@@ -58,5 +58,11 @@ class Mesh2DRegular {
     std::vector<Cell> cells_;
     std::vector<Surface> surfaces_;
     std::vector<Boundary> boundaries_;
+
+    std::map<uint, uint> surface_tags_;
+    std::map<std::string, uint> surface_names_;
+
+    std::map<uint, uint> boundary_tags_;
+    std::map<std::string, uint> boundary_names_;
 };
 }  // namespace hamt
