@@ -8,7 +8,7 @@
 namespace hamt {
 namespace gmsh {
 TEST(gmsh, ReadMSH2) {
-    const std::string file_name("./test/unit_tests/io/gmsh/test_data/test_domain_msh2.msh");
+    const std::string file_name("../../../hamt/test/unit_tests/io/gmsh/test_data/test_domain_msh2.msh");
     MSH2 mesh;
 
     ASSERT_THROW(ReadMSH2(""), Exception);
@@ -18,25 +18,25 @@ TEST(gmsh, ReadMSH2) {
     ASSERT_EQ(36, mesh.elements_.size());
 
     // node-number x-coord y-coord z-coord
-    ASSERT_EQ(1, mesh.nodes_.at(0).node_number);
-    ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(0).coord(0));
-    ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(0).coord(1));
-    ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(0).coord(2));
-
-    ASSERT_EQ(2, mesh.nodes_.at(1).node_number);
-    ASSERT_DOUBLE_EQ(1.0, mesh.nodes_.at(1).coord(0));
+    ASSERT_EQ(1, mesh.nodes_.at(1).node_number);
+    ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(1).coord(0));
     ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(1).coord(1));
     ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(1).coord(2));
 
-    ASSERT_EQ(3, mesh.nodes_.at(2).node_number);
+    ASSERT_EQ(2, mesh.nodes_.at(2).node_number);
     ASSERT_DOUBLE_EQ(1.0, mesh.nodes_.at(2).coord(0));
-    ASSERT_DOUBLE_EQ(1.0, mesh.nodes_.at(2).coord(1));
+    ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(2).coord(1));
     ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(2).coord(2));
 
-    ASSERT_EQ(4, mesh.nodes_.at(3).node_number);
-    ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(3).coord(0));
+    ASSERT_EQ(3, mesh.nodes_.at(3).node_number);
+    ASSERT_DOUBLE_EQ(1.0, mesh.nodes_.at(3).coord(0));
     ASSERT_DOUBLE_EQ(1.0, mesh.nodes_.at(3).coord(1));
     ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(3).coord(2));
+
+    ASSERT_EQ(4, mesh.nodes_.at(4).node_number);
+    ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(4).coord(0));
+    ASSERT_DOUBLE_EQ(1.0, mesh.nodes_.at(4).coord(1));
+    ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(4).coord(2));
 
     // elm-number elm-type number-of-tags < tag > … node-number-list
     ASSERT_EQ(1, mesh.elements_.at(0).elm_number);
