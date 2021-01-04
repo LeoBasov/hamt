@@ -1,0 +1,6 @@
+cmake_minimum_required (VERSION 3.10)
+project (hamt)
+add_subdirectory (test)
+add_subdirectory (src)
+enable_testing ()
+add_test (NAME MyTest COMMAND unit_tests)
