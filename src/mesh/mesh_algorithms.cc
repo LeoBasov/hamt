@@ -20,6 +20,11 @@ Mesh2DRegular MSH2ToMesh2DRegular(const gmsh::MSH2& msh2_mesh) {
             mesh.nodes_.at(element.node_number_list.at(2) - 1).cell_bl = mesh.cells_.size();
             mesh.nodes_.at(element.node_number_list.at(3) - 1).cell_br = mesh.cells_.size();
 
+            cell.node1 = element.node_number_list.at(0) - 1;
+            cell.node2 = element.node_number_list.at(1) - 1;
+            cell.node3 = element.node_number_list.at(2) - 1;
+            cell.node4 = element.node_number_list.at(3) - 1;
+
             mesh.cells_.push_back(cell);
         }
     }

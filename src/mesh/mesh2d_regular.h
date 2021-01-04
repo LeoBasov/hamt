@@ -33,8 +33,9 @@ class Mesh2DRegular {
     };
 
     struct Cell {
-        uint bounary_left, bounary_buttom, bounary_right, bounary_top;
+        int bounary_left = -1, bounary_buttom = -1, bounary_right = -1, bounary_top = -1;
         uint surface_id;
+        uint node1, node2, node3, node4;
     };
 
     struct Surface {
