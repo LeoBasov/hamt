@@ -12,6 +12,8 @@ class MSH2 {
    public:
     struct PhysicalName {
         // physical-dimension physical-tag "physical-name"
+        uint physical_dimension, physical_tag;
+        std::string physical_name;
     };
 
     struct Node {
@@ -33,6 +35,7 @@ class MSH2 {
     void Clear();
 
     std::map<uint, Node> nodes_;
+    std::map<uint, PhysicalName> physical_names_;
     std::vector<Element> elements_;
 };
 }  // namespace gmsh

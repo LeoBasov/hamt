@@ -9,6 +9,7 @@ MSH2::MSH2() {}
 void MSH2::Clear() {
     nodes_.clear();
     elements_.clear();
+    physical_names_.clear();
 }
 
 }  // namespace gmsh

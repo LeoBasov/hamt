@@ -48,7 +48,46 @@ void CheckFileFormatMSH2(const std::string& file_name) {
     throw Exception("GMSH MESH FORMAT NOT FOUND IN FILE", __PRETTY_FUNCTION__);
 }
 
-void ReadPhysicalNamesMSH2(const std::string& file_name, MSH2& mesh) {}
+void ReadPhysicalNamesMSH2(const std::string& file_name, MSH2& mesh) {
+    std::ifstream infile(file_name);
+    std::string line;
+    bool found(false);
+
+    if (!infile.is_open()) {
+        throw std::exception();
+    }
+
+    while (std::getline(infile, line)) {
+        if (line == "$PhysicalNames") {
+            found = true;
+        } else if (found && (line == "$EndPhysicalNames")) {
+            infile.close();
+
+            return;
+        } else if (found) {
+            std::istringstream iss(line);
+            std::vector<std::string> results((std::istream_iterator<std::string>(iss)),
+                                             std::istream_iterator<std::string>());
+            MSH2::PhysicalName name;
+
+            if (results.size() == 1) {
+                continue;
+            }
+
+            name.physical_dimension = std::stoi(results.at(0));
+            name.physical_tag = std::stoi(results.at(1));
+            name.physical_name = results.at(2).substr(1, results.at(2).size() - 2);
+
+            if (!mesh.physical_names_.insert({name.physical_tag, name}).second) {
+                infile.close();
+                throw Exception("REDEFINED NAME TAG [" + std::to_string(name.physical_tag) + "]", __PRETTY_FUNCTION__);
+            }
+        }
+    }
+
+    infile.close();
+    throw Exception("GMSH PHYSICAL NAMES NOT FOUND IN FILE", __PRETTY_FUNCTION__);
+}
 
 void ReadNodesMSH2(const std::string& file_name, MSH2& mesh) {
     std::ifstream infile(file_name);
