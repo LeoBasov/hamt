@@ -19,12 +19,6 @@ Line Loop(1) = {1, 2, 3, 4};
 //+
 Plane Surface(1) = {1};
 //+
-Transfinite Surface {1} = {1, 2, 3, 4};
-//+
-Transfinite Line {1, 3} = 10 Using Progression 1;
-//+
-Transfinite Line {2, 4} = 10 Using Progression 1;
-//+
 Physical Line("buttom") = {4};
 //+
 Physical Line("right") = {3};
@@ -32,3 +26,11 @@ Physical Line("right") = {3};
 Physical Line("top") = {2};
 //+
 Physical Line("left") = {1};
+//+
+Transfinite Surface {1} = {1, 2, 3, 4};
+//+
+Transfinite Line {1, 3} = 10 Using Progression 1;
+//+
+Transfinite Line {2, 4} = 10 Using Progression 1;
+//+
+Recombine Surface {1};
