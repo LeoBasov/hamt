@@ -27,8 +27,8 @@ class Mesh2DRegular {
 
     struct Node {
         // stencil ids
-        uint u_im_j, u_ip_j, u_i_jm, u_i_jp;
-        uint cell_bl, cell_br, cell_tr, cell_tl;
+        int u_im_j = -1, u_ip_j = -1, u_i_jm = -1, u_i_jp = -1;
+        int cell_bl = -1, cell_br = -1, cell_tr = -1, cell_tl = -1;
         NodeType type = MID;
     };
 
@@ -52,7 +52,6 @@ class Mesh2DRegular {
 
     void Clear();
 
-   private:
     double dx_, dy_;
     std::vector<Node> nodes_;
     std::vector<Cell> cells_;
