@@ -19,6 +19,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include <iostream>
 
 #include "exception/incomplete_code_error.h"
+#include "exception/load_pass.h"
+#include "io/parser/controller.h"
 #include "io/parser/parser.h"
 
 using namespace hamt;
@@ -26,9 +28,17 @@ using namespace hamt;
 void WriteHeader(), WriteCopyright(), WriteLicense(), WriteLicenceWarranty(), WriteLicenceRedistribution(),
     WriteCredits();
 
-int main(int argc, char **) {
+void WriteHelp(const Controller &controller);
+
+int ProcessFile(Controller &controller, const std::string &file_name, const std::string &relative_dir,
+                const bool &test_mode);
+
+void ChecArgvExact(const uint &size, const std::vector<std::string> &argv);
+
+int main(int argc, char *argv[]) {
     bool run(true);
     Parser parser;
+    Controller controller;
 
     WriteHeader();
 
@@ -40,7 +50,7 @@ int main(int argc, char **) {
             if (parser.command_.name == "quit") {
                 run = false;
             } else if (parser.command_.name == "help") {
-                std::cout << "IncompleteCodeError: WriteHelp(controller);" << std::endl;
+                WriteHelp(controller);
             } else if (parser.command_.name == "copyright") {
                 WriteCopyright();
             } else if (parser.command_.name == "credits") {
@@ -52,29 +62,65 @@ int main(int argc, char **) {
                     WriteLicenceWarranty();
                 } else if (parser.command_.argv.size() && parser.command_.argv.front() == "c") {
                     WriteLicenceRedistribution();
-                } else {
-                    std::cout << "Unknown command: show";
-
-                    for (auto command : parser.command_.argv) {
-                        std::cout << " " << command;
-                    }
-
-                    std::cout << std::endl;
                 }
             } else if (parser.command_.name == "load") {
-                std::cout << "IncompleteCodeError: load" << std::endl;
+                try {
+                    ChecArgvExact(1, parser.command_.argv);
+                    ProcessFile(controller, parser.command_.argv.front(), parser.relative_directory_, false);
+                } catch (CommandError &e) {
+                    std::cout << "CommandError: " << e.what() << std::endl;
+                } catch (IncompleteCodeError &e) {
+                    std::cout << "IncompleteCodeError: " << e.what() << std::endl;
+                }
             } else {
-                std::cout << "IncompleteCodeError: else" << std::endl;
+                try {
+                    controller.ProcessCommand(parser.command_, false);
+                } catch (CommandError &e) {
+                    std::cout << "CommandError: " << e.what() << std::endl;
+                } catch (IncompleteCodeError &e) {
+                    std::cout << "IncompleteCodeError: " << e.what() << std::endl;
+                }
             }
         }
     } else if (argc == 2) {
-        throw IncompleteCodeError("simulation run");
+        if (ProcessFile(controller, argv[1], "", false) == 0) {
+            std::cout << "================================================================" << std::endl;
+            std::cout << "EXECUTION FINISHED SUCCESSFULLY" << std::endl;
+            std::cout << "================================================================" << std::endl;
+
+            return 0;
+        } else {
+            std::cout << "================================================================" << std::endl;
+            std::cout << "EXECUTION FINISHED WITH ERROR" << std::endl;
+            std::cout << "================================================================" << std::endl;
+
+            return 1;
+        }
     } else if (argc == 3) {
-        throw IncompleteCodeError("simulation run -t");
+        if (std::string(argv[1]) == "-t") {
+            if (ProcessFile(controller, argv[2], "", true) == 0) {
+                std::cout << "================================================================" << std::endl;
+                std::cout << "EXECUTION FINISHED SUCCESSFULLY" << std::endl;
+                std::cout << "================================================================" << std::endl;
+
+                return 0;
+            } else {
+                std::cout << "================================================================" << std::endl;
+                std::cout << "EXECUTION FINISHED WITH ERROR" << std::endl;
+                std::cout << "================================================================" << std::endl;
+
+                return 1;
+            }
+        } else {
+            std::cout << "ParseError: Unknown argument [" << argv[1] << "]." << std::endl;
+            return 1;
+        }
     } else {
         std::cout << "ParseError: Too many arguments." << std::endl;
         return 1;
     }
+
+    return 0;
 }
 
 void WriteHeader() {
@@ -108,4 +154,49 @@ void WriteLicenceWarranty() {
 
 void WriteLicenceRedistribution() { std::cout << "TODO" << std::endl; }
 
+void WriteHelp(const Controller &controller) {
+    std::cout << "The following operations are currently implemented:" << std::endl;
+
+    for (auto op : controller.GetOperations()) {
+        std::cout << op.second->GetHelp() << std::endl;
+    }
+}
+
 void WriteCredits() { std::cout << "TODO" << std::endl; }
+
+int ProcessFile(Controller &controller, const std::string &file_name, const std::string &relative_dir,
+                const bool &test_mode) {
+    Parser parser;
+
+    try {
+        parser.ParseFile(relative_dir + file_name);
+        controller.SetRelDir(parser.relative_directory_);
+    } catch (std::exception &e) {
+        std::cout << "ParseError: File [" << relative_dir + file_name << "] could not be opened." << std::endl;
+        return 1;
+    }
+
+    for (auto command : parser.commads_) {
+        try {
+            controller.ProcessCommand(command, test_mode);
+        } catch (CommandError &e) {
+            std::cout << "CommandError: " << e.what() << std::endl;
+            return 1;
+        } catch (IncompleteCodeError &e) {
+            std::cout << "IncompleteCodeError: " << e.what() << std::endl;
+            return 1;
+        } catch (LoadPass &e) {
+            if (ProcessFile(controller, e.what(), parser.relative_directory_, test_mode)) {
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+void ChecArgvExact(const uint &size, const std::vector<std::string> &argv) {
+    if (argv.size() != size) {
+        throw CommandError("command 'load' must have '" + std::to_string(size) + "' argument(s)");
+    }
+}
