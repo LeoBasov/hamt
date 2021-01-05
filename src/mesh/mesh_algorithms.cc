@@ -1,7 +1,7 @@
 #include "mesh_algorithms.h"
 
 namespace hamt {
-namespace mesh2d_regular_algorithms {
+namespace mesh_algorithms {
 
 Mesh2DRegular MSH2ToMesh2DRegular(const gmsh::MSH2& msh2_mesh) {
     Mesh2DRegular mesh;
@@ -40,14 +40,43 @@ Mesh2DRegular MSH2ToMesh2DRegular(const gmsh::MSH2& msh2_mesh) {
             cell.node3 = element.node_number_list.at(2) - 1;
             cell.node4 = element.node_number_list.at(3) - 1;
 
-            // here one should be able to set correct surfaces
+            cell.surface_id = mesh.surface_tags_.at(element.tags.at(1));
 
             mesh.cells_.push_back(cell);
+        } else if (element.elm_type == 3) {
+            for (auto& cell : mesh.cells_) {
+                if (cell.IsButtom(element.node_number_list.at(0) - 1, element.node_number_list.at(1) - 1)) {
+                    cell.bounary_buttom = mesh.boundary_tags_.at(element.tags.at(1));
+                } else if (cell.IsRight(element.node_number_list.at(0) - 1, element.node_number_list.at(1) - 1)) {
+                    cell.bounary_right = mesh.boundary_tags_.at(element.tags.at(1));
+                } else if (cell.IsTop(element.node_number_list.at(0) - 1, element.node_number_list.at(1) - 1)) {
+                    cell.bounary_top = mesh.boundary_tags_.at(element.tags.at(1));
+                } else if (cell.IsLeft(element.node_number_list.at(0) - 1, element.node_number_list.at(1) - 1)) {
+                    cell.bounary_left = mesh.boundary_tags_.at(element.tags.at(1));
+                }
+            }
         }
     }
 
-    // asign cell and surfaces to correct types
-    // assigned correct surfaces and boundary conditions
+    for (auto& node : mesh.nodes_) {
+        if ((node.cell_bl < 0) && (node.cell_br < 0) && (node.cell_tr >= 0) && (node.cell_tl >= 0)) {
+            node.type = Mesh2DRegular::BUTTOM;
+        } else if ((node.cell_bl >= 0) && (node.cell_br >= 0) && (node.cell_tr < 0) && (node.cell_tl < 0)) {
+            node.type = Mesh2DRegular::TOP;
+        } else if ((node.cell_bl < 0) && (node.cell_br >= 0) && (node.cell_tr <= 0) && (node.cell_tl < 0)) {
+            node.type = Mesh2DRegular::LEFT;
+        } else if ((node.cell_bl >= 0) && (node.cell_br < 0) && (node.cell_tr < 0) && (node.cell_tl >= 0)) {
+            node.type = Mesh2DRegular::RIGHT;
+        } else if ((node.cell_bl >= 0) && (node.cell_br < 0) && (node.cell_tr < 0) && (node.cell_tl < 0)) {
+            node.type = Mesh2DRegular::TOP_RIGHT;
+        } else if ((node.cell_bl < 0) && (node.cell_br >= 0) && (node.cell_tr < 0) && (node.cell_tl < 0)) {
+            node.type = Mesh2DRegular::TOP_LEFT;
+        } else if ((node.cell_bl < 0) && (node.cell_br < 0) && (node.cell_tr < 0) && (node.cell_tl >= 0)) {
+            node.type = Mesh2DRegular::BUTTOM_RIGHT;
+        } else if ((node.cell_bl < 0) && (node.cell_br < 0) && (node.cell_tr >= 0) && (node.cell_tl < 0)) {
+            node.type = Mesh2DRegular::BUTTOM_LEFT;
+        }
+    }
 
     return mesh;
 }

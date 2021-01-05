@@ -16,8 +16,8 @@ class Mesh2DRegular {
         TOP,
         TOP_LEFT,
         TOP_RIGHT,
-        BUTTOM_LEFTL,
-        BUTTON_RIGHT,
+        BUTTOM_LEFT,
+        BUTTOM_RIGHT,
         CROSS_H,
         CROSS_V,
         CROSS_HV
@@ -36,6 +36,11 @@ class Mesh2DRegular {
         int bounary_left = -1, bounary_buttom = -1, bounary_right = -1, bounary_top = -1;
         uint surface_id;
         uint node1, node2, node3, node4;
+
+        bool IsButtom(uint node_1, uint node_2) const;
+        bool IsRight(uint node_1, uint node_2) const;
+        bool IsTop(uint node1, uint node2) const;
+        bool IsLeft(uint node1, uint node2) const;
     };
 
     struct Surface {
