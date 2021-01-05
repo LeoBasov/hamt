@@ -30,6 +30,7 @@ Mesh2DRegular MSH2ToMesh2DRegular(const gmsh::MSH2& msh2_mesh) {
         if (element.elm_type == 3) {
             Mesh2DRegular::Cell cell;
 
+            // For the given test case the order is shofted. Might not always be the case
             mesh.nodes_.at(element.node_number_list.at(0) - 1).cell_tr = mesh.cells_.size();
             mesh.nodes_.at(element.node_number_list.at(1) - 1).cell_tl = mesh.cells_.size();
             mesh.nodes_.at(element.node_number_list.at(2) - 1).cell_bl = mesh.cells_.size();
@@ -40,7 +41,7 @@ Mesh2DRegular MSH2ToMesh2DRegular(const gmsh::MSH2& msh2_mesh) {
             cell.node3 = element.node_number_list.at(2) - 1;
             cell.node4 = element.node_number_list.at(3) - 1;
 
-            cell.surface_id = mesh.surface_tags_.at(element.tags.at(1));
+            // cell.surface_id = mesh.surface_tags_.at(element.tags.at(1));
 
             mesh.cells_.push_back(cell);
         } else if (element.elm_type == 3) {
@@ -61,20 +62,55 @@ Mesh2DRegular MSH2ToMesh2DRegular(const gmsh::MSH2& msh2_mesh) {
     for (auto& node : mesh.nodes_) {
         if ((node.cell_bl < 0) && (node.cell_br < 0) && (node.cell_tr >= 0) && (node.cell_tl >= 0)) {
             node.type = Mesh2DRegular::BUTTOM;
+
+            node.u_i_jp = mesh.cells_.at(node.cell_tl).node3;
+            node.u_im_j = mesh.cells_.at(node.cell_tl).node1;
+            node.u_ip_j = mesh.cells_.at(node.cell_tr).node2;
         } else if ((node.cell_bl >= 0) && (node.cell_br >= 0) && (node.cell_tr < 0) && (node.cell_tl < 0)) {
             node.type = Mesh2DRegular::TOP;
-        } else if ((node.cell_bl < 0) && (node.cell_br >= 0) && (node.cell_tr <= 0) && (node.cell_tl < 0)) {
+
+            node.u_i_jm = mesh.cells_.at(node.cell_bl).node2;
+            node.u_im_j = mesh.cells_.at(node.cell_bl).node4;
+            node.u_ip_j = mesh.cells_.at(node.cell_br).node3;
+        } else if ((node.cell_bl < 0) && (node.cell_br >= 0) && (node.cell_tr >= 0) && (node.cell_tl < 0)) {
             node.type = Mesh2DRegular::LEFT;
+
+            node.u_i_jp = mesh.cells_.at(node.cell_tr).node4;
+            node.u_i_jm = mesh.cells_.at(node.cell_br).node1;
+            node.u_ip_j = mesh.cells_.at(node.cell_tr).node2;
         } else if ((node.cell_bl >= 0) && (node.cell_br < 0) && (node.cell_tr < 0) && (node.cell_tl >= 0)) {
             node.type = Mesh2DRegular::RIGHT;
+
+            node.u_i_jp = mesh.cells_.at(node.cell_tl).node3;
+            node.u_i_jm = mesh.cells_.at(node.cell_bl).node2;
+            node.u_im_j = mesh.cells_.at(node.cell_bl).node4;
         } else if ((node.cell_bl >= 0) && (node.cell_br < 0) && (node.cell_tr < 0) && (node.cell_tl < 0)) {
             node.type = Mesh2DRegular::TOP_RIGHT;
+
+            node.u_i_jm = mesh.cells_.at(node.cell_bl).node2;
+            node.u_im_j = mesh.cells_.at(node.cell_bl).node4;
         } else if ((node.cell_bl < 0) && (node.cell_br >= 0) && (node.cell_tr < 0) && (node.cell_tl < 0)) {
             node.type = Mesh2DRegular::TOP_LEFT;
+
+            node.u_i_jm = mesh.cells_.at(node.cell_br).node1;
+            node.u_ip_j = mesh.cells_.at(node.cell_br).node3;
         } else if ((node.cell_bl < 0) && (node.cell_br < 0) && (node.cell_tr < 0) && (node.cell_tl >= 0)) {
             node.type = Mesh2DRegular::BUTTOM_RIGHT;
+
+            node.u_i_jp = mesh.cells_.at(node.cell_tl).node3;
+            node.u_im_j = mesh.cells_.at(node.cell_tl).node1;
         } else if ((node.cell_bl < 0) && (node.cell_br < 0) && (node.cell_tr >= 0) && (node.cell_tl < 0)) {
             node.type = Mesh2DRegular::BUTTOM_LEFT;
+
+            node.u_i_jp = mesh.cells_.at(node.cell_tr).node4;
+            node.u_ip_j = mesh.cells_.at(node.cell_tr).node2;
+        } else {
+            node.type = Mesh2DRegular::MID;
+
+            node.u_i_jm = mesh.cells_.at(node.cell_bl).node2;
+            node.u_i_jp = mesh.cells_.at(node.cell_tl).node3;
+            node.u_im_j = mesh.cells_.at(node.cell_tl).node1;
+            node.u_ip_j = mesh.cells_.at(node.cell_tr).node2;
         }
     }
 
