@@ -40,4 +40,41 @@ TEST(Mesh2DRegular, Clear) {
     ASSERT_EQ(0, mesh.boundary_names_.size());
 }
 
+TEST(Mesh2DRegular, Cell) {
+    Mesh2DRegular::Cell cell;
+
+    cell.node1 = 0;
+    cell.node2 = 1;
+    cell.node3 = 2;
+    cell.node4 = 3;
+
+    ASSERT_TRUE(cell.IsButtom(0, 1));
+    ASSERT_TRUE(cell.IsButtom(1, 0));
+
+    ASSERT_TRUE(cell.IsRight(1, 2));
+    ASSERT_TRUE(cell.IsRight(2, 1));
+
+    ASSERT_TRUE(cell.IsTop(2, 3));
+    ASSERT_TRUE(cell.IsTop(3, 2));
+
+    ASSERT_TRUE(cell.IsLeft(3, 0));
+    ASSERT_TRUE(cell.IsLeft(0, 3));
+
+    ASSERT_FALSE(cell.IsButtom(1, 2));
+    ASSERT_FALSE(cell.IsButtom(2, 3));
+    ASSERT_FALSE(cell.IsButtom(3, 0));
+
+    ASSERT_FALSE(cell.IsRight(2, 3));
+    ASSERT_FALSE(cell.IsRight(3, 0));
+    ASSERT_FALSE(cell.IsRight(0, 1));
+
+    ASSERT_FALSE(cell.IsTop(3, 0));
+    ASSERT_FALSE(cell.IsTop(0, 1));
+    ASSERT_FALSE(cell.IsTop(1, 2));
+
+    ASSERT_FALSE(cell.IsLeft(0, 1));
+    ASSERT_FALSE(cell.IsLeft(1, 2));
+    ASSERT_FALSE(cell.IsLeft(2, 3));
+}
+
 }  // namespace hamt
