@@ -16,6 +16,10 @@ Mesh2DRegular MSH2ToMesh2DRegular(const gmsh::MSH2& msh2_mesh) {
 void SetUpNodesAndCells(Mesh2DRegular& mesh, const gmsh::MSH2& msh2_mesh) {
     mesh.nodes_.resize(msh2_mesh.nodes_.size());
 
+    for (uint i = 1; i <= msh2_mesh.nodes_.size(); i++) {
+        mesh.nodes_.at(i - 1).position = msh2_mesh.nodes_.at(i).coord;
+    }
+
     for (const auto& element : msh2_mesh.elements_) {
         if (element.elm_type == 3) {
             Mesh2DRegular::Cell cell;

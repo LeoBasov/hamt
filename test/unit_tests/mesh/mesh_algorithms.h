@@ -35,9 +35,21 @@ TEST(mesh_algorithms, MSH2ToMesh2DRegular) {
     ASSERT_EQ(mesh.nodes_.at(0).cell_tr, 4);
     ASSERT_EQ(mesh.nodes_.at(0).cell_tl, -1);
 
+    ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(0).position(0));
+    ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(0).position(1));
+    ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(0).position(2));
+
     // buttom right
     // top left
+    ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(4).position(0));
+    ASSERT_DOUBLE_EQ(1.0, mesh.nodes_.at(4).position(1));
+    ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(4).position(2));
+
     // top right
+    ASSERT_DOUBLE_EQ(1.5, mesh.nodes_.at(6).position(0));
+    ASSERT_DOUBLE_EQ(1.0, mesh.nodes_.at(6).position(1));
+    ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(6).position(2));
+
     // left
     // right
     // top

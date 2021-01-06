@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Eigen/Dense>
 #include <map>
 #include <vector>
 
@@ -30,6 +31,7 @@ class Mesh2DRegular {
         int u_im_j = -1, u_ip_j = -1, u_i_jm = -1, u_i_jp = -1;
         int cell_bl = -1, cell_br = -1, cell_tr = -1, cell_tl = -1;
         NodeType type = MID;
+        Eigen::Vector3d position;
     };
 
     struct Cell {
