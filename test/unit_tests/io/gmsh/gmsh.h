@@ -73,6 +73,13 @@ TEST(gmsh, ReadMSH2) {
     ASSERT_EQ(1, mesh.physical_names_.at(3).physical_dimension);
     ASSERT_EQ(4, mesh.physical_names_.at(3).physical_tag);
     ASSERT_EQ("left", mesh.physical_names_.at(3).physical_name);
+
+    // Clear
+    mesh.Clear();
+
+    ASSERT_EQ(0, mesh.nodes_.size());
+    ASSERT_EQ(0, mesh.physical_names_.size());
+    ASSERT_EQ(0, mesh.elements_.size());
 }
 }  // namespace gmsh
 }  // namespace hamt
