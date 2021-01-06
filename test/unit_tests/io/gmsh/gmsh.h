@@ -8,8 +8,8 @@
 namespace hamt {
 namespace gmsh {
 TEST(gmsh, ReadMSH2) {
-    // const std::string file_name("../../../hamt/test/unit_tests/io/gmsh/test_data/test_domain_msh2.msh");
-    const std::string file_name("./test/unit_tests/io/gmsh/test_data/test_domain_msh2.msh");
+    // const std::string file_name("../../../hamt/test/test_data/test_domain_msh2.msh");
+    const std::string file_name("./test/test_data/test_domain_msh2.msh");
     MSH2 mesh;
 
     ASSERT_THROW(ReadMSH2(""), Exception);
