@@ -34,57 +34,41 @@ void SetUpNodesAndCells(Mesh2DRegular& mesh, const gmsh::MSH2& msh2_mesh) {
     }
 
     for (auto& node : mesh.nodes_) {
+        if (node.cell_bl >= 0) {
+            node.u_im_j = mesh.cells_.at(node.cell_bl).node4;
+            node.u_i_jm = mesh.cells_.at(node.cell_bl).node2;
+        }
+        if (node.cell_br >= 0) {
+            node.u_i_jm = mesh.cells_.at(node.cell_br).node1;
+            node.u_ip_j = mesh.cells_.at(node.cell_br).node3;
+        }
+        if (node.cell_tr >= 0) {
+            node.u_ip_j = mesh.cells_.at(node.cell_tr).node2;
+            node.u_i_jp = mesh.cells_.at(node.cell_tr).node4;
+        }
+        if (node.cell_tl >= 0) {
+            node.u_i_jp = mesh.cells_.at(node.cell_tl).node3;
+            node.u_im_j = mesh.cells_.at(node.cell_tl).node1;
+        }
+
         if ((node.cell_bl < 0) && (node.cell_br < 0) && (node.cell_tr >= 0) && (node.cell_tl >= 0)) {
             node.type = Mesh2DRegular::BUTTOM;
-
-            node.u_i_jp = mesh.cells_.at(node.cell_tl).node3;
-            node.u_im_j = mesh.cells_.at(node.cell_tl).node1;
-            node.u_ip_j = mesh.cells_.at(node.cell_tr).node2;
         } else if ((node.cell_bl >= 0) && (node.cell_br >= 0) && (node.cell_tr < 0) && (node.cell_tl < 0)) {
             node.type = Mesh2DRegular::TOP;
-
-            node.u_i_jm = mesh.cells_.at(node.cell_bl).node2;
-            node.u_im_j = mesh.cells_.at(node.cell_bl).node4;
-            node.u_ip_j = mesh.cells_.at(node.cell_br).node3;
         } else if ((node.cell_bl < 0) && (node.cell_br >= 0) && (node.cell_tr >= 0) && (node.cell_tl < 0)) {
             node.type = Mesh2DRegular::LEFT;
-
-            node.u_i_jp = mesh.cells_.at(node.cell_tr).node4;
-            node.u_i_jm = mesh.cells_.at(node.cell_br).node1;
-            node.u_ip_j = mesh.cells_.at(node.cell_tr).node2;
         } else if ((node.cell_bl >= 0) && (node.cell_br < 0) && (node.cell_tr < 0) && (node.cell_tl >= 0)) {
             node.type = Mesh2DRegular::RIGHT;
-
-            node.u_i_jp = mesh.cells_.at(node.cell_tl).node3;
-            node.u_i_jm = mesh.cells_.at(node.cell_bl).node2;
-            node.u_im_j = mesh.cells_.at(node.cell_bl).node4;
         } else if ((node.cell_bl >= 0) && (node.cell_br < 0) && (node.cell_tr < 0) && (node.cell_tl < 0)) {
             node.type = Mesh2DRegular::TOP_RIGHT;
-
-            node.u_i_jm = mesh.cells_.at(node.cell_bl).node2;
-            node.u_im_j = mesh.cells_.at(node.cell_bl).node4;
         } else if ((node.cell_bl < 0) && (node.cell_br >= 0) && (node.cell_tr < 0) && (node.cell_tl < 0)) {
             node.type = Mesh2DRegular::TOP_LEFT;
-
-            node.u_i_jm = mesh.cells_.at(node.cell_br).node1;
-            node.u_ip_j = mesh.cells_.at(node.cell_br).node3;
         } else if ((node.cell_bl < 0) && (node.cell_br < 0) && (node.cell_tr < 0) && (node.cell_tl >= 0)) {
             node.type = Mesh2DRegular::BUTTOM_RIGHT;
-
-            node.u_i_jp = mesh.cells_.at(node.cell_tl).node3;
-            node.u_im_j = mesh.cells_.at(node.cell_tl).node1;
         } else if ((node.cell_bl < 0) && (node.cell_br < 0) && (node.cell_tr >= 0) && (node.cell_tl < 0)) {
             node.type = Mesh2DRegular::BUTTOM_LEFT;
-
-            node.u_i_jp = mesh.cells_.at(node.cell_tr).node4;
-            node.u_ip_j = mesh.cells_.at(node.cell_tr).node2;
         } else {
             node.type = Mesh2DRegular::MID;
-
-            node.u_i_jm = mesh.cells_.at(node.cell_bl).node2;
-            node.u_i_jp = mesh.cells_.at(node.cell_tl).node3;
-            node.u_im_j = mesh.cells_.at(node.cell_tl).node1;
-            node.u_ip_j = mesh.cells_.at(node.cell_tr).node2;
         }
     }
 }
