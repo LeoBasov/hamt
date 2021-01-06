@@ -96,6 +96,8 @@ void SetUpPhysicalGroups(Mesh2DRegular& mesh, const gmsh::MSH2& msh2_mesh) {
         const gmsh::MSH2::Element& element(msh2_mesh.elements_.at(i));
 
         if (element.elm_type == 3) {
+            // The setting of surface tags doesn't seem to wrok
+
             // mesh.cells_.at(k++).surface_id = mesh.surface_tags_.at(element.tags.at(1));
         } else if (element.elm_type == 1) {
             for (auto& cell : mesh.cells_) {
