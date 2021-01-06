@@ -8,8 +8,8 @@
 namespace hamt {
 
 TEST(mesh_algorithms, MSH2ToMesh2DRegular) {
-    // const std::string file_name("../../../hamt/test/unit_tests/mesh/test_data/block_3.msh");
-    const std::string file_name("./test/unit_tests/mesh/test_data/block_3.msh");
+    // const std::string file_name("../../../hamt/test/test_data/block.msh");
+    const std::string file_name("./test/test_data/block.msh");
     const gmsh::MSH2 msh2_mesh = gmsh::ReadMSH2(file_name);
     const Mesh2DRegular mesh = mesh_algorithms::MSH2ToMesh2DRegular(msh2_mesh);
 
@@ -35,9 +35,21 @@ TEST(mesh_algorithms, MSH2ToMesh2DRegular) {
     ASSERT_EQ(mesh.nodes_.at(0).cell_tr, 4);
     ASSERT_EQ(mesh.nodes_.at(0).cell_tl, -1);
 
+    ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(0).position(0));
+    ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(0).position(1));
+    ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(0).position(2));
+
     // buttom right
     // top left
+    ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(4).position(0));
+    ASSERT_DOUBLE_EQ(1.0, mesh.nodes_.at(4).position(1));
+    ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(4).position(2));
+
     // top right
+    ASSERT_DOUBLE_EQ(1.5, mesh.nodes_.at(6).position(0));
+    ASSERT_DOUBLE_EQ(1.0, mesh.nodes_.at(6).position(1));
+    ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(6).position(2));
+
     // left
     // right
     // top
