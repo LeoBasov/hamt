@@ -10,6 +10,10 @@ void Mesh2DRegular::Clear() {
     cells_.clear();
     surfaces_.clear();
     boundaries_.clear();
+    surface_tags_.clear();
+    surface_names_.clear();
+    boundary_tags_.clear();
+    boundary_names_.clear();
 }
 
 bool Mesh2DRegular::Cell::IsButtom(uint node_1, uint node_2) const {
