@@ -8,6 +8,7 @@ Mesh2DRegular MSH2ToMesh2DRegular(const gmsh::MSH2& msh2_mesh) {
 
     SetUpNodesAndCells(mesh, msh2_mesh);
     SetUpPhysicalGroups(mesh, msh2_mesh);
+    SetUpCellSize(mesh, msh2_mesh);
 
     return mesh;
 }
@@ -111,6 +112,23 @@ void SetUpPhysicalGroups(Mesh2DRegular& mesh, const gmsh::MSH2& msh2_mesh) {
                     cell.bounary_left = mesh.boundary_tags_.at(element.tags.at(1));
                 }
             }
+        }
+    }
+}
+
+void SetUpCellSize(Mesh2DRegular& mesh, const gmsh::MSH2& msh2_mesh) {
+    for (uint i = 0; i < msh2_mesh.elements_.size(); i++) {
+        const gmsh::MSH2::Element& element(msh2_mesh.elements_.at(i));
+
+        if (element.elm_type == 3) {
+            const gmsh::MSH2::Node node1(msh2_mesh.nodes_.at(element.node_number_list.at(0)));
+            const gmsh::MSH2::Node node2(msh2_mesh.nodes_.at(element.node_number_list.at(1)));
+            const gmsh::MSH2::Node node3(msh2_mesh.nodes_.at(element.node_number_list.at(2)));
+
+            mesh.dx_ = std::abs(node1.coord(0) - node2.coord(0));
+            mesh.dy_ = std::abs(node2.coord(1) - node3.coord(1));
+
+            break;
         }
     }
 }

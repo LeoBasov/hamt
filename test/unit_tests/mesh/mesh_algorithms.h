@@ -8,6 +8,7 @@
 namespace hamt {
 
 TEST(mesh_algorithms, MSH2ToMesh2DRegular) {
+    // const std::string file_name("../../../hamt/test/unit_tests/mesh/test_data/block_3.msh");
     const std::string file_name("./test/unit_tests/mesh/test_data/block_3.msh");
     const gmsh::MSH2 msh2_mesh = gmsh::ReadMSH2(file_name);
     const Mesh2DRegular mesh = mesh_algorithms::MSH2ToMesh2DRegular(msh2_mesh);
@@ -52,6 +53,9 @@ TEST(mesh_algorithms, MSH2ToMesh2DRegular) {
     ASSERT_EQ(mesh.nodes_.at(28).cell_br, 13);
     ASSERT_EQ(mesh.nodes_.at(28).cell_tr, 14);
     ASSERT_EQ(mesh.nodes_.at(28).cell_tl, 10);
+
+    ASSERT_DOUBLE_EQ(0.25, mesh.dx_);
+    ASSERT_DOUBLE_EQ(0.25, mesh.dy_);
 }
 
 }  // namespace hamt
