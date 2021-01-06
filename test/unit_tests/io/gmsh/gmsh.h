@@ -8,14 +8,15 @@
 namespace hamt {
 namespace gmsh {
 TEST(gmsh, ReadMSH2) {
+    // const std::string file_name("../../../hamt/test/unit_tests/io/gmsh/test_data/test_domain_msh2.msh");
     const std::string file_name("./test/unit_tests/io/gmsh/test_data/test_domain_msh2.msh");
     MSH2 mesh;
 
     ASSERT_THROW(ReadMSH2(""), Exception);
     mesh = ReadMSH2(file_name);
 
-    ASSERT_EQ(36, mesh.nodes_.size());
-    ASSERT_EQ(36, mesh.elements_.size());
+    ASSERT_EQ(100, mesh.nodes_.size());
+    ASSERT_EQ(121, mesh.elements_.size());
     ASSERT_EQ(4, mesh.physical_names_.size());
 
     // node-number x-coord y-coord z-coord
@@ -41,39 +42,44 @@ TEST(gmsh, ReadMSH2) {
 
     // elm-number elm-type number-of-tags < tag > … node-number-list
     ASSERT_EQ(1, mesh.elements_.at(0).elm_number);
-    ASSERT_EQ(1, mesh.elements_.at(0).elm_type);
+    ASSERT_EQ(15, mesh.elements_.at(0).elm_type);
     ASSERT_EQ(2, mesh.elements_.at(0).tags.size());
-    ASSERT_EQ(4, mesh.elements_.at(0).tags.at(0));
+    ASSERT_EQ(0, mesh.elements_.at(0).tags.at(0));
     ASSERT_EQ(1, mesh.elements_.at(0).tags.at(1));
-    ASSERT_EQ(2, mesh.elements_.at(0).node_number_list.size());
+    ASSERT_EQ(1, mesh.elements_.at(0).node_number_list.size());
     ASSERT_EQ(1, mesh.elements_.at(0).node_number_list.at(0));
-    ASSERT_EQ(5, mesh.elements_.at(0).node_number_list.at(1));
 
     ASSERT_EQ(2, mesh.elements_.at(1).elm_number);
-    ASSERT_EQ(1, mesh.elements_.at(1).elm_type);
+    ASSERT_EQ(15, mesh.elements_.at(1).elm_type);
     ASSERT_EQ(2, mesh.elements_.at(1).tags.size());
-    ASSERT_EQ(4, mesh.elements_.at(1).tags.at(0));
-    ASSERT_EQ(1, mesh.elements_.at(1).tags.at(1));
-    ASSERT_EQ(2, mesh.elements_.at(1).node_number_list.size());
-    ASSERT_EQ(5, mesh.elements_.at(1).node_number_list.at(0));
-    ASSERT_EQ(6, mesh.elements_.at(1).node_number_list.at(1));
+    ASSERT_EQ(0, mesh.elements_.at(1).tags.at(0));
+    ASSERT_EQ(2, mesh.elements_.at(1).tags.at(1));
+    ASSERT_EQ(1, mesh.elements_.at(1).node_number_list.size());
+    ASSERT_EQ(2, mesh.elements_.at(1).node_number_list.at(0));
 
     // physical-dimension physical-tag "physical-name"
+    ASSERT_EQ(1, mesh.physical_names_.at(0).physical_dimension);
+    ASSERT_EQ(1, mesh.physical_names_.at(0).physical_tag);
+    ASSERT_EQ("buttom", mesh.physical_names_.at(0).physical_name);
+
     ASSERT_EQ(1, mesh.physical_names_.at(1).physical_dimension);
-    ASSERT_EQ(1, mesh.physical_names_.at(1).physical_tag);
-    ASSERT_EQ("buttom", mesh.physical_names_.at(1).physical_name);
+    ASSERT_EQ(2, mesh.physical_names_.at(1).physical_tag);
+    ASSERT_EQ("right", mesh.physical_names_.at(1).physical_name);
 
     ASSERT_EQ(1, mesh.physical_names_.at(2).physical_dimension);
-    ASSERT_EQ(2, mesh.physical_names_.at(2).physical_tag);
-    ASSERT_EQ("right", mesh.physical_names_.at(2).physical_name);
+    ASSERT_EQ(3, mesh.physical_names_.at(2).physical_tag);
+    ASSERT_EQ("top", mesh.physical_names_.at(2).physical_name);
 
     ASSERT_EQ(1, mesh.physical_names_.at(3).physical_dimension);
-    ASSERT_EQ(3, mesh.physical_names_.at(3).physical_tag);
-    ASSERT_EQ("top", mesh.physical_names_.at(3).physical_name);
+    ASSERT_EQ(4, mesh.physical_names_.at(3).physical_tag);
+    ASSERT_EQ("left", mesh.physical_names_.at(3).physical_name);
 
-    ASSERT_EQ(1, mesh.physical_names_.at(4).physical_dimension);
-    ASSERT_EQ(4, mesh.physical_names_.at(4).physical_tag);
-    ASSERT_EQ("left", mesh.physical_names_.at(4).physical_name);
+    // Clear
+    mesh.Clear();
+
+    ASSERT_EQ(0, mesh.nodes_.size());
+    ASSERT_EQ(0, mesh.physical_names_.size());
+    ASSERT_EQ(0, mesh.elements_.size());
 }
 }  // namespace gmsh
 }  // namespace hamt

@@ -78,10 +78,7 @@ void ReadPhysicalNamesMSH2(const std::string& file_name, MSH2& mesh) {
             name.physical_tag = std::stoi(results.at(1));
             name.physical_name = results.at(2).substr(1, results.at(2).size() - 2);
 
-            if (!mesh.physical_names_.insert({name.physical_tag, name}).second) {
-                infile.close();
-                throw Exception("REDEFINED NAME TAG [" + std::to_string(name.physical_tag) + "]", __PRETTY_FUNCTION__);
-            }
+            mesh.physical_names_.push_back(name);
         }
     }
 
