@@ -5,14 +5,14 @@ namespace vtk {
 namespace unstructured_grid {
 
 void WriteMesh2DRegular(const Mesh2DRegular &mesh, const std::string &file_name,
-                        const std::vector<std::pair<std::string, std::vector<double>>> &cell_data) {
+                        const std::vector<std::pair<std::string, std::vector<double>>> &point_data) {
     std::ofstream stream(file_name);
 
     if (!stream.is_open()) {
         throw Exception("Could not open file [" + file_name + "].", __PRETTY_FUNCTION__);
     } else {
         WriteHeader(stream);
-        WriteBody(stream, mesh, cell_data);
+        WriteBody(stream, mesh, point_data);
         WriteFooter(stream);
     }
 
@@ -26,7 +26,7 @@ void WriteHeader(std::ofstream &stream) {
 void WriteFooter(std::ofstream &stream) { stream << "</VTKFile>" << std::endl; }
 
 void WriteBody(std::ofstream &stream, const Mesh2DRegular &mesh,
-               const std::vector<std::pair<std::string, std::vector<double>>> &cell_data) {
+               const std::vector<std::pair<std::string, std::vector<double>>> &point_data) {
     stream << "<UnstructuredGrid>" << std::endl;
     stream << "<Piece NumberOfPoints=\"" << mesh.nodes_.size() << "\" NumberOfCells=\"" << mesh.cells_.size() << "\">"
            << std::endl;
@@ -35,8 +35,8 @@ void WriteBody(std::ofstream &stream, const Mesh2DRegular &mesh,
     WriteCells(stream, mesh);
     // WriteCellData();
 
-    if (cell_data.size()) {
-        WritePointData(stream, cell_data);
+    if (point_data.size()) {
+        WritePointData(stream, point_data);
     }
 
     stream << "</Piece>" << std::endl;
@@ -90,10 +90,10 @@ void WriteCells(std::ofstream &stream, const Mesh2DRegular &mesh) {
     stream << "</Cells>" << std::endl;
 }
 
-void WritePointData(std::ofstream &stream, const std::vector<std::pair<std::string, std::vector<double>>> &cell_data) {
+void WritePointData(std::ofstream &stream, const std::vector<std::pair<std::string, std::vector<double>>> &point_data) {
     stream << "<PointData>" << std::endl;
 
-    for (const auto &data : cell_data) {
+    for (const auto &data : point_data) {
         stream << "<DataArray type=\"Float32\" Name=\"" + data.first + "\" format=\"ascii\">" << std::endl;
 
         for (const auto &value : data.second) {
