@@ -35,7 +35,7 @@ class MSH2 {
     void Clear();
 
     std::map<uint, Node> nodes_;
-    std::map<uint, PhysicalName> physical_names_;
+    std::vector<PhysicalName> physical_names_;
     std::vector<Element> elements_;
 };
 }  // namespace gmsh

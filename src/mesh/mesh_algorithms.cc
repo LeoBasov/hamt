@@ -76,20 +76,34 @@ void SetUpNodesAndCells(Mesh2DRegular& mesh, const gmsh::MSH2& msh2_mesh) {
 
 void SetUpPhysicalGroups(Mesh2DRegular& mesh, const gmsh::MSH2& msh2_mesh) {
     for (const auto& name : msh2_mesh.physical_names_) {
-        if (name.second.physical_dimension == 1) {
+        if (name.physical_dimension == 1) {
             Mesh2DRegular::Boundary boundary;
 
-            mesh.boundary_tags_.insert({name.second.physical_tag, mesh.boundaries_.size()});
-            mesh.boundary_names_.insert({name.second.physical_name, mesh.boundaries_.size()});
+            auto ret_pair1 = mesh.boundary_tags_.insert({name.physical_tag, mesh.boundaries_.size()});
+            auto ret_pair2 = mesh.boundary_names_.insert({name.physical_name, mesh.boundaries_.size()});
+
+            if (!ret_pair1.second) {
+                throw Exception("Could not insert boundary tag [" + std::to_string(name.physical_tag) + "]",
+                                __PRETTY_FUNCTION__);
+            } else if (!ret_pair2.second) {
+                throw Exception("Could not insert boundary name [" + name.physical_name + "]", __PRETTY_FUNCTION__);
+            }
 
             mesh.boundaries_.push_back(boundary);
-        } else if (name.second.physical_dimension == 2) {
-            Mesh2DRegular::Surface boundary;
+        } else if (name.physical_dimension == 2) {
+            Mesh2DRegular::Surface surface;
 
-            mesh.surface_tags_.insert({name.second.physical_tag, mesh.boundaries_.size()});
-            mesh.surface_names_.insert({name.second.physical_name, mesh.boundaries_.size()});
+            auto ret_pair1 = mesh.surface_tags_.insert({name.physical_tag, mesh.surfaces_.size()});
+            auto ret_pair2 = mesh.surface_names_.insert({name.physical_name, mesh.surfaces_.size()});
 
-            mesh.surfaces_.push_back(boundary);
+            if (!ret_pair1.second) {
+                throw Exception("Could not insert surface tag [" + std::to_string(name.physical_tag) + "]",
+                                __PRETTY_FUNCTION__);
+            } else if (!ret_pair2.second) {
+                throw Exception("Could not insert surface name [" + name.physical_name + "]", __PRETTY_FUNCTION__);
+            }
+
+            mesh.surfaces_.push_back(surface);
         }
     }
 
@@ -99,7 +113,7 @@ void SetUpPhysicalGroups(Mesh2DRegular& mesh, const gmsh::MSH2& msh2_mesh) {
         if (element.elm_type == 3) {
             // The setting of surface tags doesn't seem to wrok
 
-            // mesh.cells_.at(k++).surface_id = mesh.surface_tags_.at(element.tags.at(1));
+            mesh.cells_.at(k++).surface_id = mesh.surface_tags_.at(element.tags.at(1));
         } else if (element.elm_type == 1) {
             for (auto& cell : mesh.cells_) {
                 if (cell.IsButtom(element.node_number_list.at(0) - 1, element.node_number_list.at(1) - 1)) {

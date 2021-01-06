@@ -36,13 +36,13 @@ Transfinite Curve {3, 1} = 3 Using Progression 1;
 //+
 Recombine Surface {1};
 //+
-Physical Curve("ls") = {4};
+Physical Curve("ls", 4) = {4};
 //+
-Physical Curve("bs") = {1};
+Physical Curve("bs", 1) = {1};
 //+
-Physical Curve("rs") = {2};
+Physical Curve("rs", 2) = {2};
 //+
-Physical Curve("ts") = {3};
+Physical Curve("ts", 3) = {3};
 //+
 Line(5) = {1, 2};
 //+
@@ -56,13 +56,13 @@ Curve Loop(2) = {8, 5, 6, 7};
 //+
 Plane Surface(2) = {2};
 //+
-Physical Curve("lb") = {8};
+Physical Curve("lb", 8) = {8};
 //+
-Physical Curve("bb") = {5};
+Physical Curve("bb", 5) = {5};
 //+
-Physical Curve("rb") = {6};
+Physical Curve("rb", 6) = {6};
 //+
-Physical Curve("tb") = {7};
+Physical Curve("tb", 7) = {7};
 //+
 Transfinite Surface {2} = {1, 2, 4, 5};
 //+
@@ -72,6 +72,6 @@ Transfinite Curve {5, 7} = 5 Using Progression 1;
 //+
 Recombine Surface {2};
 //+
-Physical Surface("b") = {2};
+Physical Surface("surf_big", 2) = {2};
 //+
-Physical Surface("s") = {1};
+Physical Surface("surf_small", 1) = {1};

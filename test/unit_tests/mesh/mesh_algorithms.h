@@ -56,6 +56,38 @@ TEST(mesh_algorithms, MSH2ToMesh2DRegular) {
 
     ASSERT_DOUBLE_EQ(0.25, mesh.dx_);
     ASSERT_DOUBLE_EQ(0.25, mesh.dy_);
+
+    // surfaces
+    ASSERT_EQ(2, mesh.surface_names_.size());
+    ASSERT_EQ(2, mesh.surface_tags_.size());
+
+    ASSERT_EQ(0, mesh.surface_names_.at("surf_small"));
+    ASSERT_EQ(1, mesh.surface_names_.at("surf_big"));
+
+    ASSERT_EQ(0, mesh.surface_tags_.at(1));
+    ASSERT_EQ(1, mesh.surface_tags_.at(2));
+
+    // boundaries
+    ASSERT_EQ(8, mesh.boundary_names_.size());
+    ASSERT_EQ(8, mesh.boundary_tags_.size());
+
+    ASSERT_EQ(0, mesh.boundary_names_.at("bs"));
+    ASSERT_EQ(1, mesh.boundary_names_.at("rs"));
+    ASSERT_EQ(2, mesh.boundary_names_.at("ts"));
+    ASSERT_EQ(3, mesh.boundary_names_.at("ls"));
+    ASSERT_EQ(4, mesh.boundary_names_.at("bb"));
+    ASSERT_EQ(5, mesh.boundary_names_.at("rb"));
+    ASSERT_EQ(6, mesh.boundary_names_.at("tb"));
+    ASSERT_EQ(7, mesh.boundary_names_.at("lb"));
+
+    ASSERT_EQ(0, mesh.boundary_tags_.at(1));
+    ASSERT_EQ(1, mesh.boundary_tags_.at(2));
+    ASSERT_EQ(2, mesh.boundary_tags_.at(3));
+    ASSERT_EQ(3, mesh.boundary_tags_.at(4));
+    ASSERT_EQ(4, mesh.boundary_tags_.at(5));
+    ASSERT_EQ(5, mesh.boundary_tags_.at(6));
+    ASSERT_EQ(6, mesh.boundary_tags_.at(7));
+    ASSERT_EQ(7, mesh.boundary_tags_.at(8));
 }
 
 }  // namespace hamt

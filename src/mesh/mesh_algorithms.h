@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../exception/exception.h"
 #include "../io/gmsh/msh2.h"
 #include "mesh2d_regular.h"
 
