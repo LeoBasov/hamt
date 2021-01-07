@@ -17,13 +17,25 @@ int main(int, char **) {
 
     // sides
     mesh.SetBoundaryType("rs", Mesh2DRegular::DIRICHLET);
-    mesh.SetBoundaryValue("rs", 400);
+    mesh.SetBoundaryValue("rs", 450);
 
     mesh.SetBoundaryType("rb", Mesh2DRegular::DIRICHLET);
-    mesh.SetBoundaryValue("rb", 200);
+    mesh.SetBoundaryValue("rb", 400);
 
-    // surface
-    // mesh.SetSurfaceThermalConductivity("surf", 1);
+    mesh.SetBoundaryType("lb", Mesh2DRegular::DIRICHLET);
+    mesh.SetBoundaryValue("lb", 300);
+
+    mesh.SetBoundaryType("tb", Mesh2DRegular::NEUMANN);
+    mesh.SetBoundaryValue("tb", 0);
+
+    mesh.SetBoundaryType("ts", Mesh2DRegular::NEUMANN);
+    mesh.SetBoundaryValue("ts", 0);
+
+    mesh.SetBoundaryType("bb", Mesh2DRegular::NEUMANN);
+    mesh.SetBoundaryValue("bb", 0);
+
+    mesh.SetBoundaryType("bs", Mesh2DRegular::NEUMANN);
+    mesh.SetBoundaryValue("bs", 0);
 
     mat_b = heat_equation::homogeneous::ConvertMesh2dRegularCartesian(mesh);
     VectorXd x = mat_b.first.colPivHouseholderQr().solve(mat_b.second);
