@@ -9,33 +9,34 @@ using namespace hamt;
 using namespace Eigen;
 
 int main(int, char **) {
-    const std::string file_name("../../../hamt/test/test_data/block_fine.msh"), file_name_out("./test.vtu");
+    const std::string file_name("../../../hamt/examples/cartesia_two_block/block.msh"), file_name_out("./test.vtu");
     const gmsh::MSH2 msh2_mesh = gmsh::ReadMSH2(file_name);
     Mesh2DRegular mesh = mesh_algorithms::MSH2ToMesh2DRegular(msh2_mesh);
     std::pair<MatrixXd, VectorXd> mat_b;
     std::pair<std::string, std::vector<double>> poinst_data{"temeprature", std::vector<double>(mesh.nodes_.size())};
 
     // sides
-    mesh.SetBoundaryType("rs", Mesh2DRegular::DIRICHLET);
-    mesh.SetBoundaryValue("rs", 450);
+    mesh.SetBoundaryType("buttom", Mesh2DRegular::DIRICHLET);
+    mesh.SetBoundaryValue("buttom", 300);
 
-    mesh.SetBoundaryType("rb", Mesh2DRegular::DIRICHLET);
-    mesh.SetBoundaryValue("rb", 400);
+    mesh.SetBoundaryType("right_buttom", Mesh2DRegular::NEUMANN);
+    mesh.SetBoundaryValue("right_buttom", 0);
 
-    mesh.SetBoundaryType("lb", Mesh2DRegular::DIRICHLET);
-    mesh.SetBoundaryValue("lb", 300);
+    mesh.SetBoundaryType("left_buttom", Mesh2DRegular::NEUMANN);
+    mesh.SetBoundaryValue("left_buttom", 0);
 
-    mesh.SetBoundaryType("tb", Mesh2DRegular::NEUMANN);
-    mesh.SetBoundaryValue("tb", 0);
+    mesh.SetBoundaryType("left_top", Mesh2DRegular::NEUMANN);
+    mesh.SetBoundaryValue("left_top", 0);
 
-    mesh.SetBoundaryType("ts", Mesh2DRegular::NEUMANN);
-    mesh.SetBoundaryValue("ts", 0);
+    mesh.SetBoundaryType("top", Mesh2DRegular::DIRICHLET);
+    mesh.SetBoundaryValue("top", 100);
 
-    mesh.SetBoundaryType("bb", Mesh2DRegular::NEUMANN);
-    mesh.SetBoundaryValue("bb", 0);
+    mesh.SetBoundaryType("right_top", Mesh2DRegular::NEUMANN);
+    mesh.SetBoundaryValue("right_top", 0);
 
-    mesh.SetBoundaryType("bs", Mesh2DRegular::NEUMANN);
-    mesh.SetBoundaryValue("bs", 0);
+    // surfaces
+    mesh.SetSurfaceThermalConductivity("top_surf", 50);
+    mesh.SetSurfaceThermalConductivity("buttom_surf", 50);
 
     mat_b = heat_equation::homogeneous::ConvertMesh2dRegularCartesian(mesh);
     VectorXd x = mat_b.first.colPivHouseholderQr().solve(mat_b.second);

@@ -29,15 +29,15 @@ Plane Surface(1) = {1};
 
 Physical Surface("buttom_surf", 1) = {1};
 
-Line(6) = {4, 6};
-Line(7) = {6, 5};
-Line(8) = {5, 3};
+Line(6) = {3, 5};
+Line(7) = {5, 6};
+Line(8) = {6, 4};
 
 Physical Curve("left_top", 6) = {6};
 Physical Curve("top", 7) = {7};
 Physical Curve("right_top", 8) = {8};
 
-Curve Loop(2) = {3, 6, 7, 8};
+Curve Loop(2) = {8, -3, 6, 7};
 Plane Surface(2) = {2};
 
 Physical Surface("top_surf", 2) = {2};
@@ -50,3 +50,4 @@ Recombine Surface {2, 1};
 Transfinite Curve {7, 3, 1} = N Using Progression 1;
 Transfinite Curve {6, 8} = N Using Progression 1;
 Transfinite Curve {4, 2} = N Using Progression 1;
+
