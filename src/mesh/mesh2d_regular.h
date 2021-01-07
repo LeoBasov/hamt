@@ -43,15 +43,15 @@ class Mesh2DRegular {
     };
 
     struct Surface {
-        double thermal_conductivity;
+        double thermal_conductivity = 1.0;
 
         inline bool operator==(const Surface& rhs) { return this->thermal_conductivity == rhs.thermal_conductivity; }
         inline bool operator!=(const Surface& rhs) { return !(*this == rhs); }
     };
 
     struct Boundary {
-        BoundaryType type;
-        double value;
+        BoundaryType type = DIRICHLET;
+        double value = 1.0;
     };
 
    public:
