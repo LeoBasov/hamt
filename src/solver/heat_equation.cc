@@ -21,6 +21,7 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dRegularCartesian(const Mesh2DRegular&
                 break;
             }
             case Mesh2DRegular::NodeType::TOP_RIGHT: {
+                ConvertTopRight(mat_b, mesh, i);
                 break;
             }
             case Mesh2DRegular::NodeType::TOP_LEFT: {
@@ -100,6 +101,32 @@ void ConvertButtomRight(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegula
         mat_b.first(row, node.u_im_j) = -1.0;
 
         mat_b.second(row) = boundary_right.value * mesh.dx_ + boundary_buttom.value * mesh.dy_;
+    }
+}
+
+void ConvertTopRight(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row) {
+    const Mesh2DRegular::Node node(mesh.nodes_.at(row));
+    const Mesh2DRegular::Cell cell(mesh.cells_.at(node.cell_bl));
+    const Mesh2DRegular::Boundary boundary_right(mesh.boundaries_.at(cell.bounary_right));
+    const Mesh2DRegular::Boundary boundary_top(mesh.boundaries_.at(cell.bounary_top));
+
+    if ((boundary_right.type == Mesh2DRegular::DIRICHLET) && (boundary_top.type == Mesh2DRegular::DIRICHLET)) {
+        mat_b.first(row, row) = 1.0;
+
+        mat_b.second(row) = 0.5 * (boundary_right.value + boundary_top.value);
+    } else if ((boundary_right.type == Mesh2DRegular::DIRICHLET)) {
+        mat_b.first(row, row) = 1.0;
+
+        mat_b.second(row) = boundary_right.value;
+    } else if ((boundary_top.type == Mesh2DRegular::DIRICHLET)) {
+        mat_b.first(row, row) = 1.0;
+
+        mat_b.second(row) = boundary_top.value;
+    } else {
+        mat_b.first(row, node.u_i_jm) = 1.0;
+        mat_b.first(row, node.u_im_j) = -1.0;
+
+        mat_b.second(row) = boundary_right.value * mesh.dx_ - boundary_top.value * mesh.dy_;
     }
 }
 
