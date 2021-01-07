@@ -53,9 +53,9 @@ void Mesh2DRegular::SetBoundaryValue(const std::string& name, const double& valu
 }
 
 void Mesh2DRegular::SetSurfaceThermalConductivity(const std::string& name, const double& value) {
-    auto iter(boundary_names_.find(name));
+    auto iter(surface_names_.find(name));
 
-    if (iter == boundary_names_.end()) {
+    if (iter == surface_names_.end()) {
         throw Exception("Undefined surface [" + name + "]", __PRETTY_FUNCTION__);
     } else {
         surfaces_.at(iter->second).thermal_conductivity = value;
