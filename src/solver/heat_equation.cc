@@ -41,6 +41,7 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dRegularCartesian(const Mesh2DRegular&
                 break;
             }
             case Mesh2DRegular::NodeType::LEFT: {
+                ConvertLeft(mat_b, mesh, i);
                 break;
             }
             case Mesh2DRegular::NodeType::MID: {
@@ -195,7 +196,7 @@ void ConvertButtom(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& me
 void ConvertRight(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row) {
     const Mesh2DRegular::Node node(mesh.nodes_.at(row));
     const Mesh2DRegular::Cell cell_top(mesh.cells_.at(node.cell_tl));
-    const Mesh2DRegular::Cell cell_buttom(mesh.cells_.at(node.cell_br));
+    const Mesh2DRegular::Cell cell_buttom(mesh.cells_.at(node.cell_bl));
     const Mesh2DRegular::Boundary boundary_top(mesh.boundaries_.at(cell_top.bounary_right));
     const Mesh2DRegular::Boundary boundary_buttom(mesh.boundaries_.at(cell_buttom.bounary_right));
     const Mesh2DRegular::Surface surface_top(mesh.surfaces_.at(cell_top.surface_id));
@@ -253,6 +254,38 @@ void ConvertTop(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh,
         mat_b.first(row, node.u_i_jm) = -therm_cond_tot;
 
         mat_b.second(row) = therm_cond_tot * 0.5 * (boundary_right.value + boundary_left.value) * mesh.dy_;
+    }
+}
+
+void ConvertLeft(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row) {
+    const Mesh2DRegular::Node node(mesh.nodes_.at(row));
+    const Mesh2DRegular::Cell cell_top(mesh.cells_.at(node.cell_tr));
+    const Mesh2DRegular::Cell cell_buttom(mesh.cells_.at(node.cell_br));
+    const Mesh2DRegular::Boundary boundary_top(mesh.boundaries_.at(cell_top.bounary_left));
+    const Mesh2DRegular::Boundary boundary_buttom(mesh.boundaries_.at(cell_buttom.bounary_left));
+    const Mesh2DRegular::Surface surface_top(mesh.surfaces_.at(cell_top.surface_id));
+    const Mesh2DRegular::Surface surface_buttom(mesh.surfaces_.at(cell_buttom.surface_id));
+
+    if ((boundary_top.type == Mesh2DRegular::DIRICHLET) && (boundary_buttom.type == Mesh2DRegular::DIRICHLET)) {
+        mat_b.first(row, row) = 1.0;
+
+        mat_b.second(row) = 0.5 * (boundary_top.value + boundary_buttom.value);
+    } else if ((boundary_top.type == Mesh2DRegular::DIRICHLET)) {
+        mat_b.first(row, row) = 1.0;
+
+        mat_b.second(row) = boundary_top.value;
+    } else if ((boundary_buttom.type == Mesh2DRegular::DIRICHLET)) {
+        mat_b.first(row, row) = 1.0;
+
+        mat_b.second(row) = boundary_buttom.value;
+    } else {
+        const double therm_cond_tot(surface_buttom.thermal_conductivity + surface_top.thermal_conductivity);
+
+        mat_b.first(row, node.u_i_jp) = surface_top.thermal_conductivity;
+        mat_b.first(row, node.u_i_jm) = surface_buttom.thermal_conductivity;
+        mat_b.first(row, node.u_ip_j) = -therm_cond_tot;
+
+        mat_b.second(row) = -therm_cond_tot * 0.5 * (boundary_buttom.value + boundary_top.value) * mesh.dx_;
     }
 }
 
