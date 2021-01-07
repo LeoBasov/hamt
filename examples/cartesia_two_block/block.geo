@@ -1,15 +1,11 @@
 SetFactory("OpenCASCADE");
 
-L = DefineNumber[ 1.0 , Min 0.1, Max 2, Step 0.01,
-  Name "Parameters/Length" ];
-H = DefineNumber[ 2.0 , Min 0.1, Max 2, Step 0.01,
-  Name "Parameters/Height" ];
-M = DefineNumber[ 1.0, Min 0.1, Max 2, Step 0.01,
-  Name "Parameters/Midth" ];
+L = 1.0;
+H = 2.0;
+M = 1.0;
 
-N_top = 10;
-N_buttom = 10;
-N_vertical = 10;
+N = DefineNumber[ 10, Min 2, Max 100, Step 1,
+  Name "Parameters/N_cells" ];
 
 Point(1) = {0.0, 0.0, 0.0};
 Point(2) = {L, 0.0, 0.0};
@@ -51,6 +47,6 @@ Transfinite Surface {2} = {4, 3, 5, 6};
 
 Recombine Surface {2, 1};
 
-Transfinite Curve {7, 3, 1} = N_vertical Using Progression 1;
-Transfinite Curve {6, 8} = N_top Using Progression 1;
-Transfinite Curve {4, 2} = N_vertical Using Progression 1;
+Transfinite Curve {7, 3, 1} = N Using Progression 1;
+Transfinite Curve {6, 8} = N Using Progression 1;
+Transfinite Curve {4, 2} = N Using Progression 1;
