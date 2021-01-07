@@ -4,6 +4,8 @@
 #include <map>
 #include <vector>
 
+#include "../exception/exception.h"
+
 using uint = unsigned int;
 
 namespace hamt {
