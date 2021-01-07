@@ -36,7 +36,7 @@ int main(int, char **) {
 
     // surfaces
     mesh.SetSurfaceThermalConductivity("top_surf", 50);
-    mesh.SetSurfaceThermalConductivity("buttom_surf", 50);
+    mesh.SetSurfaceThermalConductivity("buttom_surf", 150);
 
     mat_b = heat_equation::homogeneous::ConvertMesh2dRegularCartesian(mesh);
     VectorXd x = mat_b.first.colPivHouseholderQr().solve(mat_b.second);
