@@ -19,9 +19,6 @@ class Mesh2DRegular {
         TOP_RIGHT,
         BUTTOM_LEFT,
         BUTTOM_RIGHT,
-        CROSS_H,
-        CROSS_V,
-        CROSS_HV
     };
 
     enum BoundaryType { NEUMANN, DIRICHLET };
@@ -47,6 +44,9 @@ class Mesh2DRegular {
 
     struct Surface {
         double thermal_conductivity;
+
+        inline bool operator==(const Surface& rhs) { return this->thermal_conductivity == rhs.thermal_conductivity; }
+        inline bool operator!=(const Surface& rhs) { return !(*this == rhs); }
     };
 
     struct Boundary {
@@ -57,6 +57,9 @@ class Mesh2DRegular {
    public:
     Mesh2DRegular();
     ~Mesh2DRegular() = default;
+
+    void SetBoundaryType(const std::string& name, BoundaryType type);
+    void SetBoundaryValue(const std::string& name, const double& value);
 
     void Clear();
 

@@ -32,4 +32,12 @@ bool Mesh2DRegular::Cell::IsLeft(uint node_1, uint node_2) const {
     return (node4 == node_1 && node1 == node_2) || (node4 == node_2 && node1 == node_1);
 }
 
+void Mesh2DRegular::SetBoundaryType(const std::string& name, BoundaryType type) {
+    boundaries_.at(boundary_names_.at(name)).type = type;
+}
+
+void Mesh2DRegular::SetBoundaryValue(const std::string& name, const double& value) {
+    boundaries_.at(boundary_names_.at(name)).value = value;
+}
+
 }  // namespace hamt
