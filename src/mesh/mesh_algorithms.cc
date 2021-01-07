@@ -38,6 +38,39 @@ void SetUpNodesAndCells(Mesh2DRegular& mesh, const gmsh::MSH2& msh2_mesh) {
         }
     }
 
+
+    for(uint i = 0; i< mesh.nodes_.size() ; i++){
+        for(uint j = i + 1; j < mesh.nodes_.size() ; j++){
+            if(mesh.nodes_.at(i).position == mesh.nodes_.at(j).position){
+                if (mesh.nodes_.at(i).cell_bl >= 0) {
+                    mesh.nodes_.at(j).cell_bl = mesh.nodes_.at(i).cell_bl;
+                }
+                if (mesh.nodes_.at(i).cell_br >= 0) {
+                    mesh.nodes_.at(j).cell_br = mesh.nodes_.at(i).cell_br;
+                }
+                if (mesh.nodes_.at(i).cell_tr >= 0) {
+                    mesh.nodes_.at(j).cell_tr = mesh.nodes_.at(i).cell_tr;
+                }
+                if (mesh.nodes_.at(i).cell_tl >= 0) {
+                    mesh.nodes_.at(j).cell_tl = mesh.nodes_.at(i).cell_tl;
+                }
+
+                if (mesh.nodes_.at(j).cell_bl >= 0) {
+                    mesh.nodes_.at(i).cell_bl = mesh.nodes_.at(j).cell_bl;
+                }
+                if (mesh.nodes_.at(j).cell_br >= 0) {
+                    mesh.nodes_.at(i).cell_br = mesh.nodes_.at(j).cell_br;
+                }
+                if (mesh.nodes_.at(j).cell_tr >= 0) {
+                    mesh.nodes_.at(i).cell_tr = mesh.nodes_.at(j).cell_tr;
+                }
+                if (mesh.nodes_.at(j).cell_tl >= 0) {
+                    mesh.nodes_.at(i).cell_tl = mesh.nodes_.at(j).cell_tl;
+                }
+            }
+        }
+    }
+
     for (auto& node : mesh.nodes_) {
         if (node.cell_bl >= 0) {
             node.u_im_j = mesh.cells_.at(node.cell_bl).node4;
