@@ -16,6 +16,8 @@ void ConvertButtomRight(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegula
 void ConvertTopRight(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row);
 void ConvertTopLeft(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row);
 
+void ConvertButtom(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row);
+
 }  // namespace homogeneous
 }  // namespace heat_equation
 }  // namespace hamt

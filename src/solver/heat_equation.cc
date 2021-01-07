@@ -29,6 +29,7 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dRegularCartesian(const Mesh2DRegular&
                 break;
             }
             case Mesh2DRegular::NodeType::BUTTOM: {
+                ConvertButtom(mat_b, mesh, i);
                 break;
             }
             case Mesh2DRegular::NodeType::RIGHT: {
@@ -154,6 +155,38 @@ void ConvertTopLeft(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& m
         mat_b.first(row, node.u_i_jm) = -1.0;
 
         mat_b.second(row) = boundary_left.value * mesh.dx_ + boundary_top.value * mesh.dy_;
+    }
+}
+
+void ConvertButtom(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row) {
+    const Mesh2DRegular::Node node(mesh.nodes_.at(row));
+    const Mesh2DRegular::Cell cell_left(mesh.cells_.at(node.cell_tl));
+    const Mesh2DRegular::Cell cell_right(mesh.cells_.at(node.cell_tr));
+    const Mesh2DRegular::Boundary boundary_left(mesh.boundaries_.at(cell_left.bounary_buttom));
+    const Mesh2DRegular::Boundary boundary_right(mesh.boundaries_.at(cell_right.bounary_buttom));
+    const Mesh2DRegular::Surface surface_left(mesh.surfaces_.at(cell_left.surface_id));
+    const Mesh2DRegular::Surface surface_right(mesh.surfaces_.at(cell_right.surface_id));
+
+    if ((boundary_left.type == Mesh2DRegular::DIRICHLET) && (boundary_right.type == Mesh2DRegular::DIRICHLET)) {
+        mat_b.first(row, row) = 1.0;
+
+        mat_b.second(row) = 0.5 * (boundary_left.value + boundary_right.value);
+    } else if ((boundary_left.type == Mesh2DRegular::DIRICHLET)) {
+        mat_b.first(row, row) = 1.0;
+
+        mat_b.second(row) = boundary_left.value;
+    } else if ((boundary_right.type == Mesh2DRegular::DIRICHLET)) {
+        mat_b.first(row, row) = 1.0;
+
+        mat_b.second(row) = boundary_right.value;
+    } else {
+        const double therm_cond_tot(surface_right.thermal_conductivity + surface_left.thermal_conductivity);
+
+        mat_b.first(row, node.u_ip_j) = surface_right.thermal_conductivity;
+        mat_b.first(row, node.u_im_j) = surface_left.thermal_conductivity;
+        mat_b.first(row, node.u_i_jp) = -therm_cond_tot;
+
+        mat_b.second(row) = -therm_cond_tot * 0.5 * (boundary_right.value + boundary_left.value) * mesh.dy_;
     }
 }
 
