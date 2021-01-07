@@ -30,9 +30,9 @@ Plane Surface(1) = {1};
 //+
 Transfinite Surface {1} = {3, 6, 7, 4};
 //+
-Transfinite Curve {4, 2} = 6 Using Progression 1;
+Transfinite Curve {4, 2} = 16 Using Progression 1;
 //+
-Transfinite Curve {3, 1} = 6 Using Progression 1;
+Transfinite Curve {3, 1} = 16 Using Progression 1;
 //+
 Recombine Surface {1};
 //+
@@ -66,9 +66,9 @@ Physical Curve("tb", 7) = {7};
 //+
 Transfinite Surface {2} = {1, 2, 4, 5};
 //+
-Transfinite Curve {8, 6} = 11 Using Progression 1;
+Transfinite Curve {8, 6} = 31 Using Progression 1;
 //+
-Transfinite Curve {5, 7} = 11 Using Progression 1;
+Transfinite Curve {5, 7} = 31 Using Progression 1;
 //+
 Recombine Surface {2};
 //+
