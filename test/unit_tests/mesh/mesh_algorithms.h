@@ -22,7 +22,36 @@ TEST(mesh_algorithms, MSH2ToMesh2DRegular) {
     ASSERT_EQ(mesh.nodes_.at(3).type, Mesh2DRegular::TOP);
     ASSERT_EQ(mesh.nodes_.at(12).type, Mesh2DRegular::BUTTOM);
     ASSERT_EQ(mesh.nodes_.at(21).type, Mesh2DRegular::LEFT);
-    ASSERT_EQ(mesh.nodes_.at(16).type, Mesh2DRegular::RIGHT);
+    ASSERT_EQ(mesh.nodes_.at(14).type, Mesh2DRegular::RIGHT);
+
+    // inner corner
+    ASSERT_EQ(mesh.nodes_.at(2).u_i_jm, 14);
+    ASSERT_EQ(mesh.nodes_.at(2).u_i_jp, 16);
+    ASSERT_EQ(mesh.nodes_.at(2).u_im_j, 31);
+    ASSERT_EQ(mesh.nodes_.at(2).u_ip_j, 7);
+
+    ASSERT_EQ(mesh.nodes_.at(2).cell_bl, 17);
+    ASSERT_EQ(mesh.nodes_.at(2).cell_br, -1);
+    ASSERT_EQ(mesh.nodes_.at(2).cell_tr, 0);
+    ASSERT_EQ(mesh.nodes_.at(2).cell_tl, 18);
+
+    ASSERT_EQ(mesh.nodes_.at(15).u_i_jm, 14);
+    ASSERT_EQ(mesh.nodes_.at(15).u_i_jp, 16);
+    ASSERT_EQ(mesh.nodes_.at(15).u_im_j, 31);
+    ASSERT_EQ(mesh.nodes_.at(15).u_ip_j, 7);
+
+    ASSERT_EQ(mesh.nodes_.at(15).cell_bl, 17);
+    ASSERT_EQ(mesh.nodes_.at(15).cell_br, -1);
+    ASSERT_EQ(mesh.nodes_.at(15).cell_tr, 0);
+    ASSERT_EQ(mesh.nodes_.at(15).cell_tl, 18);
+
+    ASSERT_DOUBLE_EQ(1.0, mesh.nodes_.at(2).position(0));
+    ASSERT_DOUBLE_EQ(0.5, mesh.nodes_.at(2).position(1));
+    ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(2).position(2));
+
+    ASSERT_DOUBLE_EQ(1.0, mesh.nodes_.at(15).position(0));
+    ASSERT_DOUBLE_EQ(0.5, mesh.nodes_.at(15).position(1));
+    ASSERT_DOUBLE_EQ(0.0, mesh.nodes_.at(15).position(2));
 
     // buttom lef
     ASSERT_EQ(mesh.nodes_.at(0).u_i_jm, -1);
