@@ -61,6 +61,8 @@ class Mesh2DRegular {
     void SetBoundaryType(const std::string& name, BoundaryType type);
     void SetBoundaryValue(const std::string& name, const double& value);
 
+    void SetSurfaceThermalConductivity(const std::string& name, const double& value);
+
     void Clear();
 
     double dx_, dy_;

@@ -40,4 +40,8 @@ void Mesh2DRegular::SetBoundaryValue(const std::string& name, const double& valu
     boundaries_.at(boundary_names_.at(name)).value = value;
 }
 
+void Mesh2DRegular::SetSurfaceThermalConductivity(const std::string& name, const double& value) {
+    surfaces_.at(surface_names_.at(name)).thermal_conductivity = value;
+}
+
 }  // namespace hamt
