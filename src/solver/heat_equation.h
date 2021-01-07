@@ -20,6 +20,7 @@ void ConvertButtom(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& me
 void ConvertRight(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row);
 void ConvertTop(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row);
 void ConvertLeft(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row);
+void ConvertMid(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row);
 
 }  // namespace homogeneous
 }  // namespace heat_equation
