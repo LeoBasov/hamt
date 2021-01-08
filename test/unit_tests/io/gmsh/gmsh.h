@@ -9,10 +9,13 @@ namespace hamt {
 namespace gmsh {
 TEST(gmsh, ReadMSH2) {
     // const std::string file_name("../../../hamt/test/test_data/test_domain_msh2.msh");
+    // const std::string faulty_mesh("../../../hamt/test/test_data/faulty_mesh.msh");
     const std::string file_name("./test/test_data/test_domain_msh2.msh");
+    const std::string faulty_mesh("./test/test_data/faulty_mesh.msh");
     MSH2 mesh;
 
     ASSERT_THROW(ReadMSH2(""), Exception);
+    ASSERT_THROW(ReadMSH2(faulty_mesh), Exception);
     mesh = ReadMSH2(file_name);
 
     ASSERT_EQ(100, mesh.nodes_.size());
@@ -81,5 +84,6 @@ TEST(gmsh, ReadMSH2) {
     ASSERT_EQ(0, mesh.physical_names_.size());
     ASSERT_EQ(0, mesh.elements_.size());
 }
+
 }  // namespace gmsh
 }  // namespace hamt

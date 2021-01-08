@@ -10,6 +10,7 @@ MSH2 ReadMSH2(const std::string& file_name) {
     ReadNodesMSH2(file_name, mesh);
     ReadElementsMSH2(file_name, mesh);
     ReadPhysicalNamesMSH2(file_name, mesh);
+    CheckMeshMSH2(mesh);
 
     return mesh;
 }
@@ -169,6 +170,30 @@ void ReadElementsMSH2(const std::string& file_name, MSH2& mesh) {
 
     infile.close();
     throw Exception("GMSH ELEMENTS NOT FOUND IN FILE", __PRETTY_FUNCTION__);
+}
+
+void CheckMeshMSH2(const MSH2& mesh) {
+    Vector3d normal_vec, last_normal_vec;
+    bool first(true);
+
+    for (auto& element : mesh.elements_) {
+        if (element.elm_type == 3) {
+            const Vector3d node1(mesh.nodes_.at(element.node_number_list.at(0)).coord);
+            const Vector3d node2(mesh.nodes_.at(element.node_number_list.at(1)).coord);
+            const Vector3d node3(mesh.nodes_.at(element.node_number_list.at(3)).coord);
+
+            normal_vec = (node2 - node1).cross(node3 - node1).normalized();
+
+            if (!first && (last_normal_vec != normal_vec)) {
+                throw Exception("Nonconsistant normal of element [" + std::to_string(element.elm_number) + "].",
+                                __PRETTY_FUNCTION__);
+            } else {
+                first = false;
+            }
+
+            last_normal_vec = normal_vec;
+        }
+    }
 }
 
 }  // namespace gmsh
