@@ -84,6 +84,26 @@ TEST(heat_equation_homogeneous, ConvertButtomLeft) {
             }
         }
     }
+
+    mesh.SetBoundaryType("left_buttom", Mesh2DRegular::DIRICHLET);
+    mesh.SetBoundaryType("butom_left", Mesh2DRegular::DIRICHLET);
+
+    heat_equation_homogeneous::ConvertButtomLeft(mat_b, mesh, 0);
+
+    ASSERT_DOUBLE_EQ(1.0, mat_b.first(0, 0));
+    ASSERT_DOUBLE_EQ(0.5 * (left_buttom + buttom_left), mat_b.second(0));
+
+    for (uint i = 0; i < mesh.nodes_.size(); i++) {
+        if (i != 0) {
+            ASSERT_DOUBLE_EQ(0.0, mat_b.second(i));
+        }
+
+        for (uint j = 0; j < mesh.nodes_.size(); j++) {
+            if ((i != 0) && (j != 0)) {
+                ASSERT_DOUBLE_EQ(0.0, mat_b.first(i, j));
+            }
+        }
+    }
 }
 
 }  // namespace hamt
