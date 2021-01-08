@@ -55,3 +55,17 @@ Recombine Surface {1};
 Recombine Surface {2};
 Recombine Surface {3};
 Recombine Surface {4};
+
+Physical Curve("butom_left", 1) = {1};
+Physical Curve("butom_right", 2) = {2};
+Physical Curve("right_buttom", 3) = {3};
+Physical Curve("right_top", 4) = {4};
+Physical Curve("top_right", 5) = {5};
+Physical Curve("top_left", 6) = {6};
+Physical Curve("left_top", 7) = {7};
+Physical Curve("left_buttom", 8) = {8};
+
+Physical Surface("surf_bl", 1) = {1};
+Physical Surface("surf_br", 2) = {2};
+Physical Surface("surf_tr", 3) = {3};
+Physical Surface("surf_tl", 4) = {4};

@@ -1,6 +1,21 @@
 $MeshFormat
 2.2 0 8
 $EndMeshFormat
+$PhysicalNames
+12
+1 1 "butom_left"
+1 2 "butom_right"
+1 3 "right_buttom"
+1 4 "right_top"
+1 5 "top_right"
+1 6 "top_left"
+1 7 "left_top"
+1 8 "left_buttom"
+2 1 "surf_bl"
+2 2 "surf_br"
+2 3 "surf_tr"
+2 4 "surf_tl"
+$EndPhysicalNames
 $Nodes
 9
 1 0 0 0
