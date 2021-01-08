@@ -2,9 +2,9 @@
 
 #include <gtest/gtest.h>
 
-#include "../../../../src/solver/heat_equation/homogeneous.h"
 #include "../../../../src/io/gmsh/gmsh.h"
 #include "../../../../src/mesh/mesh_algorithms.h"
+#include "../../../../src/solver/heat_equation/homogeneous.h"
 
 namespace hamt {
 

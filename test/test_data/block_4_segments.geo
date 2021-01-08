@@ -65,6 +65,11 @@ Physical Curve("top_left", 6) = {6};
 Physical Curve("left_top", 7) = {7};
 Physical Curve("left_buttom", 8) = {8};
 
+Physical Curve("mid_buttom", 10) = {10};
+Physical Curve("mid_right", 12) = {12};
+Physical Curve("mid_top", 9) = {9};
+Physical Curve("mid_left", 11) = {11};
+
 Physical Surface("surf_bl", 1) = {1};
 Physical Surface("surf_br", 2) = {2};
 Physical Surface("surf_tr", 3) = {3};
