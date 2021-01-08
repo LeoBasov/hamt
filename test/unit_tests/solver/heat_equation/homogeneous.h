@@ -10,8 +10,8 @@ namespace hamt {
 using namespace Eigen;
 
 Mesh2DRegular GetMesh() {
-    const std::string file_name("../../../hamt/test/test_data/block_4_segments.msh");
-    // const std::string file_name("./test/test_data/block_4_segments.msh");
+    // const std::string file_name("../../../hamt/test/test_data/block_4_segments.msh");
+    const std::string file_name("./test/test_data/block_4_segments.msh");
 
     return mesh_algorithms::MSH2ToMesh2DRegular(gmsh::ReadMSH2(file_name));
 }
@@ -22,6 +22,8 @@ TEST(heat_equation_homogeneous, ConvertButtomLeft) {
 
     mat_b.first = MatrixXd::Zero(mesh.nodes_.size(), mesh.nodes_.size());
     mat_b.second = VectorXd::Zero(mesh.nodes_.size());
+
+    heat_equation_homogeneous::ConvertButtomLeft(mat_b, mesh, 0);
 }
 
 }  // namespace hamt
