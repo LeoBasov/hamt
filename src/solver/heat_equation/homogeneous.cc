@@ -1,8 +1,7 @@
-#include "heat_equation.h"
+#include "homogeneous.h"
 
 namespace hamt {
-namespace heat_equation {
-namespace homogeneous {
+namespace heat_equation_homogeneous {
 
 std::pair<MatrixXd, VectorXd> ConvertMesh2dRegularCartesian(const Mesh2DRegular& mesh) {
     std::pair<MatrixXd, VectorXd> mat_b;
@@ -355,6 +354,5 @@ void ConvertMid(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh,
     mat_b.first(row, node.u_i_jp) = mean_xt;
 }
 
-}  // namespace homogeneous
-}  // namespace heat_equation
+}  // namespace heat_equation_homogeneous
 }  // namespace hamt

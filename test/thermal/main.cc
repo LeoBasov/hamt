@@ -3,7 +3,7 @@
 #include "../../src/io/gmsh/gmsh.h"
 #include "../../src/io/vtk/unstructured_grid.h"
 #include "../../src/mesh/mesh_algorithms.h"
-#include "../../src/solver/heat_equation.h"
+#include "../../src/solver/heat_equation/homogeneous.h"
 
 using namespace hamt;
 using namespace Eigen;
@@ -38,7 +38,7 @@ int main(int, char **) {
     mesh.SetSurfaceThermalConductivity("top_surf", 50);
     mesh.SetSurfaceThermalConductivity("buttom_surf", 150);
 
-    mat_b = heat_equation::homogeneous::ConvertMesh2dRegularCartesian(mesh);
+    mat_b = heat_equation_homogeneous::ConvertMesh2dRegularCartesian(mesh);
     VectorXd x = mat_b.first.colPivHouseholderQr().solve(mat_b.second);
 
     for (uint i = 0; i < mesh.nodes_.size(); i++) {
