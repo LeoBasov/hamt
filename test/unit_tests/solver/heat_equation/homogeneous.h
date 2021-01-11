@@ -718,4 +718,110 @@ TEST(heat_equation_homogeneous, ConvertTop) {
     }
 }
 
+TEST(heat_equation_homogeneous, ConvertLeft) {
+    Mesh2DRegular mesh(GetMesh());
+    std::pair<MatrixXd, VectorXd> mat_b;
+    const double left_top(7.0);
+    const double left_buttom(13.0);
+    const double surf_tl(15.0);
+    const double surf_bl(17.0);
+    const uint node_id(5);
+    const uint u_i_jm(0);
+    const uint u_i_jp(6);
+    const uint u_ip_j(4);
+
+    mat_b.first = MatrixXd::Zero(mesh.nodes_.size(), mesh.nodes_.size());
+    mat_b.second = VectorXd::Zero(mesh.nodes_.size());
+
+    mesh.SetBoundaryValue("left_top", left_top);
+    mesh.SetBoundaryValue("left_buttom", left_buttom);
+
+    mesh.SetSurfaceThermalConductivity("surf_tl", surf_tl);
+    mesh.SetSurfaceThermalConductivity("surf_bl", surf_bl);
+
+    mesh.SetBoundaryType("left_top", Mesh2DRegular::DIRICHLET);
+    mesh.SetBoundaryType("left_buttom", Mesh2DRegular::NEUMANN);
+
+    heat_equation_homogeneous::ConvertLeft(mat_b, mesh, node_id);
+
+    ASSERT_DOUBLE_EQ(1.0, mat_b.first(node_id, node_id));
+    ASSERT_DOUBLE_EQ(left_top, mat_b.second(node_id));
+
+    for (uint i = 0; i < mesh.nodes_.size(); i++) {
+        if (i != node_id) {
+            ASSERT_DOUBLE_EQ(0.0, mat_b.second(i));
+        }
+
+        for (uint j = 0; j < mesh.nodes_.size(); j++) {
+            if ((i != node_id) && (j != node_id)) {
+                ASSERT_DOUBLE_EQ(0.0, mat_b.first(i, j));
+            }
+        }
+    }
+
+    mesh.SetBoundaryType("left_top", Mesh2DRegular::NEUMANN);
+    mesh.SetBoundaryType("left_buttom", Mesh2DRegular::DIRICHLET);
+
+    heat_equation_homogeneous::ConvertLeft(mat_b, mesh, node_id);
+
+    ASSERT_DOUBLE_EQ(1.0, mat_b.first(node_id, node_id));
+    ASSERT_DOUBLE_EQ(left_buttom, mat_b.second(node_id));
+
+    for (uint i = 0; i < mesh.nodes_.size(); i++) {
+        if (i != node_id) {
+            ASSERT_DOUBLE_EQ(0.0, mat_b.second(i));
+        }
+
+        for (uint j = 0; j < mesh.nodes_.size(); j++) {
+            if ((i != node_id) && (j != node_id)) {
+                ASSERT_DOUBLE_EQ(0.0, mat_b.first(i, j));
+            }
+        }
+    }
+
+    mesh.SetBoundaryType("left_top", Mesh2DRegular::DIRICHLET);
+    mesh.SetBoundaryType("left_buttom", Mesh2DRegular::DIRICHLET);
+
+    heat_equation_homogeneous::ConvertLeft(mat_b, mesh, node_id);
+
+    ASSERT_DOUBLE_EQ(1.0, mat_b.first(node_id, node_id));
+    ASSERT_DOUBLE_EQ(0.5 * (left_top + left_buttom), mat_b.second(node_id));
+
+    for (uint i = 0; i < mesh.nodes_.size(); i++) {
+        if (i != node_id) {
+            ASSERT_DOUBLE_EQ(0.0, mat_b.second(i));
+        }
+
+        for (uint j = 0; j < mesh.nodes_.size(); j++) {
+            if ((i != node_id) && (j != node_id)) {
+                ASSERT_DOUBLE_EQ(0.0, mat_b.first(i, j));
+            }
+        }
+    }
+
+    mesh.SetBoundaryType("left_top", Mesh2DRegular::NEUMANN);
+    mesh.SetBoundaryType("left_buttom", Mesh2DRegular::NEUMANN);
+
+    heat_equation_homogeneous::ConvertLeft(mat_b, mesh, node_id);
+
+    ASSERT_DOUBLE_EQ(surf_tl, mat_b.first(node_id, u_i_jp));
+    ASSERT_DOUBLE_EQ(-(surf_tl + surf_bl), mat_b.first(node_id, u_ip_j));
+    ASSERT_DOUBLE_EQ(surf_bl, mat_b.first(node_id, u_i_jm));
+
+    ASSERT_DOUBLE_EQ(-(surf_tl + surf_bl) * 0.5 * (left_top + left_buttom) * mesh.dx_, mat_b.second(node_id));
+
+    for (uint i = 0; i < mesh.nodes_.size(); i++) {
+        if (i != node_id) {
+            ASSERT_DOUBLE_EQ(0.0, mat_b.second(i));
+        }
+
+        for (uint j = 0; j < mesh.nodes_.size(); j++) {
+            if (((i != node_id) && (j != u_i_jp)) || ((i != node_id) && (j != u_ip_j)) ||
+                ((i != node_id) && (j != u_i_jm))) {
+                ASSERT_DOUBLE_EQ(0.0, mat_b.first(i, j));
+            }
+        }
+    }
+}
+
 }  // namespace hamt
