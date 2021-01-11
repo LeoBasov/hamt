@@ -106,4 +106,102 @@ TEST(heat_equation_homogeneous, ConvertButtomLeft) {
     }
 }
 
+TEST(heat_equation_homogeneous, ConvertButtomRight) {
+    Mesh2DRegular mesh(GetMesh());
+    std::pair<MatrixXd, VectorXd> mat_b;
+    const double right_buttom(7.0);
+    const double buttom_right(13.0);
+    const uint node_id(2);
+    const uint u_i_jp(3);
+    const uint u_im_j(1);
+
+    mat_b.first = MatrixXd::Zero(mesh.nodes_.size(), mesh.nodes_.size());
+    mat_b.second = VectorXd::Zero(mesh.nodes_.size());
+
+    mesh.SetBoundaryType("right_buttom", Mesh2DRegular::DIRICHLET);
+    mesh.SetBoundaryType("butom_right", Mesh2DRegular::NEUMANN);
+
+    mesh.SetBoundaryValue("right_buttom", right_buttom);
+    mesh.SetBoundaryValue("butom_right", buttom_right);
+
+    heat_equation_homogeneous::ConvertButtomRight(mat_b, mesh, node_id);
+
+    ASSERT_DOUBLE_EQ(1.0, mat_b.first(node_id, node_id));
+    ASSERT_DOUBLE_EQ(right_buttom, mat_b.second(node_id));
+
+    for (uint i = 0; i < mesh.nodes_.size(); i++) {
+        if (i != node_id) {
+            ASSERT_DOUBLE_EQ(0.0, mat_b.second(i));
+        }
+
+        for (uint j = 0; j < mesh.nodes_.size(); j++) {
+            if ((i != node_id) && (j != node_id)) {
+                ASSERT_DOUBLE_EQ(0.0, mat_b.first(i, j));
+            }
+        }
+    }
+
+    mesh.SetBoundaryType("right_buttom", Mesh2DRegular::NEUMANN);
+    mesh.SetBoundaryType("butom_right", Mesh2DRegular::DIRICHLET);
+
+    heat_equation_homogeneous::ConvertButtomRight(mat_b, mesh, node_id);
+
+    ASSERT_DOUBLE_EQ(1.0, mat_b.first(node_id, node_id));
+    ASSERT_DOUBLE_EQ(buttom_right, mat_b.second(node_id));
+
+    for (uint i = 0; i < mesh.nodes_.size(); i++) {
+        if (i != node_id) {
+            ASSERT_DOUBLE_EQ(0.0, mat_b.second(i));
+        }
+
+        for (uint j = 0; j < mesh.nodes_.size(); j++) {
+            if ((i != node_id) && (j != node_id)) {
+                ASSERT_DOUBLE_EQ(0.0, mat_b.first(i, j));
+            }
+        }
+    }
+
+    mesh.SetBoundaryType("right_buttom", Mesh2DRegular::DIRICHLET);
+    mesh.SetBoundaryType("butom_right", Mesh2DRegular::DIRICHLET);
+
+    heat_equation_homogeneous::ConvertButtomRight(mat_b, mesh, node_id);
+
+    ASSERT_DOUBLE_EQ(1.0, mat_b.first(node_id, node_id));
+    ASSERT_DOUBLE_EQ(0.5 * (right_buttom + buttom_right), mat_b.second(node_id));
+
+    for (uint i = 0; i < mesh.nodes_.size(); i++) {
+        if (i != node_id) {
+            ASSERT_DOUBLE_EQ(0.0, mat_b.second(i));
+        }
+
+        for (uint j = 0; j < mesh.nodes_.size(); j++) {
+            if ((i != node_id) && (j != node_id)) {
+                ASSERT_DOUBLE_EQ(0.0, mat_b.first(i, j));
+            }
+        }
+    }
+
+    mesh.SetBoundaryType("right_buttom", Mesh2DRegular::NEUMANN);
+    mesh.SetBoundaryType("butom_right", Mesh2DRegular::NEUMANN);
+
+    heat_equation_homogeneous::ConvertButtomRight(mat_b, mesh, node_id);
+
+    ASSERT_DOUBLE_EQ(mesh.dx_ * buttom_right + mesh.dy_ * right_buttom, mat_b.second(node_id));
+
+    ASSERT_DOUBLE_EQ(1.0, mat_b.first(node_id, u_i_jp));
+    ASSERT_DOUBLE_EQ(-1.0, mat_b.first(node_id, u_im_j));
+
+    for (uint i = 0; i < mesh.nodes_.size(); i++) {
+        if (i != node_id) {
+            ASSERT_DOUBLE_EQ(0.0, mat_b.second(i));
+        }
+
+        for (uint j = 0; j < mesh.nodes_.size(); j++) {
+            if (((i != node_id) && (j != u_i_jp)) || ((i != node_id) && (j != u_im_j))) {
+                ASSERT_DOUBLE_EQ(0.0, mat_b.first(i, j));
+            }
+        }
+    }
+}
+
 }  // namespace hamt
