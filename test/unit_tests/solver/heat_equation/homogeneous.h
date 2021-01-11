@@ -6,6 +6,8 @@
 #include "../../../../src/mesh/mesh_algorithms.h"
 #include "../../../../src/solver/heat_equation/homogeneous.h"
 
+#include "../../../../src/io/vtk/unstructured_grid.h"
+
 namespace hamt {
 using namespace Eigen;
 
@@ -870,6 +872,61 @@ TEST(heat_equation_homogeneous, ConvertMid) {
                 ASSERT_DOUBLE_EQ(0.0, mat_b.first(i, j));
             }
         }
+    }
+}
+
+TEST(heat_equation_homogeneous, ConvertMesh2dRegularCartesian) {
+    // const std::string file_name("../../../hamt/test/test_data/block_4_segments_fine.msh");
+    const std::string file_name("./test/test_data/block_4_segments_fine.msh");
+    Mesh2DRegular mesh(mesh_algorithms::MSH2ToMesh2DRegular(gmsh::ReadMSH2(file_name)));
+    std::pair<MatrixXd, VectorXd> mat_b;
+    VectorXd results;
+    const double butom_left(100.0);
+    const double butom_right(100.0);
+    const double right_buttom(0.0);
+    const double right_top(0.0);
+    const double top_right(300.0);
+    const double top_left(300.0);
+    const double left_top(0.0);
+    const double left_buttom(0.0);
+
+    mesh.SetBoundaryValue("butom_left", butom_left);
+    mesh.SetBoundaryValue("butom_right", butom_right);
+    mesh.SetBoundaryValue("right_buttom", right_buttom);
+    mesh.SetBoundaryValue("right_top", right_top);
+    mesh.SetBoundaryValue("top_right", top_right);
+    mesh.SetBoundaryValue("top_left", top_left);
+    mesh.SetBoundaryValue("left_top", left_top);
+    mesh.SetBoundaryValue("left_buttom", left_buttom);
+
+    mesh.SetBoundaryType("butom_left", Mesh2DRegular::DIRICHLET);
+    mesh.SetBoundaryType("butom_right", Mesh2DRegular::DIRICHLET);
+
+    mesh.SetBoundaryType("right_buttom", Mesh2DRegular::NEUMANN);
+    mesh.SetBoundaryType("right_top", Mesh2DRegular::NEUMANN);
+
+    mesh.SetBoundaryType("left_top", Mesh2DRegular::NEUMANN);
+    mesh.SetBoundaryType("left_buttom", Mesh2DRegular::NEUMANN);
+
+    mesh.SetBoundaryType("top_right", Mesh2DRegular::DIRICHLET);
+    mesh.SetBoundaryType("top_left", Mesh2DRegular::DIRICHLET);
+
+    mat_b = heat_equation_homogeneous::ConvertMesh2dRegularCartesian(mesh);
+    results = mat_b.first.colPivHouseholderQr().solve(mat_b.second);
+
+    // buttom: 0, 1, 2
+    for (uint i = 0; i < 3; i++) {
+        ASSERT_NEAR(100.0, results(i), 1e-9);
+    }
+
+    // mid: 3, 4,  5
+    for (uint i = 3; i < 6; i++) {
+        ASSERT_NEAR(200.0, results(i), 1e-9);
+    }
+
+    // top: 6, 7, 8
+    for (uint i = 6; i < 9; i++) {
+        ASSERT_NEAR(300.0, results(i), 1e-9);
     }
 }
 
