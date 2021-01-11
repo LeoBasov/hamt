@@ -6,9 +6,9 @@ namespace mesh_algorithms {
 Mesh2DRegular MSH2ToMesh2DRegular(const gmsh::MSH2& msh2_mesh) {
     Mesh2DRegular mesh;
 
+    SetUpCellSize(mesh, msh2_mesh);
     SetUpNodesAndCells(mesh, msh2_mesh);
     SetUpPhysicalGroups(mesh, msh2_mesh);
-    SetUpCellSize(mesh, msh2_mesh);
 
     return mesh;
 }
@@ -35,6 +35,40 @@ void SetUpNodesAndCells(Mesh2DRegular& mesh, const gmsh::MSH2& msh2_mesh) {
             cell.node4 = element.node_number_list.at(3) - 1;
 
             mesh.cells_.push_back(cell);
+        }
+    }
+
+
+    for(uint i = 0; i< mesh.nodes_.size() ; i++){
+        for(uint j = i + 1; j < mesh.nodes_.size() ; j++){
+            if ((std::abs(mesh.nodes_.at(i).position(0) - mesh.nodes_.at(j).position(0)) < 0.5 * mesh.dx_) &&
+                (std::abs(mesh.nodes_.at(i).position(1) - mesh.nodes_.at(j).position(1)) < 0.5 * mesh.dy_)) {
+                if (mesh.nodes_.at(i).cell_bl >= 0) {
+                    mesh.nodes_.at(j).cell_bl = mesh.nodes_.at(i).cell_bl;
+                }
+                if (mesh.nodes_.at(i).cell_br >= 0) {
+                    mesh.nodes_.at(j).cell_br = mesh.nodes_.at(i).cell_br;
+                }
+                if (mesh.nodes_.at(i).cell_tr >= 0) {
+                    mesh.nodes_.at(j).cell_tr = mesh.nodes_.at(i).cell_tr;
+                }
+                if (mesh.nodes_.at(i).cell_tl >= 0) {
+                    mesh.nodes_.at(j).cell_tl = mesh.nodes_.at(i).cell_tl;
+                }
+
+                if (mesh.nodes_.at(j).cell_bl >= 0) {
+                    mesh.nodes_.at(i).cell_bl = mesh.nodes_.at(j).cell_bl;
+                }
+                if (mesh.nodes_.at(j).cell_br >= 0) {
+                    mesh.nodes_.at(i).cell_br = mesh.nodes_.at(j).cell_br;
+                }
+                if (mesh.nodes_.at(j).cell_tr >= 0) {
+                    mesh.nodes_.at(i).cell_tr = mesh.nodes_.at(j).cell_tr;
+                }
+                if (mesh.nodes_.at(j).cell_tl >= 0) {
+                    mesh.nodes_.at(i).cell_tl = mesh.nodes_.at(j).cell_tl;
+                }
+            }
         }
     }
 

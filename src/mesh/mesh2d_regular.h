@@ -4,6 +4,8 @@
 #include <map>
 #include <vector>
 
+#include "../exception/exception.h"
+
 using uint = unsigned int;
 
 namespace hamt {
@@ -19,9 +21,6 @@ class Mesh2DRegular {
         TOP_RIGHT,
         BUTTOM_LEFT,
         BUTTOM_RIGHT,
-        CROSS_H,
-        CROSS_V,
-        CROSS_HV
     };
 
     enum BoundaryType { NEUMANN, DIRICHLET };
@@ -46,17 +45,25 @@ class Mesh2DRegular {
     };
 
     struct Surface {
-        double thermal_conductivity;
+        double thermal_conductivity = 1.0;
+
+        inline bool operator==(const Surface& rhs) { return this->thermal_conductivity == rhs.thermal_conductivity; }
+        inline bool operator!=(const Surface& rhs) { return !(*this == rhs); }
     };
 
     struct Boundary {
-        BoundaryType type;
-        double value;
+        BoundaryType type = DIRICHLET;
+        double value = 1.0;
     };
 
    public:
     Mesh2DRegular();
     ~Mesh2DRegular() = default;
+
+    void SetBoundaryType(const std::string& name, BoundaryType type);
+    void SetBoundaryValue(const std::string& name, const double& value);
+
+    void SetSurfaceThermalConductivity(const std::string& name, const double& value);
 
     void Clear();
 

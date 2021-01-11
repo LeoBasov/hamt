@@ -32,4 +32,34 @@ bool Mesh2DRegular::Cell::IsLeft(uint node_1, uint node_2) const {
     return (node4 == node_1 && node1 == node_2) || (node4 == node_2 && node1 == node_1);
 }
 
+void Mesh2DRegular::SetBoundaryType(const std::string& name, BoundaryType type) {
+    auto iter(boundary_names_.find(name));
+
+    if (iter == boundary_names_.end()) {
+        throw Exception("Undefined boundary [" + name + "]", __PRETTY_FUNCTION__);
+    } else {
+        boundaries_.at(iter->second).type = type;
+    }
+}
+
+void Mesh2DRegular::SetBoundaryValue(const std::string& name, const double& value) {
+    auto iter(boundary_names_.find(name));
+
+    if (iter == boundary_names_.end()) {
+        throw Exception("Undefined boundary [" + name + "]", __PRETTY_FUNCTION__);
+    } else {
+        boundaries_.at(iter->second).value = value;
+    }
+}
+
+void Mesh2DRegular::SetSurfaceThermalConductivity(const std::string& name, const double& value) {
+    auto iter(surface_names_.find(name));
+
+    if (iter == surface_names_.end()) {
+        throw Exception("Undefined surface [" + name + "]", __PRETTY_FUNCTION__);
+    } else {
+        surfaces_.at(iter->second).thermal_conductivity = value;
+    }
+}
+
 }  // namespace hamt
