@@ -824,4 +824,53 @@ TEST(heat_equation_homogeneous, ConvertLeft) {
     }
 }
 
+TEST(heat_equation_homogeneous, ConvertMid) {
+    Mesh2DRegular mesh(GetMesh());
+    std::pair<MatrixXd, VectorXd> mat_b;
+    const double surf_tl(7.0);
+    const double surf_tr(13.0);
+    const double surf_bl(15.0);
+    const double surf_br(17.0);
+    const uint node_id(4);
+    const uint u_i_jm(1);
+    const uint u_i_jp(7);
+    const uint u_im_j(5);
+    const uint u_ip_j(3);
+
+    mat_b.first = MatrixXd::Zero(mesh.nodes_.size(), mesh.nodes_.size());
+    mat_b.second = VectorXd::Zero(mesh.nodes_.size());
+
+    mesh.SetSurfaceThermalConductivity("surf_tl", surf_tl);
+    mesh.SetSurfaceThermalConductivity("surf_tr", surf_tr);
+    mesh.SetSurfaceThermalConductivity("surf_bl", surf_bl);
+    mesh.SetSurfaceThermalConductivity("surf_br", surf_br);
+
+    const double mean_xb = 0.5 * (surf_bl + surf_br);
+    const double mean_xt = 0.5 * (surf_tl + surf_tr);
+    const double mean_yl = 0.5 * (surf_bl + surf_tl);
+    const double mean_yr = 0.5 * (surf_br + surf_tr);
+
+    const double therm_tot_x(mean_yl + mean_yr);
+    const double therm_tot_y(mean_xb + mean_xt);
+
+    heat_equation_homogeneous::ConvertMid(mat_b, mesh, node_id);
+
+    ASSERT_DOUBLE_EQ(mean_yl, mat_b.first(node_id, u_im_j));
+    ASSERT_DOUBLE_EQ(mean_yr, mat_b.first(node_id, u_ip_j));
+    ASSERT_DOUBLE_EQ(-(therm_tot_x + therm_tot_y), mat_b.first(node_id, node_id));
+    ASSERT_DOUBLE_EQ(mean_xb, mat_b.first(node_id, u_i_jm));
+    ASSERT_DOUBLE_EQ(mean_xt, mat_b.first(node_id, u_i_jp));
+
+    for (uint i = 0; i < mesh.nodes_.size(); i++) {
+        ASSERT_DOUBLE_EQ(0.0, mat_b.second(i));
+
+        for (uint j = 0; j < mesh.nodes_.size(); j++) {
+            if (((i != node_id) && (j != u_i_jp)) || ((i != node_id) && (j != u_ip_j)) ||
+                ((i != node_id) && (j != u_i_jm)) || ((i != node_id) && (j != u_im_j))) {
+                ASSERT_DOUBLE_EQ(0.0, mat_b.first(i, j));
+            }
+        }
+    }
+}
+
 }  // namespace hamt
