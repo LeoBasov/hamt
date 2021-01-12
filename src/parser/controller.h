@@ -5,6 +5,7 @@
 #include "../exception/commanderror.h"
 #include "../hamt/hamt.h"
 #include "operation.h"
+#include "opt_load/operation_load.h"
 #include "parser.h"
 
 namespace hamt {
