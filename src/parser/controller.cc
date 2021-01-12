@@ -15,6 +15,7 @@ void Controller::ProcessCommand(const Command &command, const bool &test_mode) {
     auto itter(operations_.find(command.name));
 
     if (itter != operations_.end()) {
+        itter->second->Check(command.argv);
         itter->second->Execute(command.argv, test_mode);
     } else if (!command.name.empty()) {
         throw CommandError("command '" + command.name + "' is not defined");
@@ -23,8 +24,10 @@ void Controller::ProcessCommand(const Command &command, const bool &test_mode) {
 
 void Controller::SetUpOperations() {
     std::shared_ptr<Operation> load(std::make_shared<OperationLoad>());
+    std::shared_ptr<Operation> read(std::make_shared<OperationRead>());
 
     operations_[load->GetName()] = load;
+    operations_[read->GetName()] = read;
 }
 
 std::map<std::string, std::shared_ptr<Operation>> Controller::GetOperations() const { return operations_; }

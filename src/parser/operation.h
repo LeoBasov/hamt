@@ -22,13 +22,12 @@ class Operation {
 
     std::string GetName() const;
     virtual std::string GetHelp() const = 0;
+    virtual void Check(const std::vector<std::string>& argv) = 0;
 
    protected:
     std::string name_;
     std::shared_ptr<HAMT> hamt_;
     std::map<std::string, std::shared_ptr<Operation>> sub_operations_;
-
-    virtual void Check(const std::vector<std::string>& argv) = 0;
 
     virtual void ChecArgvMin(const uint& min, const std::vector<std::string>& argv) const;
     virtual void ChecArgvMax(const uint& max, const std::vector<std::string>& argv) const;
