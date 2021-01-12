@@ -11,6 +11,8 @@ void OperationRead::Execute(const std::vector<std::string>& argv, const bool&) {
         std::cout << "REGULAR MESH LOADED" << std::endl;
         std::cout << "NUMBER NODES : " << hamt_->data_->mesh2d_regular_.nodes_.size() << std::endl;
         std::cout << "NUMBER CELLS : " << hamt_->data_->mesh2d_regular_.cells_.size() << std::endl;
+        std::cout << "BOUNDARIES: " << hamt_->data_->mesh2d_regular_.boundaries_.size() << std::endl;
+        std::cout << "SURFACES: " << hamt_->data_->mesh2d_regular_.surfaces_.size() << std::endl;
     } else {
         throw CommandError("Command 'read' undfedined argument [" + argv.at(0) + "].");
     }
