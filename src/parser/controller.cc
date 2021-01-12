@@ -26,10 +26,12 @@ void Controller::SetUpOperations() {
     std::shared_ptr<Operation> load(std::make_shared<OperationLoad>());
     std::shared_ptr<Operation> read(std::make_shared<OperationRead>());
     std::shared_ptr<OperationClear> clear(std::make_shared<OperationClear>());
+    std::shared_ptr<OperationInfo> info(std::make_shared<OperationInfo>());
 
     operations_[load->GetName()] = load;
     operations_[read->GetName()] = read;
     operations_[clear->GetName()] = clear;
+    operations_[info->GetName()] = info;
 }
 
 std::map<std::string, std::shared_ptr<Operation>> Controller::GetOperations() const { return operations_; }

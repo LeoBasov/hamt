@@ -6,6 +6,7 @@
 #include "../hamt/hamt.h"
 #include "operation.h"
 #include "opr_clear/operation_clear.h"
+#include "opr_info/operation_info.h"
 #include "opr_load/operation_load.h"
 #include "opr_read/operation_read.h"
 #include "parser.h"
