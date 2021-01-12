@@ -25,9 +25,11 @@ void Controller::ProcessCommand(const Command &command, const bool &test_mode) {
 void Controller::SetUpOperations() {
     std::shared_ptr<Operation> load(std::make_shared<OperationLoad>());
     std::shared_ptr<Operation> read(std::make_shared<OperationRead>());
+    std::shared_ptr<OperationClear> clear(std::make_shared<OperationClear>());
 
     operations_[load->GetName()] = load;
     operations_[read->GetName()] = read;
+    operations_[clear->GetName()] = clear;
 }
 
 std::map<std::string, std::shared_ptr<Operation>> Controller::GetOperations() const { return operations_; }

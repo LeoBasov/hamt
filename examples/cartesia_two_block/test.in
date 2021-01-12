@@ -1,3 +1,4 @@
 # First test
 
 read reg_mesh block.msh
+clear reg_mesh
