@@ -3,11 +3,11 @@
 namespace hamt {
 
 Controller::Controller() {
-    core_ = std::make_shared<Core>();
+    hamt_ = std::make_shared<HAMT>();
     SetUpOperations();
 
     for (auto &bin : operations_) {
-        bin.second->SetCore(core_);
+        bin.second->SetHAMT(hamt_);
     }
 }
 
@@ -25,6 +25,6 @@ void Controller::SetUpOperations() {}
 
 std::map<std::string, std::shared_ptr<Operation>> Controller::GetOperations() const { return operations_; }
 
-void Controller::SetRelDir(const std::string &rel_dir) { core_->rel_dir_ = rel_dir; }
+void Controller::SetRelDir(const std::string &rel_dir) { rel_dir_ = rel_dir; }
 
 }  // namespace hamt

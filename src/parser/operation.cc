@@ -6,11 +6,11 @@ Operation::Operation() {}
 
 Operation::Operation(std::string name) : name_(name) {}
 
-void Operation::SetCore(const std::shared_ptr<Core>& core) {
-    core_ = core;
+void Operation::SetHAMT(const std::shared_ptr<HAMT>& hamt) {
+    hamt_ = hamt;
 
     for (auto& bin : sub_operations_) {
-        bin.second->SetCore(core_);
+        bin.second->SetHAMT(hamt_);
     }
 }
 
