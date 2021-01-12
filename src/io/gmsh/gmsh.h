@@ -10,6 +10,8 @@
 namespace hamt {
 namespace gmsh {
 
+double GetFileFormat(const std::string& file_name);
+
 MSH2 ReadMSH2(const std::string& file_name);
 void CheckFileFormatMSH2(const std::string& file_name);
 void ReadPhysicalNamesMSH2(const std::string& file_name, MSH2& mesh);
