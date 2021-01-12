@@ -15,7 +15,6 @@ void Operation::SetHAMT(const std::shared_ptr<HAMT>& hamt) {
 }
 
 void Operation::Execute(const std::vector<std::string>& argv, const bool& test_mode) {
-    Check(argv);
     auto itter(sub_operations_.find(argv.front()));
 
     if (itter != sub_operations_.end()) {
