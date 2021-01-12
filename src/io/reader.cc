@@ -8,9 +8,9 @@ void Reader::SetData(const std::shared_ptr<Data>& data) { data_ = data; }
 
 void Reader::ReadRegularMesh(const std::string& file_name) {
     std::istringstream iss(file_name);
-    std::vector<std::string> results((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
+    std::string result(file_name.substr(file_name.find("."), file_name.size()));
 
-    if (results.back() == "msh") {
+    if (result == ".msh") {
         const double file_format(gmsh::GetFileFormat(file_name));
 
         if (std::floor(file_format) == 2.0) {
@@ -19,7 +19,7 @@ void Reader::ReadRegularMesh(const std::string& file_name) {
             throw Exception("Undefined Gmsh file format [" + std::to_string(file_format) + "].", __PRETTY_FUNCTION__);
         }
     } else {
-        throw Exception("Undefined file format [" + results.back() + "].", __PRETTY_FUNCTION__);
+        throw Exception("Undefined file format [" + result + "].", __PRETTY_FUNCTION__);
     }
 }
 

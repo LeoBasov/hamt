@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #include "../../exception/commanderror.h"
 #include "../../exception/incomplete_code_error.h"
 #include "../operation.h"

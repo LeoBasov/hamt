@@ -5,7 +5,14 @@ namespace hamt {
 OperationRead::OperationRead() : Operation("read") {}
 
 void OperationRead::Execute(const std::vector<std::string>& argv, const bool&) {
-    throw IncompleteCodeError(__PRETTY_FUNCTION__);
+    if (argv.at(0) == "reg_mesh") {
+        hamt_->reader_.ReadRegularMesh(argv.at(1));
+
+        std::cout << "NUMBER NODES : " << hamt_->data_->mesh2d_regular_.nodes_.size() << std::endl;
+        std::cout << "NUMBER CELLS : " << hamt_->data_->mesh2d_regular_.cells_.size() << std::endl;
+    } else {
+        throw CommandError("Command 'read' undfedined argument [" + argv.at(0) + "].");
+    }
 }
 
 void OperationRead::Check(const std::vector<std::string>& argv) { ChecArgvExact(2, argv); }
