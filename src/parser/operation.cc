@@ -14,6 +14,10 @@ void Operation::SetHAMT(const std::shared_ptr<HAMT>& hamt) {
     }
 }
 
+void Operation::SetRelDir(const std::string& rel_dir) {
+    rel_dir_ = rel_dir;
+}
+
 void Operation::Execute(const std::vector<std::string>& argv, const bool& test_mode) {
     auto itter(sub_operations_.find(argv.front()));
 

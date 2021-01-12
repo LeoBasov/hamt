@@ -22,7 +22,6 @@ class Controller {
    private:
     std::shared_ptr<HAMT> hamt_;
     std::map<std::string, std::shared_ptr<Operation>> operations_;
-    std::string rel_dir_;
 
     void SetUpOperations();
 };

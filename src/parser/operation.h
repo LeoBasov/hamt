@@ -18,6 +18,7 @@ class Operation {
     virtual ~Operation() = default;
 
     void SetHAMT(const std::shared_ptr<HAMT>& hamt);
+    void SetRelDir(const std::string& rel_dir);
     virtual void Execute(const std::vector<std::string>& argv, const bool& test_mode = false);
 
     std::string GetName() const;
@@ -28,6 +29,7 @@ class Operation {
     std::string name_;
     std::shared_ptr<HAMT> hamt_;
     std::map<std::string, std::shared_ptr<Operation>> sub_operations_;
+    std::string rel_dir_;
 
     virtual void ChecArgvMin(const uint& min, const std::vector<std::string>& argv) const;
     virtual void ChecArgvMax(const uint& max, const std::vector<std::string>& argv) const;
