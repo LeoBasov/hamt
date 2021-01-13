@@ -9,5 +9,8 @@ info reg_mesh
 set reg_mesh bound_type buttom dirichlet
 info reg_mesh
 
+set reg_mesh bound_value buttom 100.12
+info reg_mesh
+
 clear reg_mesh
 info reg_mesh
