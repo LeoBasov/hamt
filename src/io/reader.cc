@@ -7,8 +7,7 @@ Reader::Reader() {}
 void Reader::SetData(const std::shared_ptr<Data>& data) { data_ = data; }
 
 void Reader::ReadRegularMesh(const std::string& file_name) {
-    std::istringstream iss(file_name);
-    std::string result(file_name.substr(file_name.find("."), file_name.size()));
+    std::string result(file_name.substr(file_name.rfind("."), file_name.size()));
 
     if (result == ".msh") {
         const double file_format(gmsh::GetFileFormat(file_name));
