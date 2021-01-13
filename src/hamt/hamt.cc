@@ -7,6 +7,7 @@ HAMT::HAMT() {
 
     reader_.SetData(data_);
     writer_.SetData(data_);
+    solver_.SetData(data_);
 }
 
 }  // namespace hamt

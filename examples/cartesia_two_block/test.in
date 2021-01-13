@@ -24,4 +24,19 @@ set writer reg_mesh vtk file_name test
 
 read reg_mesh block.msh
 
+set reg_mesh bound_value buttom 100
+set reg_mesh bound_value top 300
+
+set reg_mesh bound_type left_buttom neumann
+set reg_mesh bound_value left_buttom 0
+
+set reg_mesh bound_type left_top neumann
+set reg_mesh bound_value left_top 0
+
+set reg_mesh bound_type right_buttom neumann
+set reg_mesh bound_value right_buttom 0
+
+set reg_mesh bound_type right_top neumann
+set reg_mesh bound_value right_top 0
+
 run

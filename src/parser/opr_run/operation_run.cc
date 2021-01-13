@@ -7,7 +7,7 @@ OperationRun::OperationRun() : Operation("run") {}
 void OperationRun::Execute(const std::vector<std::string>& argv, const bool&) {
     ChecArgvMax(1, argv);
     uint number_iterations(1);
-    Timer writer_timer_, total_;
+    Timer writer_timer, total_timer, solver_timer;
 
     if (argv.size()) {
         if (std::stoi(argv.at(0)) > 0) {
@@ -22,23 +22,29 @@ void OperationRun::Execute(const std::vector<std::string>& argv, const bool&) {
     std::cout << "------------------------------------------------------------" << std::endl;
 
     for (uint i = 0; i < number_iterations; i++) {
-        total_.Start();
+        total_timer.Start();
 
-        writer_timer_.Start();
+        solver_timer.Start();
+        hamt_->solver_.Execute();
+        solver_timer.Stop();
+
+        writer_timer.Start();
         hamt_->writer_.Write(i);
-        writer_timer_.Stop();
+        writer_timer.Stop();
 
-        total_.Stop();
+        total_timer.Stop();
 
-        std::cout << "Writer time: " << writer_timer_.GetCurrentDuration() << " s" << std::endl;
-        std::cout << "Total time: " << total_.GetCurrentDuration() << " s" << std::endl;
+        std::cout << "Solver time: " << solver_timer.GetCurrentDuration() << " s" << std::endl;
+        std::cout << "Writer time: " << writer_timer.GetCurrentDuration() << " s" << std::endl;
+        std::cout << "Total time: " << total_timer.GetCurrentDuration() << " s" << std::endl;
         std::cout << "Iteration " << i + 1 << "/" << number_iterations << " complete." << std::endl;
         std::cout << "------------------------------------------------------------" << std::endl;
     }
 
     std::cout << "RUN COMPLETE" << std::endl;
-    std::cout << "Total Writer time: " << writer_timer_.GetTotalDuration() << " s" << std::endl;
-    std::cout << "Total time: " << total_.GetTotalDuration() << " s" << std::endl;
+    std::cout << "Total Solver time: " << solver_timer.GetTotalDuration() << " s" << std::endl;
+    std::cout << "Total Writer time: " << writer_timer.GetTotalDuration() << " s" << std::endl;
+    std::cout << "Total time: " << total_timer.GetTotalDuration() << " s" << std::endl;
     std::cout << "================================================================" << std::endl;
 }
 
