@@ -7,6 +7,7 @@ Writer::Writer() {
 
     // extend here for more file formats
     file_configs[VTK] = Config();
+    file_configs[CSV] = Config();
 
     // extend here for more meshes
     configs_[REGULAR] = file_configs;
@@ -51,7 +52,7 @@ void Writer::Write(const uint& iter) {
 
 void Writer::WriteRegularMesh(const std::map<FileFormat, Config>& configs, const uint& iter) {
     for (const auto& bin : configs) {
-        if (!(iter % bin.second.frequency)) {
+        if (!(iter % bin.second.frequency) && bin.second.activated) {
             switch (bin.first) {
                 case VTK: {
                     if (data_->results_.size()) {
@@ -68,6 +69,33 @@ void Writer::WriteRegularMesh(const std::map<FileFormat, Config>& configs, const
                         vtk::unstructured_grid::WriteMesh2DRegular(data_->mesh2d_regular_,
                                                                    bin.second.file_name + ".vtu", {});
                     }
+                    break;
+                }
+                case CSV: {
+                    std::ofstream stream(bin.second.file_name + ".csv");
+
+                    if (!stream.is_open()) {
+                        throw Exception("Could not open file [" + bin.second.file_name + ".csv" + "]",
+                                        __PRETTY_FUNCTION__);
+                    }
+
+                    if (data_->results_.size()) {
+                        for (uint i = 0; i < data_->mesh2d_regular_.nodes_.size(); i++) {
+                            const Vector3d position(data_->mesh2d_regular_.nodes_.at(i).position);
+
+                            stream << data_->results_(i) << "," << position(0) << "," << position(1) << ","
+                                   << position(2) << std::endl;
+                        }
+                    } else {
+                        for (uint i = 0; i < data_->mesh2d_regular_.nodes_.size(); i++) {
+                            const Vector3d position(data_->mesh2d_regular_.nodes_.at(i).position);
+
+                            stream << 0.0 << "," << position(0) << "," << position(1) << "," << position(2)
+                                   << std::endl;
+                        }
+                    }
+
+                    stream.close();
                     break;
                 }
                 default: {

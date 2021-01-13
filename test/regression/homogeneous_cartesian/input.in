@@ -11,6 +11,9 @@ read reg_mesh block_4_segments.msh
 set writer reg_mesh vtk on
 set writer reg_mesh vtk file_name reg_car_hom
 
+set writer reg_mesh csv on
+set writer reg_mesh csv file_name reg_car_hom
+
 # set voundary conditions
 set reg_mesh bound_value buttom_left 100
 set reg_mesh bound_value buttom_right 100
