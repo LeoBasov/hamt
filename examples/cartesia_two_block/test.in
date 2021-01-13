@@ -17,3 +17,7 @@ info reg_mesh
 
 clear reg_mesh
 info reg_mesh
+
+set writer reg_mesh vtk on
+set writer reg_mesh vtk output_freq 10
+set writer reg_mesh vtk file_name test

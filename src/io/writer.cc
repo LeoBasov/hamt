@@ -14,8 +14,24 @@ Writer::Writer() {
 
 void Writer::SetData(const std::shared_ptr<Data>& data) { data_ = data; }
 
-void Writer::Initialize(const MeshType mesh_type, const FileFormat file_format, const Config& config) {
+void Writer::SetConfig(const MeshType mesh_type, const FileFormat file_format, const Config& config) {
     configs_.at(mesh_type).at(file_format) = config;
+}
+
+Writer::Config Writer::GetConfig(const MeshType mesh_type, const FileFormat file_format) const {
+    const auto iter_mesh(configs_.find(mesh_type));
+
+    if (iter_mesh != configs_.end()) {
+        const auto iter_type(iter_mesh->second.find(file_format));
+
+        if (iter_type != iter_mesh->second.end()) {
+            return iter_type->second;
+        } else {
+            throw Exception("Undefined FileFormat [" + std::to_string(file_format) + "]", __PRETTY_FUNCTION__);
+        }
+    } else {
+        throw Exception("Undefined MeshType [" + std::to_string(mesh_type) + "]", __PRETTY_FUNCTION__);
+    }
 }
 
 void Writer::Write(const uint& iter) {

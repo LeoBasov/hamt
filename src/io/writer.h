@@ -25,7 +25,8 @@ class Writer {
     ~Writer() = default;
 
     void SetData(const std::shared_ptr<Data>& data);
-    void Initialize(const MeshType mesh_type, const FileFormat file_format, const Config& config);
+    void SetConfig(const MeshType mesh_type, const FileFormat file_format, const Config& config);
+    Config GetConfig(const MeshType mesh_type, const FileFormat file_format) const;
     void Write(const uint& iter);
 
    private:
