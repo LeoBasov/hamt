@@ -1,0 +1,33 @@
+######################################
+#                                    #
+# Regression test for cartesian mesh #
+#                                    #
+######################################
+
+# laod mesh
+read reg_mesh block_4_segments.msh
+
+# set writer status
+set writer reg_mesh vtk on
+set writer reg_mesh vtk file_name reg_car_hom
+
+# set voundary conditions
+set reg_mesh bound_value buttom_left 100
+set reg_mesh bound_value buttom_right 100
+
+set reg_mesh bound_type right_buttom neumann
+set reg_mesh bound_value right_buttom 0
+
+set reg_mesh bound_type right_top neumann
+set reg_mesh bound_value right_top 0
+
+set reg_mesh bound_value top_right 300
+set reg_mesh bound_value top_left 300
+
+set reg_mesh bound_type left_buttom neumann
+set reg_mesh bound_value left_buttom 0
+
+set reg_mesh bound_type left_top neumann
+set reg_mesh bound_value left_top 0
+
+run
