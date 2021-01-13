@@ -13,12 +13,29 @@ commands:
       - run:
           name: Install LCOV
           command: apt update && sudo apt install -y lcov
+  set_up_regression_test_environment:
+    steps:
+      - checkout
+      - run:
+          name: Installing SUDO
+          command: 'apt-get update && apt install -y sudo && rm -rf /var/lib/apt/lists/*'
+      - run:
+          name: Installing PYHTON
+          command: 'apt-get update && sudo apt install -y python3'
+      - run:
+          name: Run SETUP
+          command: ./setup.sh
 
   build_tests:
     steps:
       - run:
           name: Build HAMT-TESTS
           command: 'mkdir build-hamt-tests && cd build-hamt-tests && cmake -DCMAKE_BUILD_TYPE=Release ../test/ && make'
+  build_hamt:
+    steps:
+      - run:
+          name: Build HAMT
+          command: 'mkdir build-hamt && cd build-hamt && cmake -DCMAKE_BUILD_TYPE=Release ../src/ && make'
 
   run_unit_tests:
     steps:
@@ -48,8 +65,14 @@ jobs:
       - set_up_unit_test_environment
       - build_tests
       - run_unit_tests
+  analytical_tests:
+    executor: docker-bionic
+    steps:
+      - set_up_regression_test_environment
+      - build_hamt
 
 workflows:
   build-and-run-tests:
     jobs:
       - unit_tests
+      - analytical_tests
