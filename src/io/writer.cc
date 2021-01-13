@@ -28,6 +28,7 @@ void Writer::Write(const uint& iter) {
 void Writer::WriteRegularMesh(const Config& config) {
     switch (config.file_format) {
         case VTK: {
+            throw IncompleteCodeError(__PRETTY_FUNCTION__);
             break;
         }
         default: {

@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "../exception/incomplete_code_error.h"
 #include "../hamt/data.h"
 
 namespace hamt {
