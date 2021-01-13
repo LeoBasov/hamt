@@ -3,6 +3,33 @@
 namespace hamt {
 namespace gmsh {
 
+double GetFileFormat(const std::string& file_name) {
+    std::ifstream infile(file_name);
+    std::string line;
+    bool found(false);
+
+    if (!infile.is_open()) {
+        throw Exception("File [" + file_name + "] could not be open.", __PRETTY_FUNCTION__);
+    }
+
+    while (std::getline(infile, line)) {
+        if (line == "$MeshFormat") {
+            found = true;
+        } else if (found) {
+            std::istringstream iss(line);
+            std::vector<std::string> results((std::istream_iterator<std::string>(iss)),
+                                             std::istream_iterator<std::string>());
+
+            infile.close();
+            return std::stod(results.at(0));
+        }
+    }
+
+    infile.close();
+
+    throw Exception("GMSH MESH FORMAT NOT FOUND IN FILE", __PRETTY_FUNCTION__);
+}
+
 MSH2 ReadMSH2(const std::string& file_name) {
     MSH2 mesh;
 

@@ -20,8 +20,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "exception/incomplete_code_error.h"
 #include "exception/load_pass.h"
-#include "io/parser/controller.h"
-#include "io/parser/parser.h"
+#include "parser/controller.h"
+#include "parser/parser.h"
 
 using namespace hamt;
 

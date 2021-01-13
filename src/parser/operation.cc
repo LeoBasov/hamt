@@ -6,16 +6,17 @@ Operation::Operation() {}
 
 Operation::Operation(std::string name) : name_(name) {}
 
-void Operation::SetCore(const std::shared_ptr<Core>& core) {
-    core_ = core;
+void Operation::SetHAMT(const std::shared_ptr<HAMT>& hamt) {
+    hamt_ = hamt;
 
     for (auto& bin : sub_operations_) {
-        bin.second->SetCore(core_);
+        bin.second->SetHAMT(hamt_);
     }
 }
 
+void Operation::SetRelDir(const std::string& rel_dir) { rel_dir_ = rel_dir; }
+
 void Operation::Execute(const std::vector<std::string>& argv, const bool& test_mode) {
-    Check(argv);
     auto itter(sub_operations_.find(argv.front()));
 
     if (itter != sub_operations_.end()) {
