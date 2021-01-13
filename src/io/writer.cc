@@ -28,7 +28,18 @@ void Writer::Write(const uint& iter) {
 void Writer::WriteRegularMesh(const Config& config) {
     switch (config.file_format) {
         case VTK: {
-            throw IncompleteCodeError(__PRETTY_FUNCTION__);
+            if (data_->results_.size()) {
+                std::pair<std::string, std::vector<double>> vec{"temperature",
+                                                                std::vector<double>(data_->results_.size())};
+
+                for (uint i = 0; i < vec.second.size(); i++) {
+                    vec.second.at(i) = data_->results_(i);
+                }
+
+                vtk::unstructured_grid::WriteMesh2DRegular(data_->mesh2d_regular_, config.file_name, {vec});
+            } else {
+                vtk::unstructured_grid::WriteMesh2DRegular(data_->mesh2d_regular_, config.file_name, {});
+            }
             break;
         }
         default: {

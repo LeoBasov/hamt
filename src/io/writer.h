@@ -4,6 +4,7 @@
 
 #include "../exception/incomplete_code_error.h"
 #include "../hamt/data.h"
+#include "vtk/unstructured_grid.h"
 
 namespace hamt {
 using namespace Eigen;
