@@ -21,3 +21,7 @@ info reg_mesh
 set writer reg_mesh vtk on
 set writer reg_mesh vtk output_freq 10
 set writer reg_mesh vtk file_name test
+
+read reg_mesh block.msh
+
+run

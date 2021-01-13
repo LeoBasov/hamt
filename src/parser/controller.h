@@ -9,6 +9,7 @@
 #include "opr_info/operation_info.h"
 #include "opr_load/operation_load.h"
 #include "opr_read/operation_read.h"
+#include "opr_run/operation_run.h"
 #include "opr_set/operation_set.h"
 #include "parser.h"
 

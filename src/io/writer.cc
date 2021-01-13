@@ -51,7 +51,7 @@ void Writer::Write(const uint& iter) {
 
 void Writer::WriteRegularMesh(const std::map<FileFormat, Config>& configs, const uint& iter) {
     for (const auto& bin : configs) {
-        if (!(bin.second.frequency % iter)) {
+        if (!(iter % bin.second.frequency)) {
             switch (bin.first) {
                 case VTK: {
                     if (data_->results_.size()) {
@@ -62,9 +62,11 @@ void Writer::WriteRegularMesh(const std::map<FileFormat, Config>& configs, const
                             vec.second.at(i) = data_->results_(i);
                         }
 
-                        vtk::unstructured_grid::WriteMesh2DRegular(data_->mesh2d_regular_, bin.second.file_name, {vec});
+                        vtk::unstructured_grid::WriteMesh2DRegular(data_->mesh2d_regular_,
+                                                                   bin.second.file_name + ".vtu", {vec});
                     } else {
-                        vtk::unstructured_grid::WriteMesh2DRegular(data_->mesh2d_regular_, bin.second.file_name, {});
+                        vtk::unstructured_grid::WriteMesh2DRegular(data_->mesh2d_regular_,
+                                                                   bin.second.file_name + ".vtu", {});
                     }
                     break;
                 }
