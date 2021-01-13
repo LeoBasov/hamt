@@ -5,16 +5,15 @@
 #include "../../exception/commanderror.h"
 #include "../../exception/incomplete_code_error.h"
 #include "../operation.h"
-#include "set_reg_mesh.h"
-#include "set_writer.h"
 
 namespace hamt {
-class OperationSet : public Operation {
+class OperationRun : public Operation {
    public:
-    OperationSet();
-    ~OperationSet() override = default;
+    OperationRun();
+    ~OperationRun() override = default;
 
     void Check(const std::vector<std::string>& argv) override;
     std::string GetHelp() const override;
+    virtual void Execute(const std::vector<std::string>& argv, const bool& test_mode = false) override;
 };
 }  // namespace hamt
