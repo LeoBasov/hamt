@@ -59,7 +59,7 @@ commands:
           command: ./build-hamt/hamt ./test/regression/homogeneous_cartesian/input.in
       - run:
           name: Run cartesian homogenous block analysis
-          command: cd ./test/regression/homogeneous_cartesian/ && python3 asses.py ../../../reg_car_hom.csv
+          command: cd ./test/regression/homogeneous_cartesian/ && python3 asses.py ../../../reg_car_hom.csv reg_car_hom_ref.csv
 
 executors:
   docker-bionic:

@@ -20,27 +20,15 @@ def read_file(file_name):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('file_name', help='name of the result file')
+    parser.add_argument('file_name_ref', help='name of the reference file')
     args = parser.parse_args()
 
     values = read_file(args.file_name)
+    values_ref = read_file(args.file_name_ref)
 
-    if values[0][0] != 100:
-        raise Exception("temperature difference too big")
-    elif values[1][0] != 100:
-        raise Exception("temperature difference too big")
-    elif values[2][0] != 100:
-        raise Exception("temperature difference too big")
-    elif values[3][0] != 200:
-        raise Exception("temperature difference too big")
-    elif values[4][0] != 200:
-        raise Exception("temperature difference too big")
-    elif values[5][0] != 200:
-        raise Exception("temperature difference too big")
-    elif values[6][0] != 300:
-        raise Exception("temperature difference too big")
-    elif values[7][0] != 300:
-        raise Exception("temperature difference too big")
-    elif values[8][0] != 300:
-        raise Exception("temperature difference too big")
+    for row in range(len(values)):
+        for col in range(len([row])):
+            if values_ref[row][col] != values[row][col]:
+                raise Exception('difference between ref and result')
 
     print('SUCCESS')
