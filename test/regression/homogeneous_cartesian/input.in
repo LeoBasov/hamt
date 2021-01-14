@@ -4,7 +4,7 @@
 #                                    #
 ######################################
 
-# Phase 1
+# Vertical
 #=====================================
 # laod mesh
 read reg_mesh block_4_segments.msh
@@ -37,7 +37,7 @@ set reg_mesh bound_value left_top 0
 
 run
 
-# Phase 2
+# Horizontal
 #=====================================
 # set writer status
 set writer reg_mesh vtk file_name reg_car_hom_1
