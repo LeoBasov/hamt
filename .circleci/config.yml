@@ -13,12 +13,29 @@ commands:
       - run:
           name: Install LCOV
           command: apt update && sudo apt install -y lcov
+  set_up_regression_test_environment:
+    steps:
+      - checkout
+      - run:
+          name: Installing SUDO
+          command: 'apt-get update && apt install -y sudo && rm -rf /var/lib/apt/lists/*'
+      - run:
+          name: Installing PYHTON
+          command: 'apt-get update && sudo apt install -y python3'
+      - run:
+          name: Run SETUP
+          command: ./setup.sh
 
   build_tests:
     steps:
       - run:
           name: Build HAMT-TESTS
           command: 'mkdir build-hamt-tests && cd build-hamt-tests && cmake -DCMAKE_BUILD_TYPE=Release ../test/ && make'
+  build_hamt:
+    steps:
+      - run:
+          name: Build HAMT
+          command: 'mkdir build-hamt && cd build-hamt && cmake -DCMAKE_BUILD_TYPE=Release ../src/ && make'
 
   run_unit_tests:
     steps:
@@ -35,6 +52,23 @@ commands:
             genhtml ./build-hamt-tests/unit_tests/coverage-filtered.info --output-directory coverage
       - store_artifacts:
           path: coverage
+  run_analytical_tests:
+    steps:
+      - run:
+          name: Run cartesian homogenous block execution test
+          command: ./build-hamt/hamt ./test/regression/homogeneous_cartesian/input.in
+      - run:
+          name: Run cartesian homogenous block analysis vertical
+          command: cd ./test/regression/homogeneous_cartesian/ && python3 asses.py ../../../reg_car_hom.csv reg_car_hom_ref.csv
+      - run:
+          name: Run cartesian homogenous block analysis horizontal
+          command: cd ./test/regression/homogeneous_cartesian/ && python3 asses.py ../../../reg_car_hom_1.csv reg_car_hom_1_ref.csv
+      - run:
+          name: Run cartesian homogenous block analysis horizontal heterogen.
+          command: cd ./test/regression/homogeneous_cartesian/ && python3 asses.py ../../../reg_car_hom_2.csv reg_car_hom_2_ref.csv
+      - run:
+          name: Run cartesian homogenous block analysis vertical heterogen.
+          command: cd ./test/regression/homogeneous_cartesian/ && python3 asses.py ../../../reg_car_hom_3.csv reg_car_hom_3_ref.csv
 
 executors:
   docker-bionic:
@@ -48,8 +82,15 @@ jobs:
       - set_up_unit_test_environment
       - build_tests
       - run_unit_tests
+  analytical_tests:
+    executor: docker-bionic
+    steps:
+      - set_up_regression_test_environment
+      - build_hamt
+      - run_analytical_tests
 
 workflows:
   build-and-run-tests:
     jobs:
       - unit_tests
+      - analytical_tests

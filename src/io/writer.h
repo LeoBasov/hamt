@@ -11,7 +11,7 @@ using namespace Eigen;
 class Writer {
    public:
     enum MeshType { REGULAR };
-    enum FileFormat { VTK };
+    enum FileFormat { VTK, CSV };
 
     struct Config {
         MeshType mesh_type = REGULAR;
