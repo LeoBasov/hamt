@@ -66,6 +66,9 @@ commands:
       - run:
           name: Run cartesian homogenous block analysis horizontal heterogen.
           command: cd ./test/regression/homogeneous_cartesian/ && python3 asses.py ../../../reg_car_hom_2.csv reg_car_hom_2_ref.csv
+      - run:
+          name: Run cartesian homogenous block analysis vertical heterogen.
+          command: cd ./test/regression/homogeneous_cartesian/ && python3 asses.py ../../../reg_car_hom_3.csv reg_car_hom_3_ref.csv
 
 executors:
   docker-bionic:

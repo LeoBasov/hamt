@@ -107,5 +107,42 @@ set reg_mesh surf_therm_conduct surf_br 100
 set reg_mesh surf_therm_conduct surf_tl 150
 set reg_mesh surf_therm_conduct surf_tr 100
 
+# Vertical heter surf
+#=====================================
+# set writer status
+set writer reg_mesh vtk file_name reg_car_hom_3
+set writer reg_mesh csv file_name reg_car_hom_3
+
+# set voundary conditions
+set reg_mesh bound_type buttom_left dirichlet
+set reg_mesh bound_value buttom_left 100
+
+set reg_mesh bound_type buttom_right dirichlet
+set reg_mesh bound_value buttom_right 100
+
+set reg_mesh bound_type right_buttom neumann
+set reg_mesh bound_value right_buttom 0
+
+set reg_mesh bound_type right_top neumann
+set reg_mesh bound_value right_top 0
+
+set reg_mesh bound_type top_right dirichlet
+set reg_mesh bound_value top_right 300
+
+set reg_mesh bound_type top_left dirichlet
+set reg_mesh bound_value top_left 300
+
+set reg_mesh bound_type left_buttom neumann
+set reg_mesh bound_value left_buttom 0
+
+set reg_mesh bound_type left_top neumann
+set reg_mesh bound_value left_top 0
+
+# set surface values
+set reg_mesh surf_therm_conduct surf_bl 150
+set reg_mesh surf_therm_conduct surf_br 150
+set reg_mesh surf_therm_conduct surf_tl 100
+set reg_mesh surf_therm_conduct surf_tr 100
+
 run
 
