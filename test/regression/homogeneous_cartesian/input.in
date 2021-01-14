@@ -107,6 +107,8 @@ set reg_mesh surf_therm_conduct surf_br 100
 set reg_mesh surf_therm_conduct surf_tl 150
 set reg_mesh surf_therm_conduct surf_tr 100
 
+run
+
 # Vertical heter surf
 #=====================================
 # set writer status
