@@ -354,5 +354,94 @@ void ConvertMidCartesian(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegul
     mat_b.first(row, node.u_i_jp) = mean_xt;
 }
 
+std::pair<MatrixXd, VectorXd> ConvertMesh2dRegularCylindircal(const Mesh2DRegular& mesh) {
+    std::pair<MatrixXd, VectorXd> mat_b;
+
+    mat_b.first = MatrixXd::Zero(mesh.nodes_.size(), mesh.nodes_.size());
+    mat_b.second = VectorXd::Zero(mesh.nodes_.size());
+
+    for (uint i = 0; i < mesh.nodes_.size(); i++) {
+        switch (mesh.nodes_.at(i).type) {
+            case Mesh2DRegular::NodeType::BUTTOM_LEFT: {
+                ConvertButtomLeft(mat_b, mesh, i);
+                break;
+            }
+            case Mesh2DRegular::NodeType::BUTTOM_RIGHT: {
+                ConvertButtomRight(mat_b, mesh, i);
+                break;
+            }
+            case Mesh2DRegular::NodeType::TOP_RIGHT: {
+                ConvertTopRight(mat_b, mesh, i);
+                break;
+            }
+            case Mesh2DRegular::NodeType::TOP_LEFT: {
+                ConvertTopLeft(mat_b, mesh, i);
+                break;
+            }
+            case Mesh2DRegular::NodeType::BUTTOM: {
+                ConvertButtomCylindrical(mat_b, mesh, i);
+                break;
+            }
+            case Mesh2DRegular::NodeType::RIGHT: {
+                ConvertRightCartesian(mat_b, mesh, i);
+                break;
+            }
+            case Mesh2DRegular::NodeType::TOP: {
+                ConvertTopCartesian(mat_b, mesh, i);
+                break;
+            }
+            case Mesh2DRegular::NodeType::LEFT: {
+                ConvertLeftCartesian(mat_b, mesh, i);
+                break;
+            }
+            case Mesh2DRegular::NodeType::MID: {
+                ConvertMidCartesian(mat_b, mesh, i);
+                break;
+            }
+            default: {
+                throw Exception("Unhandeled case [" + std::to_string(mesh.nodes_.at(i).type) + "]",
+                                __PRETTY_FUNCTION__);
+            }
+        }
+    }
+
+    return mat_b;
+}
+
+void ConvertButtomCylindrical(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row) {
+    const Mesh2DRegular::Node node(mesh.nodes_.at(row));
+    const Mesh2DRegular::Cell cell_left(mesh.cells_.at(node.cell_tl));
+    const Mesh2DRegular::Cell cell_right(mesh.cells_.at(node.cell_tr));
+    const Mesh2DRegular::Boundary boundary_left(mesh.boundaries_.at(cell_left.bounary_buttom));
+    const Mesh2DRegular::Boundary boundary_right(mesh.boundaries_.at(cell_right.bounary_buttom));
+    const Mesh2DRegular::Surface surface_left(mesh.surfaces_.at(cell_left.surface_id));
+    const Mesh2DRegular::Surface surface_right(mesh.surfaces_.at(cell_right.surface_id));
+
+    if ((boundary_left.type == Mesh2DRegular::DIRICHLET) && (boundary_right.type == Mesh2DRegular::DIRICHLET)) {
+        mat_b.first(row, row) = 1.0;
+
+        mat_b.second(row) = 0.5 * (boundary_left.value + boundary_right.value);
+    } else if ((boundary_left.type == Mesh2DRegular::DIRICHLET)) {
+        mat_b.first(row, row) = 1.0;
+
+        mat_b.second(row) = boundary_left.value;
+    } else if ((boundary_right.type == Mesh2DRegular::DIRICHLET)) {
+        mat_b.first(row, row) = 1.0;
+
+        mat_b.second(row) = boundary_right.value;
+    } else {
+        const double r_dash(mesh.dy_ / (2.0 * node.position(1)));
+        const double therm_cond_min(surface_left.thermal_conductivity - surface_right.thermal_conductivity);
+        const double therm_cond_tot(surface_right.thermal_conductivity + surface_left.thermal_conductivity);
+        const double term(r_dash * therm_cond_min - therm_cond_tot);
+
+        mat_b.first(row, node.u_ip_j) = (1.0 + r_dash) * surface_right.thermal_conductivity;
+        mat_b.first(row, node.u_im_j) = (1.0 - r_dash) * surface_left.thermal_conductivity;
+        mat_b.first(row, node.u_i_jp) = term;
+
+        mat_b.second(row) = term * 0.5 * (boundary_right.value + boundary_left.value) * mesh.dy_;
+    }
+}
+
 }  // namespace heat_equation_homogeneous
 }  // namespace hamt

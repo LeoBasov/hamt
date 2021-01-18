@@ -21,5 +21,8 @@ void ConvertTopCartesian(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegul
 void ConvertLeftCartesian(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row);
 void ConvertMidCartesian(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row);
 
+std::pair<MatrixXd, VectorXd> ConvertMesh2dRegularCylindircal(const Mesh2DRegular& mesh);
+void ConvertButtomCylindrical(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row);
+
 }  // namespace heat_equation_homogeneous
 }  // namespace hamt
