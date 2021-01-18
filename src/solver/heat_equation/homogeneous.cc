@@ -431,7 +431,7 @@ void ConvertRightCylindrical(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DR
         mat_b.second(row) = boundary_buttom.value;
     } else {
         const double r_dash(mesh.dy_ / (2.0 * node.position(1)));
-        const double therm_cond_min(surface_top.thermal_conductivity - surface_buttom.thermal_conductivity);
+        const double therm_cond_min(surface_buttom.thermal_conductivity - surface_top.thermal_conductivity);
         const double therm_cond_tot(surface_buttom.thermal_conductivity + surface_top.thermal_conductivity);
         const double term(r_dash * therm_cond_min - therm_cond_tot);
 
@@ -466,7 +466,7 @@ void ConvertLeftCylindrical(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRe
         mat_b.second(row) = boundary_buttom.value;
     } else {
         const double r_dash(mesh.dy_ / (2.0 * node.position(1)));
-        const double therm_cond_min(surface_top.thermal_conductivity - surface_buttom.thermal_conductivity);
+        const double therm_cond_min(surface_buttom.thermal_conductivity - surface_top.thermal_conductivity);
         const double therm_cond_tot(surface_buttom.thermal_conductivity + surface_top.thermal_conductivity);
         const double term(r_dash * therm_cond_min - therm_cond_tot);
 

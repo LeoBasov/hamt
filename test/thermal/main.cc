@@ -29,16 +29,16 @@ int main(int, char **) {
     mesh.SetBoundaryValue("left_top", 0);
 
     mesh.SetBoundaryType("top", Mesh2DRegular::DIRICHLET);
-    mesh.SetBoundaryValue("top", 100);
+    mesh.SetBoundaryValue("top", 500);
 
     mesh.SetBoundaryType("right_top", Mesh2DRegular::NEUMANN);
     mesh.SetBoundaryValue("right_top", 0);
 
     // surfaces
-    mesh.SetSurfaceThermalConductivity("top_surf", 50);
-    mesh.SetSurfaceThermalConductivity("buttom_surf", 150);
+    mesh.SetSurfaceThermalConductivity("top_surf", 10);
+    mesh.SetSurfaceThermalConductivity("buttom_surf", 200);
 
-    mat_b = heat_equation_homogeneous::ConvertMesh2dRegularCartesian(mesh);
+    mat_b = heat_equation_homogeneous::ConvertMesh2dRegularCylindircal(mesh);
     VectorXd x = mat_b.first.colPivHouseholderQr().solve(mat_b.second);
 
     for (uint i = 0; i < mesh.nodes_.size(); i++) {
