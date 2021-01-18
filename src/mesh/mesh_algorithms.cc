@@ -151,17 +151,17 @@ void SetUpPhysicalGroups(Mesh2DRegular& mesh, const gmsh::MSH2& msh2_mesh) {
         if (element.elm_type == 3) {
             // The setting of surface tags doesn't seem to wrok
 
-            mesh.cells_.at(k++).surface_id = mesh.surface_tags_.at(element.tags.at(1));
+            mesh.cells_.at(k++).surface_id = mesh.surface_tags_.at(element.tags.at(0));
         } else if (element.elm_type == 1) {
             for (auto& cell : mesh.cells_) {
                 if (cell.IsButtom(element.node_number_list.at(0) - 1, element.node_number_list.at(1) - 1)) {
-                    cell.bounary_buttom = mesh.boundary_tags_.at(element.tags.at(1));
+                    cell.bounary_buttom = mesh.boundary_tags_.at(element.tags.at(0));
                 } else if (cell.IsRight(element.node_number_list.at(0) - 1, element.node_number_list.at(1) - 1)) {
-                    cell.bounary_right = mesh.boundary_tags_.at(element.tags.at(1));
+                    cell.bounary_right = mesh.boundary_tags_.at(element.tags.at(0));
                 } else if (cell.IsTop(element.node_number_list.at(0) - 1, element.node_number_list.at(1) - 1)) {
-                    cell.bounary_top = mesh.boundary_tags_.at(element.tags.at(1));
+                    cell.bounary_top = mesh.boundary_tags_.at(element.tags.at(0));
                 } else if (cell.IsLeft(element.node_number_list.at(0) - 1, element.node_number_list.at(1) - 1)) {
-                    cell.bounary_left = mesh.boundary_tags_.at(element.tags.at(1));
+                    cell.bounary_left = mesh.boundary_tags_.at(element.tags.at(0));
                 }
             }
         }
