@@ -11,7 +11,7 @@ class Solver {
    public:
     enum SolverType { HOMOGENEOUS };
     enum MeshType { REGULAR };
-    enum CoordinatesType { CARTESIAN };
+    enum CoordinatesType { CARTESIAN, CYLINDER };
 
     struct Config {
         SolverType solver_type = HOMOGENEOUS;

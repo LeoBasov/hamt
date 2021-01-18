@@ -37,6 +37,12 @@ void Solver::ExecuteHomogenRegMesh() {
             data_->results_ = mat_b.first.colPivHouseholderQr().solve(mat_b.second);
             break;
         }
+        case CYLINDER: {
+            const std::pair<MatrixXd, VectorXd> mat_b(
+                heat_equation_homogeneous::ConvertMesh2dRegularCylindircal(data_->mesh2d_regular_));
+            data_->results_ = mat_b.first.colPivHouseholderQr().solve(mat_b.second);
+            break;
+        }
         default: { throw Exception("Undefined coord type" + std::to_string(config_.coord_type), __PRETTY_FUNCTION__); }
     }
 }
