@@ -1,14 +1,14 @@
 SetFactory("OpenCASCADE");
 
 L = 1.0;
-H = 2.0;
-M = 1.0;
+H = 3.0;
+M = 2.0;
 
 N = DefineNumber[ 10, Min 2, Max 100, Step 1,
   Name "Parameters/N_cells" ];
 
-Point(1) = {0.0, 0.0, 0.0};
-Point(2) = {L, 0.0, 0.0};
+Point(1) = {0.0, 1.0, 0.0};
+Point(2) = {L, 1.0, 0.0};
 Point(3) = {L, M, 0.0};
 Point(4) = {0.0, M, 0.0};
 Point(5) = {L, H, 0.0};
