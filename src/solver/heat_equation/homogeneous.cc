@@ -395,7 +395,7 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dRegularCylindircal(const Mesh2DRegula
                 break;
             }
             case Mesh2DRegular::NodeType::MID: {
-                ConvertMidCartesian(mat_b, mesh, i);
+                ConvertMidCylindrical(mat_b, mesh, i);
                 break;
             }
             default: {
@@ -476,6 +476,73 @@ void ConvertLeftCylindrical(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRe
 
         mat_b.second(row) = term * 0.5 * (boundary_buttom.value + boundary_top.value) * mesh.dx_;
     }
+}
+
+void ConvertMidCylindrical(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row) {
+    const Mesh2DRegular::Node node(mesh.nodes_.at(row));
+    double mean_xb;
+    double mean_xt;
+    double mean_yl;
+    double mean_yr;
+
+    if (node.cell_bl == -1) {
+        const Mesh2DRegular::Surface surface_br(mesh.surfaces_.at(mesh.cells_.at(node.cell_br).surface_id));
+        const Mesh2DRegular::Surface surface_tr(mesh.surfaces_.at(mesh.cells_.at(node.cell_tr).surface_id));
+        const Mesh2DRegular::Surface surface_tl(mesh.surfaces_.at(mesh.cells_.at(node.cell_tl).surface_id));
+
+        mean_xb = 0.5 * (surface_br.thermal_conductivity + surface_br.thermal_conductivity);
+        mean_xt = 0.5 * (surface_tl.thermal_conductivity + surface_tr.thermal_conductivity);
+        mean_yl = 0.5 * (surface_br.thermal_conductivity + surface_tl.thermal_conductivity);
+        mean_yr = 0.5 * (surface_br.thermal_conductivity + surface_tr.thermal_conductivity);
+    } else if (node.cell_br == -1) {
+        const Mesh2DRegular::Surface surface_bl(mesh.surfaces_.at(mesh.cells_.at(node.cell_bl).surface_id));
+        const Mesh2DRegular::Surface surface_tr(mesh.surfaces_.at(mesh.cells_.at(node.cell_tr).surface_id));
+        const Mesh2DRegular::Surface surface_tl(mesh.surfaces_.at(mesh.cells_.at(node.cell_tl).surface_id));
+
+        mean_xb = 0.5 * (surface_bl.thermal_conductivity + surface_bl.thermal_conductivity);
+        mean_xt = 0.5 * (surface_tl.thermal_conductivity + surface_tr.thermal_conductivity);
+        mean_yl = 0.5 * (surface_bl.thermal_conductivity + surface_tl.thermal_conductivity);
+        mean_yr = 0.5 * (surface_bl.thermal_conductivity + surface_tr.thermal_conductivity);
+    } else if (node.cell_tr == -1) {
+        const Mesh2DRegular::Surface surface_bl(mesh.surfaces_.at(mesh.cells_.at(node.cell_bl).surface_id));
+        const Mesh2DRegular::Surface surface_br(mesh.surfaces_.at(mesh.cells_.at(node.cell_br).surface_id));
+        const Mesh2DRegular::Surface surface_tl(mesh.surfaces_.at(mesh.cells_.at(node.cell_tl).surface_id));
+
+        mean_xb = 0.5 * (surface_bl.thermal_conductivity + surface_br.thermal_conductivity);
+        mean_xt = 0.5 * (surface_tl.thermal_conductivity + surface_tl.thermal_conductivity);
+        mean_yl = 0.5 * (surface_bl.thermal_conductivity + surface_tl.thermal_conductivity);
+        mean_yr = 0.5 * (surface_br.thermal_conductivity + surface_tl.thermal_conductivity);
+    } else if (node.cell_tl == -1) {
+        const Mesh2DRegular::Surface surface_bl(mesh.surfaces_.at(mesh.cells_.at(node.cell_bl).surface_id));
+        const Mesh2DRegular::Surface surface_br(mesh.surfaces_.at(mesh.cells_.at(node.cell_br).surface_id));
+        const Mesh2DRegular::Surface surface_tr(mesh.surfaces_.at(mesh.cells_.at(node.cell_tr).surface_id));
+
+        mean_xb = 0.5 * (surface_bl.thermal_conductivity + surface_br.thermal_conductivity);
+        mean_xt = 0.5 * (surface_tr.thermal_conductivity + surface_tr.thermal_conductivity);
+        mean_yl = 0.5 * (surface_bl.thermal_conductivity + surface_tr.thermal_conductivity);
+        mean_yr = 0.5 * (surface_br.thermal_conductivity + surface_tr.thermal_conductivity);
+    } else {
+        const Mesh2DRegular::Surface surface_bl(mesh.surfaces_.at(mesh.cells_.at(node.cell_bl).surface_id));
+        const Mesh2DRegular::Surface surface_br(mesh.surfaces_.at(mesh.cells_.at(node.cell_br).surface_id));
+        const Mesh2DRegular::Surface surface_tr(mesh.surfaces_.at(mesh.cells_.at(node.cell_tr).surface_id));
+        const Mesh2DRegular::Surface surface_tl(mesh.surfaces_.at(mesh.cells_.at(node.cell_tl).surface_id));
+
+        mean_xb = 0.5 * (surface_bl.thermal_conductivity + surface_br.thermal_conductivity);
+        mean_xt = 0.5 * (surface_tl.thermal_conductivity + surface_tr.thermal_conductivity);
+        mean_yl = 0.5 * (surface_bl.thermal_conductivity + surface_tl.thermal_conductivity);
+        mean_yr = 0.5 * (surface_br.thermal_conductivity + surface_tr.thermal_conductivity);
+    }
+
+    const double therm_tot_y(mean_yl + mean_yr);
+    const double therm_tot_x(mean_xb + mean_xt);
+    const double r_dash(mesh.dy_ / (2.0 * node.position(1)));
+    const double therm_cond_min(mean_xb - mean_xt);
+
+    mat_b.first(row, node.u_im_j) = mean_yl;
+    mat_b.first(row, node.u_ip_j) = mean_yr;
+    mat_b.first(row, row) = r_dash * therm_cond_min - (therm_tot_x + therm_tot_y);
+    mat_b.first(row, node.u_i_jm) = (1 - r_dash) * mean_xb;
+    mat_b.first(row, node.u_i_jp) = (1 + r_dash) * mean_xt;
 }
 
 }  // namespace heat_equation_homogeneous
