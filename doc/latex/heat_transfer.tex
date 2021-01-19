@@ -1,0 +1,120 @@
+\chapter{Heat Transfer}
+The base equation for the heat transfer is the balance equation of the form
+%----------------------------------------------------------------
+\begin{equation}
+\label{eqn:balance}
+    \pdv{\rho}{t} + \nabla \vec{j} = f(\vec{r}, t)
+\end{equation}
+%----------------------------------------------------------------
+where $\rho$ is the density of the quantity in question, $\vec{j}$ is the flux, $\vec{r}$ is the position vector and $t$ is time.
+For heat transfer problem we define $\rho$ as the volumetric heat density $q$ which is defined as
+%----------------------------------------------------------------
+\begin{equation}
+\label{eqn:heat_density}
+    q = \frac{Q}{V} = c \, \rho \, T
+\end{equation}
+%----------------------------------------------------------------
+$\vec{j}$ is equvalent to the heat flux $\vec{\dot{q}}$
+%----------------------------------------------------------------
+\begin{equation}
+\label{eqn:heat_flux}
+    \vec{\dot{q}} = -\lambda \, \nabla T
+\end{equation}
+%----------------------------------------------------------------
+and the source$f(\vec{r}, t)$ is the volumetrix heat source $\dot{q}_v(\vec{r}, t)$.
+Inserting \ref{eqn:heat_density} and \ref{eqn:heat_flux} in \ref{eqn:balance} leads to the heat transfer equation
+%----------------------------------------------------------------
+\begin{equation}
+\label{eqn:heat_transfer}
+    \pdv{(c \, \rho \, T)}{t} + \nabla (-\lambda \, \nabla T ) = \dot{q}_v(\vec{r}, t)
+\end{equation}
+%----------------------------------------------------------------
+where the quantities are defined as seen in table \ref{tab:electron_beam_simulation_parameters}.
+%----------------------------------------------------------------
+\begin{table}[ht]
+\centering
+\caption{Electron beam - simulation parameters}
+\label{tab:parameters}
+\begin{tabular}{lll}
+\hline
+\hline
+Quantitiy & Description & Unit\\
+\hline
+$c$ & Specific heat capacity & $\si{\joule\per\kilogram\per\kelvin}$\\
+$\rho$ & Density & $\si{\kilogram\per\meter\cubed}$\\
+$T$ & Temperature & $\si{\kelvin}$\\
+$\lambda$ & Thermal conductivity & $\si{\watt\per\meter\per\kelvin}$\\
+$\dot{q}_v$ & Volumetric heat source & $\si{\watt\per\meter\cubed}$\\
+\hline
+\hline
+\end{tabular}
+\end{table}
+%----------------------------------------------------------------
+
+\section{Homogeneous Heat Transfer Equation}
+Aussuming...
+%----------------------------------------------------------------
+\begin{equation}
+\label{eqn:homogeneous_heat_transfer}
+    \lambda \, \Delta T  = 0
+\end{equation}
+%----------------------------------------------------------------
+The homogeneous heat equation in cartesian coordinates is expressed as
+%----------------------------------------------------------------
+\begin{equation}
+\label{eqn:homogeneous_heat_transfer_cartesian}
+    \lambda\pdv[2]{T}{x} + \lambda\pdv[2]{T}{y} + \lambda\pdv[2]{T}{z} = 0
+\end{equation}
+%----------------------------------------------------------------
+while in cylinder coordinates as
+%----------------------------------------------------------------
+\begin{equation}
+\label{eqn:homogeneous_heat_transfer_cylinder}
+    \lambda\frac{1}{r}\pdv{}{r}\left(r \pdv{T}{r}\right) + \lambda\frac{1}{r^2}\pdv[2]{T}{\phi} + \lambda\pdv[2]{T}{z} = 0.
+\end{equation}
+%----------------------------------------------------------------
+
+\section{FDM - Homogeneous Equidistant Cartesian 2D}
+By assuming only the $x$ and $y$ directions equation (\ref{eqn:homogeneous_heat_transfer_cartesian}) reduces to
+%----------------------------------------------------------------
+\begin{equation}
+  \label{eqn:fdm_equi_cart_2d}
+  \lambda\pdv[2]{T}{x} + \lambda\pdv[2]{T}{y} = 0.
+\end{equation}
+%----------------------------------------------------------------
+
+\subsection{Central Equation}
+Using equation (\ref{eqn:fdm_2}) equation (\ref{eqn:fdm_equi_cart_2d}) can be discritizised as
+%----------------------------------------------------------------
+\begin{equation}
+  \lambda_{i+1, j}T_{i + 1, j}  + \lambda_{i, j + 1}T_{i, j + 1} - \\
+  \lambda_{tot} T_{i, j} + \\
+  \lambda_{i-1, j}T_{i-1, j}  + \lambda_{i, j -1}T_{i, j - 1} = 0
+\end{equation}
+%----------------------------------------------------------------
+where
+%----------------------------------------------------------------
+\begin{equation}
+  \lambda_{tot} = \lambda_{i+1, j} + \lambda_{i-1, j} + \lambda_{i, j+1} + \lambda_{i, j-1}.
+\end{equation}
+%----------------------------------------------------------------
+In case any of the $\lambda$ paramters is to be taken on a boundary between two segments, a mean between to is to take.
+The correctness of this assumptions can be proven by setting up 4 equations around a center node using Fourrier's law.
+For $\lambda = const$ the equation reduces to
+%----------------------------------------------------------------
+\begin{equation}
+  T_{i + 1, j}  + T_{i, j + 1} - 4 \, T_{i, j} + T_{i-1, j}  + T_{i, j - 1} = 0
+\end{equation}
+%----------------------------------------------------------------
+
+\subsection{Corner Equations}
+
+\subsection{Side Equations}
+
+\subsection{Verification}
+Heat codnuctivity trhough a layerd wall
+%----------------------------------------------------------------
+\begin{equation}
+  \dot{q} = \left( \sum_{i = 1}^{N} \frac{\Delta x_i}{\lambda_i} \right)^{-1}\Delta T
+\end{equation}
+%----------------------------------------------------------------
