@@ -1,7 +1,7 @@
 SetFactory("OpenCASCADE");
 
 dx = 0.0001;
-N = 2;
+N = 3;
 
 // Housing
 Point(1) = {0.0, 50*dx, 0.0};
