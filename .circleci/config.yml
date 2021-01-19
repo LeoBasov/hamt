@@ -52,7 +52,7 @@ commands:
             genhtml ./build-hamt-tests/unit_tests/coverage-filtered.info --output-directory coverage
       - store_artifacts:
           path: coverage
-  run_analytical_tests:
+  run_analytical_tests_cartesian:
     steps:
       - run:
           name: Run cartesian homogenous block execution test
@@ -69,6 +69,11 @@ commands:
       - run:
           name: Run cartesian homogenous block analysis vertical heterogen.
           command: cd ./test/regression/homogeneous_cartesian/ && python3 asses.py ../../../reg_car_hom_3.csv reg_car_hom_3_ref.csv
+  run_analytical_tests_cylinder:
+    steps:
+      - run:
+          name: Run cartesian homogenous cylinder block execution test
+          command: ./build-hamt/hamt ./test/regression/homogeneous_cylinder/input.in
 
 executors:
   docker-bionic:
@@ -87,7 +92,8 @@ jobs:
     steps:
       - set_up_regression_test_environment
       - build_hamt
-      - run_analytical_tests
+      - run_analytical_tests_cartesian
+      - run_analytical_tests_cylinder
 
 workflows:
   build-and-run-tests:
