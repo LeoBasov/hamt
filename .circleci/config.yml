@@ -74,6 +74,9 @@ commands:
       - run:
           name: Run cartesian homogenous cylinder block execution test
           command: ./build-hamt/hamt ./test/regression/homogeneous_cylinder/input.in
+      - run:
+          name: Run cartesian homogenous cylinder block analysis vertical
+          command: cd ./test/regression/homogeneous_cylinder/ && python3 asses.py ../../../cylinder_test.csv cylinder_test.csv
 
 executors:
   docker-bionic:
