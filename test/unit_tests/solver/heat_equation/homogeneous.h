@@ -35,10 +35,11 @@ TEST(heat_equation_homogeneous, ConvertButtomLeft) {
 
     heat_equation_homogeneous::ConvertButtomLeft(mat_b, mesh, 0);
 
-    ASSERT_DOUBLE_EQ(mesh.dx_ * left_buttom - mesh.dy_ * buttom_left, mat_b.second(0));
+    ASSERT_DOUBLE_EQ(mesh.dx_ * left_buttom + mesh.dy_ * buttom_left, mat_b.second(0));
 
     ASSERT_DOUBLE_EQ(1.0, mat_b.first(0, 1));
-    ASSERT_DOUBLE_EQ(-1.0, mat_b.first(0, 5));
+    ASSERT_DOUBLE_EQ(1.0, mat_b.first(0, 5));
+    ASSERT_DOUBLE_EQ(-2.0, mat_b.first(0, 0));
 
     for (uint i = 0; i < mesh.nodes_.size(); i++) {
         for (uint j = 0; j < mesh.nodes_.size(); j++) {
@@ -188,10 +189,11 @@ TEST(heat_equation_homogeneous, ConvertButtomRight) {
 
     heat_equation_homogeneous::ConvertButtomRight(mat_b, mesh, node_id);
 
-    ASSERT_DOUBLE_EQ(mesh.dx_ * buttom_right + mesh.dy_ * right_buttom, mat_b.second(node_id));
+    ASSERT_DOUBLE_EQ(mesh.dx_ * right_buttom - mesh.dy_ * buttom_right, mat_b.second(node_id));
 
-    ASSERT_DOUBLE_EQ(1.0, mat_b.first(node_id, u_i_jp));
+    ASSERT_DOUBLE_EQ(-1.0, mat_b.first(node_id, u_i_jp));
     ASSERT_DOUBLE_EQ(-1.0, mat_b.first(node_id, u_im_j));
+    ASSERT_DOUBLE_EQ(2.0, mat_b.first(node_id, node_id));
 
     for (uint i = 0; i < mesh.nodes_.size(); i++) {
         if (i != node_id) {
@@ -286,10 +288,11 @@ TEST(heat_equation_homogeneous, ConvertTopLeft) {
 
     heat_equation_homogeneous::ConvertTopLeft(mat_b, mesh, node_id);
 
-    ASSERT_DOUBLE_EQ(mesh.dx_ * top_left + mesh.dy_ * left_top, mat_b.second(node_id));
+    ASSERT_DOUBLE_EQ(mesh.dy_ * top_left - mesh.dx_ * left_top, mat_b.second(node_id));
 
-    ASSERT_DOUBLE_EQ(1.0, mat_b.first(node_id, u_ip_j));
+    ASSERT_DOUBLE_EQ(-1.0, mat_b.first(node_id, u_ip_j));
     ASSERT_DOUBLE_EQ(-1.0, mat_b.first(node_id, u_i_jm));
+    ASSERT_DOUBLE_EQ(2.0, mat_b.first(node_id, node_id));
 
     for (uint i = 0; i < mesh.nodes_.size(); i++) {
         if (i != node_id) {
@@ -384,10 +387,11 @@ TEST(heat_equation_homogeneous, ConvertTopRight) {
 
     heat_equation_homogeneous::ConvertTopRight(mat_b, mesh, node_id);
 
-    ASSERT_DOUBLE_EQ(mesh.dx_ * right_top - mesh.dy_ * top_right, mat_b.second(node_id));
+    ASSERT_DOUBLE_EQ(mesh.dx_ * right_top + mesh.dy_ * top_right, mat_b.second(node_id));
 
-    ASSERT_DOUBLE_EQ(1.0, mat_b.first(node_id, u_i_jm));
+    ASSERT_DOUBLE_EQ(-1.0, mat_b.first(node_id, u_i_jm));
     ASSERT_DOUBLE_EQ(-1.0, mat_b.first(node_id, u_im_j));
+    ASSERT_DOUBLE_EQ(2.0, mat_b.first(node_id, node_id));
 
     for (uint i = 0; i < mesh.nodes_.size(); i++) {
         if (i != node_id) {
@@ -488,11 +492,10 @@ TEST(heat_equation_homogeneous, ConvertButtom) {
 
     heat_equation_homogeneous::ConvertButtom(mat_b, mesh, node_id);
 
-    ASSERT_DOUBLE_EQ(surf_br, mat_b.first(node_id, u_ip_j));
-    ASSERT_DOUBLE_EQ(-(surf_bl + surf_br), mat_b.first(node_id, u_i_jp));
-    ASSERT_DOUBLE_EQ(surf_bl, mat_b.first(node_id, u_im_j));
+    ASSERT_DOUBLE_EQ(-1.0, mat_b.first(node_id, node_id));
+    ASSERT_DOUBLE_EQ(1.0, mat_b.first(node_id, u_i_jp));
 
-    ASSERT_DOUBLE_EQ(-(surf_bl + surf_br) * 0.5 * (butom_left + butom_right) * mesh.dy_, mat_b.second(node_id));
+    ASSERT_DOUBLE_EQ(-0.5 * (butom_left + butom_right) * mesh.dy_, mat_b.second(node_id));
 
     for (uint i = 0; i < mesh.nodes_.size(); i++) {
         if (i != node_id) {
@@ -508,7 +511,7 @@ TEST(heat_equation_homogeneous, ConvertButtom) {
     }
 }
 
-TEST(heat_equation_homogeneous, ConvertRightCartesian) {
+TEST(heat_equation_homogeneous, ConvertRight) {
     Mesh2DRegular mesh(GetMesh());
     std::pair<MatrixXd, VectorXd> mat_b;
     const double right_top(7.0);
@@ -594,11 +597,10 @@ TEST(heat_equation_homogeneous, ConvertRightCartesian) {
 
     heat_equation_homogeneous::ConvertRight(mat_b, mesh, node_id);
 
-    ASSERT_DOUBLE_EQ(surf_tr, mat_b.first(node_id, u_i_jp));
-    ASSERT_DOUBLE_EQ(-(surf_br + surf_tr), mat_b.first(node_id, u_im_j));
-    ASSERT_DOUBLE_EQ(surf_br, mat_b.first(node_id, u_i_jm));
+    ASSERT_DOUBLE_EQ(1.0, mat_b.first(node_id, node_id));
+    ASSERT_DOUBLE_EQ(-1.0, mat_b.first(node_id, u_im_j));
 
-    ASSERT_DOUBLE_EQ((surf_tr + surf_br) * 0.5 * (right_top + right_buttom) * mesh.dx_, mat_b.second(node_id));
+    ASSERT_DOUBLE_EQ(0.5 * (right_top + right_buttom) * mesh.dx_, mat_b.second(node_id));
 
     for (uint i = 0; i < mesh.nodes_.size(); i++) {
         if (i != node_id) {
@@ -700,11 +702,10 @@ TEST(heat_equation_homogeneous, ConvertTop) {
 
     heat_equation_homogeneous::ConvertTop(mat_b, mesh, node_id);
 
-    ASSERT_DOUBLE_EQ(surf_tr, mat_b.first(node_id, u_ip_j));
-    ASSERT_DOUBLE_EQ(-(surf_tl + surf_tr), mat_b.first(node_id, u_i_jm));
-    ASSERT_DOUBLE_EQ(surf_tl, mat_b.first(node_id, u_im_j));
+    ASSERT_DOUBLE_EQ(1.0, mat_b.first(node_id, node_id));
+    ASSERT_DOUBLE_EQ(-1.0, mat_b.first(node_id, u_i_jm));
 
-    ASSERT_DOUBLE_EQ((surf_tr + surf_tl) * 0.5 * (top_left + top_right) * mesh.dx_, mat_b.second(node_id));
+    ASSERT_DOUBLE_EQ(0.5 * (top_left + top_right) * mesh.dx_, mat_b.second(node_id));
 
     for (uint i = 0; i < mesh.nodes_.size(); i++) {
         if (i != node_id) {
@@ -720,7 +721,7 @@ TEST(heat_equation_homogeneous, ConvertTop) {
     }
 }
 
-TEST(heat_equation_homogeneous, ConvertLeftCartesian) {
+TEST(heat_equation_homogeneous, ConvertLeft) {
     Mesh2DRegular mesh(GetMesh());
     std::pair<MatrixXd, VectorXd> mat_b;
     const double left_top(7.0);
@@ -806,11 +807,10 @@ TEST(heat_equation_homogeneous, ConvertLeftCartesian) {
 
     heat_equation_homogeneous::ConvertLeft(mat_b, mesh, node_id);
 
-    ASSERT_DOUBLE_EQ(surf_tl, mat_b.first(node_id, u_i_jp));
-    ASSERT_DOUBLE_EQ(-(surf_tl + surf_bl), mat_b.first(node_id, u_ip_j));
-    ASSERT_DOUBLE_EQ(surf_bl, mat_b.first(node_id, u_i_jm));
+    ASSERT_DOUBLE_EQ(-1.0, mat_b.first(node_id, node_id));
+    ASSERT_DOUBLE_EQ(1.0, mat_b.first(node_id, u_ip_j));
 
-    ASSERT_DOUBLE_EQ(-(surf_tl + surf_bl) * 0.5 * (left_top + left_buttom) * mesh.dx_, mat_b.second(node_id));
+    ASSERT_DOUBLE_EQ(-0.5 * (left_top + left_buttom) * mesh.dx_, mat_b.second(node_id));
 
     for (uint i = 0; i < mesh.nodes_.size(); i++) {
         if (i != node_id) {
