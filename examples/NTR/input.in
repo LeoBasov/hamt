@@ -1,0 +1,42 @@
+#Set up writer
+set writer reg_mesh vtk on
+set writer reg_mesh vtk file_name ntr
+
+set writer reg_mesh csv on
+set writer reg_mesh csv file_name ntr
+
+#Read mesh
+read reg_mesh ntr.msh
+
+#Set boundary type
+set reg_mesh bound_type attachment dirichlet
+
+set reg_mesh bound_type housing_top neumann
+set reg_mesh bound_type housing_buttom neumann
+
+set reg_mesh bound_type emitter_left dirichlet
+set reg_mesh bound_type emitter_buttom dirichlet
+
+set reg_mesh bound_type keeper_top neumann
+set reg_mesh bound_type keeper_front neumann
+set reg_mesh bound_type keeper_buttom neumann
+set reg_mesh bound_type keeper_left neumann
+
+#Set boundary values
+set reg_mesh bound_value attachment 300
+
+set reg_mesh bound_value housing_top 0
+set reg_mesh bound_value housing_buttom 0
+
+set reg_mesh bound_value emitter_left 1000
+set reg_mesh bound_value emitter_buttom 1000
+
+set reg_mesh bound_value keeper_top 0
+set reg_mesh bound_value keeper_front 0
+set reg_mesh bound_value keeper_buttom 0
+set reg_mesh bound_value keeper_left 0
+
+#Set up solver
+set solver coord_type cylinder
+
+run
