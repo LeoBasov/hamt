@@ -138,7 +138,8 @@ void ConvertTop(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh,
     }
 }
 
-void ConvertButtom(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row) {
+void ConvertButtom(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row,
+                   const VectorXd& results) {
     const Mesh2DRegular::Node node(mesh.nodes_.at(row));
     const Mesh2DRegular::Cell cell_left(mesh.cells_.at(node.cell_tl));
     const Mesh2DRegular::Cell cell_right(mesh.cells_.at(node.cell_tr));
@@ -157,6 +158,16 @@ void ConvertButtom(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& me
         mat_b.first(row, row) = 1.0;
 
         mat_b.second(row) = boundary_right.value;
+    } else if ((boundary_left.type == Mesh2DRegular::RADIATION) || (boundary_right.type == Mesh2DRegular::RADIATION)) {
+        const Mesh2DRegular::Surface surface_tl(mesh.surfaces_.at(mesh.cells_.at(node.cell_tl).surface_id));
+        const Mesh2DRegular::Surface surface_tr(mesh.surfaces_.at(mesh.cells_.at(node.cell_tr).surface_id));
+        const double thermal_conductivity(0.5 * (surface_tl.thermal_conductivity + surface_tr.thermal_conductivity));
+        const double k(constants::kStefanBoltzmann * mesh.dy_ / thermal_conductivity);
+
+        mat_b.first(row, node.u_i_jp) = 1.0 + 4.0 * k * std::pow(results(node.u_i_jp), 3);
+        mat_b.first(row, row) = -1.0;
+
+        mat_b.second(row) = 3.0 * k * std::pow(results(node.u_i_jp), 4);
     } else {
         mat_b.first(row, node.u_i_jp) = 1.0;
         mat_b.first(row, row) = -1.0;
@@ -266,7 +277,7 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dRegularCartesian(const Mesh2DRegular&
                 break;
             }
             case Mesh2DRegular::NodeType::BUTTOM: {
-                ConvertButtom(mat_b, mesh, i);
+                ConvertButtom(mat_b, mesh, i, results);
                 break;
             }
             case Mesh2DRegular::NodeType::RIGHT: {
@@ -385,7 +396,7 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dRegularCylindircal(const Mesh2DRegula
                 break;
             }
             case Mesh2DRegular::NodeType::BUTTOM: {
-                ConvertButtom(mat_b, mesh, i);
+                ConvertButtom(mat_b, mesh, i, results);
                 break;
             }
             case Mesh2DRegular::NodeType::RIGHT: {
