@@ -84,7 +84,8 @@ void ConvertTopRight(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& 
     }
 }
 
-void ConvertTopLeft(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row) {
+void ConvertTopLeft(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row,
+                    const VectorXd& results) {
     const Mesh2DRegular::Node node(mesh.nodes_.at(row));
     const Mesh2DRegular::Cell cell(mesh.cells_.at(node.cell_br));
     const Mesh2DRegular::Boundary boundary_left(mesh.boundaries_.at(cell.bounary_left));
@@ -102,6 +103,16 @@ void ConvertTopLeft(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& m
         mat_b.first(row, row) = 1.0;
 
         mat_b.second(row) = boundary_top.value;
+    } else if ((boundary_left.type == Mesh2DRegular::RADIATION) || (boundary_top.type == Mesh2DRegular::RADIATION)) {
+        const Mesh2DRegular::Surface surface_br(mesh.surfaces_.at(mesh.cells_.at(node.cell_br).surface_id));
+        const double thermal_conductivity(surface_br.thermal_conductivity);
+        const double k(constants::kStefanBoltzmann * mesh.dy_ / thermal_conductivity);
+
+        mat_b.first(row, row) = 8.0 * k * std::pow(results(row), 3);
+        mat_b.first(row, node.u_ip_j) = 1.0;
+        mat_b.first(row, node.u_i_jm) = -1.0;
+
+        mat_b.second(row) = 6.0 * k * std::pow(results(row), 4);
     } else {
         mat_b.first(row, node.u_ip_j) = -1.0;
         mat_b.first(row, node.u_i_jm) = -1.0;
@@ -284,7 +295,7 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dRegularCartesian(const Mesh2DRegular&
                 break;
             }
             case Mesh2DRegular::NodeType::TOP_LEFT: {
-                ConvertTopLeft(mat_b, mesh, i);
+                ConvertTopLeft(mat_b, mesh, i, results);
                 break;
             }
             case Mesh2DRegular::NodeType::BUTTOM: {
@@ -403,7 +414,7 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dRegularCylindircal(const Mesh2DRegula
                 break;
             }
             case Mesh2DRegular::NodeType::TOP_LEFT: {
-                ConvertTopLeft(mat_b, mesh, i);
+                ConvertTopLeft(mat_b, mesh, i, results);
                 break;
             }
             case Mesh2DRegular::NodeType::BUTTOM: {
