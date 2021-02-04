@@ -238,8 +238,8 @@ TEST(heat_equation_homogeneous, ConvertButtomRight) {
 
     heat_equation_homogeneous::ConvertButtomRight(mat_b, mesh, node_id, dummy_results);
 
-    ASSERT_DOUBLE_EQ(8.0 * k * std::pow(dummy_results(node_id), 3), mat_b.first(node_id, node_id));
-    ASSERT_DOUBLE_EQ(1.0, mat_b.first(node_id, u_i_jp));
+    ASSERT_DOUBLE_EQ(2.0 + 8.0 * k * std::pow(dummy_results(node_id), 3), mat_b.first(node_id, node_id));
+    ASSERT_DOUBLE_EQ(-1.0, mat_b.first(node_id, u_i_jp));
     ASSERT_DOUBLE_EQ(-1.0, mat_b.first(node_id, u_im_j));
 
     ASSERT_DOUBLE_EQ(6.0 * k * std::pow(dummy_results(node_id), 4), mat_b.second(node_id));
@@ -364,8 +364,8 @@ TEST(heat_equation_homogeneous, ConvertTopLeft) {
 
     heat_equation_homogeneous::ConvertTopLeft(mat_b, mesh, node_id, dummy_results);
 
-    ASSERT_DOUBLE_EQ(8.0 * k * std::pow(dummy_results(node_id), 3), mat_b.first(node_id, node_id));
-    ASSERT_DOUBLE_EQ(1.0, mat_b.first(node_id, u_ip_j));
+    ASSERT_DOUBLE_EQ(2.0 + 8.0 * k * std::pow(dummy_results(node_id), 3), mat_b.first(node_id, node_id));
+    ASSERT_DOUBLE_EQ(-1.0, mat_b.first(node_id, u_ip_j));
     ASSERT_DOUBLE_EQ(-1.0, mat_b.first(node_id, u_i_jm));
 
     ASSERT_DOUBLE_EQ(6.0 * k * std::pow(dummy_results(node_id), 4), mat_b.second(node_id));
