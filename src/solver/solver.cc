@@ -30,6 +30,10 @@ void Solver::Execute() {
 }
 
 void Solver::ExecuteHomogenRegMesh() {
+    if (static_cast<size_t>(data_->results_.rows()) != data_->mesh2d_regular_.nodes_.size()) {
+        data_->results_ = VectorXd::Zero(data_->mesh2d_regular_.nodes_.size());
+    }
+
     switch (config_.coord_type) {
         case CARTESIAN: {
             const std::pair<MatrixXd, VectorXd> mat_b(
