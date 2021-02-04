@@ -33,13 +33,13 @@ void Solver::ExecuteHomogenRegMesh() {
     switch (config_.coord_type) {
         case CARTESIAN: {
             const std::pair<MatrixXd, VectorXd> mat_b(
-                heat_equation_homogeneous::ConvertMesh2dRegularCartesian(data_->mesh2d_regular_));
+                heat_equation_homogeneous::ConvertMesh2dRegularCartesian(data_->mesh2d_regular_, data_->results_));
             data_->results_ = mat_b.first.partialPivLu().solve(mat_b.second);
             break;
         }
         case CYLINDER: {
             const std::pair<MatrixXd, VectorXd> mat_b(
-                heat_equation_homogeneous::ConvertMesh2dRegularCylindircal(data_->mesh2d_regular_));
+                heat_equation_homogeneous::ConvertMesh2dRegularCylindircal(data_->mesh2d_regular_, data_->results_));
             data_->results_ = mat_b.first.partialPivLu().solve(mat_b.second);
             break;
         }

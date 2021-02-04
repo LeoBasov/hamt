@@ -192,7 +192,8 @@ void ConvertRight(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mes
     }
 }
 
-void ConvertLeft(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row) {
+void ConvertLeft(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row,
+                 const VectorXd& results) {
     const Mesh2DRegular::Node node(mesh.nodes_.at(row));
     const Mesh2DRegular::Cell cell_top(mesh.cells_.at(node.cell_tr));
     const Mesh2DRegular::Cell cell_buttom(mesh.cells_.at(node.cell_br));
@@ -211,6 +212,16 @@ void ConvertLeft(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh
         mat_b.first(row, row) = 1.0;
 
         mat_b.second(row) = boundary_buttom.value;
+    } else if ((boundary_top.type == Mesh2DRegular::RADIATION) || (boundary_buttom.type == Mesh2DRegular::RADIATION)) {
+        const Mesh2DRegular::Surface surface_br(mesh.surfaces_.at(mesh.cells_.at(node.cell_br).surface_id));
+        const Mesh2DRegular::Surface surface_tr(mesh.surfaces_.at(mesh.cells_.at(node.cell_tr).surface_id));
+        const double thermal_conductivity(0.5 * (surface_br.thermal_conductivity + surface_tr.thermal_conductivity));
+        const double k(constants::kStefanBoltzmann * mesh.dx_ / thermal_conductivity);
+
+        mat_b.first(row, node.u_ip_j) = 1.0 + 4.0 * k * std::pow(results(node.u_ip_j), 3);
+        mat_b.first(row, row) = -1.0;
+
+        mat_b.second(row) = 3.0 * k * std::pow(results(node.u_ip_j), 4);
     } else {
         mat_b.first(row, node.u_ip_j) = 1.0;
         mat_b.first(row, row) = -1.0;
@@ -219,7 +230,7 @@ void ConvertLeft(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh
     }
 }
 
-std::pair<MatrixXd, VectorXd> ConvertMesh2dRegularCartesian(const Mesh2DRegular& mesh) {
+std::pair<MatrixXd, VectorXd> ConvertMesh2dRegularCartesian(const Mesh2DRegular& mesh, const VectorXd& results) {
     std::pair<MatrixXd, VectorXd> mat_b;
 
     mat_b.first = MatrixXd::Zero(mesh.nodes_.size(), mesh.nodes_.size());
@@ -256,7 +267,7 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dRegularCartesian(const Mesh2DRegular&
                 break;
             }
             case Mesh2DRegular::NodeType::LEFT: {
-                ConvertLeft(mat_b, mesh, i);
+                ConvertLeft(mat_b, mesh, i, results);
                 break;
             }
             case Mesh2DRegular::NodeType::MID: {
@@ -338,7 +349,7 @@ void ConvertMidCartesian(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegul
     mat_b.first(row, node.u_i_jp) = mean_xt;
 }
 
-std::pair<MatrixXd, VectorXd> ConvertMesh2dRegularCylindircal(const Mesh2DRegular& mesh) {
+std::pair<MatrixXd, VectorXd> ConvertMesh2dRegularCylindircal(const Mesh2DRegular& mesh, const VectorXd& results) {
     std::pair<MatrixXd, VectorXd> mat_b;
 
     mat_b.first = MatrixXd::Zero(mesh.nodes_.size(), mesh.nodes_.size());
@@ -375,7 +386,7 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dRegularCylindircal(const Mesh2DRegula
                 break;
             }
             case Mesh2DRegular::NodeType::LEFT: {
-                ConvertLeft(mat_b, mesh, i);
+                ConvertLeft(mat_b, mesh, i, results);
                 break;
             }
             case Mesh2DRegular::NodeType::MID: {

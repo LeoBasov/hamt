@@ -23,7 +23,7 @@ class Mesh2DRegular {
         BUTTOM_RIGHT,
     };
 
-    enum BoundaryType { NEUMANN, DIRICHLET };
+    enum BoundaryType { NEUMANN, DIRICHLET, RADIATION };
 
     struct Node {
         // stencil ids

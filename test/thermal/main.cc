@@ -11,6 +11,7 @@ using namespace Eigen;
 int main(int, char **) {
     const std::string file_name("../../../hamt/examples/cartesia_two_block/block.msh"), file_name_out("./test.vtu");
     const gmsh::MSH2 msh2_mesh = gmsh::ReadMSH2(file_name);
+    const VectorXd dummy_resutlts;
     Mesh2DRegular mesh = mesh_algorithms::MSH2ToMesh2DRegular(msh2_mesh);
     std::pair<MatrixXd, VectorXd> mat_b;
     std::pair<std::string, std::vector<double>> poinst_data{"temeprature", std::vector<double>(mesh.nodes_.size())};
@@ -38,7 +39,7 @@ int main(int, char **) {
     mesh.SetSurfaceThermalConductivity("top_surf", 10);
     mesh.SetSurfaceThermalConductivity("buttom_surf", 200);
 
-    mat_b = heat_equation_homogeneous::ConvertMesh2dRegularCylindircal(mesh);
+    mat_b = heat_equation_homogeneous::ConvertMesh2dRegularCylindircal(mesh, dummy_resutlts);
     VectorXd x = mat_b.first.colPivHouseholderQr().solve(mat_b.second);
 
     for (uint i = 0; i < mesh.nodes_.size(); i++) {
