@@ -165,7 +165,8 @@ void ConvertButtom(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& me
     }
 }
 
-void ConvertRight(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row) {
+void ConvertRight(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row,
+                  const VectorXd& results) {
     const Mesh2DRegular::Node node(mesh.nodes_.at(row));
     const Mesh2DRegular::Cell cell_top(mesh.cells_.at(node.cell_tl));
     const Mesh2DRegular::Cell cell_buttom(mesh.cells_.at(node.cell_bl));
@@ -184,6 +185,16 @@ void ConvertRight(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mes
         mat_b.first(row, row) = 1.0;
 
         mat_b.second(row) = boundary_buttom.value;
+    } else if ((boundary_top.type == Mesh2DRegular::RADIATION) || (boundary_buttom.type == Mesh2DRegular::RADIATION)) {
+        const Mesh2DRegular::Surface surface_bl(mesh.surfaces_.at(mesh.cells_.at(node.cell_bl).surface_id));
+        const Mesh2DRegular::Surface surface_tl(mesh.surfaces_.at(mesh.cells_.at(node.cell_tl).surface_id));
+        const double thermal_conductivity(0.5 * (surface_bl.thermal_conductivity + surface_tl.thermal_conductivity));
+        const double k(constants::kStefanBoltzmann * mesh.dx_ / thermal_conductivity);
+
+        mat_b.first(row, row) = 1.0 + 4.0 * k * std::pow(results(row), 3);
+        mat_b.first(row, node.u_im_j) = -1.0;
+
+        mat_b.second(row) = 3.0 * k * std::pow(results(row), 4);
     } else {
         mat_b.first(row, node.u_im_j) = -1.0;
         mat_b.first(row, row) = 1.0;
@@ -259,7 +270,7 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dRegularCartesian(const Mesh2DRegular&
                 break;
             }
             case Mesh2DRegular::NodeType::RIGHT: {
-                ConvertRight(mat_b, mesh, i);
+                ConvertRight(mat_b, mesh, i, results);
                 break;
             }
             case Mesh2DRegular::NodeType::TOP: {
@@ -378,7 +389,7 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dRegularCylindircal(const Mesh2DRegula
                 break;
             }
             case Mesh2DRegular::NodeType::RIGHT: {
-                ConvertRight(mat_b, mesh, i);
+                ConvertRight(mat_b, mesh, i, results);
                 break;
             }
             case Mesh2DRegular::NodeType::TOP: {

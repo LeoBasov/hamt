@@ -514,14 +514,18 @@ TEST(heat_equation_homogeneous, ConvertButtom) {
 TEST(heat_equation_homogeneous, ConvertRight) {
     Mesh2DRegular mesh(GetMesh());
     std::pair<MatrixXd, VectorXd> mat_b;
+    VectorXd dummy_results(VectorXd::Zero(mesh.nodes_.size()));
     const double right_top(7.0);
     const double right_buttom(13.0);
     const double surf_tr(15.0);
     const double surf_br(17.0);
+    const double k(constants::kStefanBoltzmann * mesh.dx_ / (0.5 * (surf_tr + surf_br)));
     const uint node_id(3);
     const uint u_i_jm(2);
     const uint u_i_jp(8);
     const uint u_im_j(4);
+
+    dummy_results(node_id) = 300.0;
 
     mat_b.first = MatrixXd::Zero(mesh.nodes_.size(), mesh.nodes_.size());
     mat_b.second = VectorXd::Zero(mesh.nodes_.size());
@@ -535,7 +539,7 @@ TEST(heat_equation_homogeneous, ConvertRight) {
     mesh.SetBoundaryType("right_top", Mesh2DRegular::DIRICHLET);
     mesh.SetBoundaryType("right_buttom", Mesh2DRegular::NEUMANN);
 
-    heat_equation_homogeneous::ConvertRight(mat_b, mesh, node_id);
+    heat_equation_homogeneous::ConvertRight(mat_b, mesh, node_id, dummy_results);
 
     ASSERT_DOUBLE_EQ(1.0, mat_b.first(node_id, node_id));
     ASSERT_DOUBLE_EQ(right_top, mat_b.second(node_id));
@@ -555,7 +559,7 @@ TEST(heat_equation_homogeneous, ConvertRight) {
     mesh.SetBoundaryType("right_top", Mesh2DRegular::NEUMANN);
     mesh.SetBoundaryType("right_buttom", Mesh2DRegular::DIRICHLET);
 
-    heat_equation_homogeneous::ConvertRight(mat_b, mesh, node_id);
+    heat_equation_homogeneous::ConvertRight(mat_b, mesh, node_id, dummy_results);
 
     ASSERT_DOUBLE_EQ(1.0, mat_b.first(node_id, node_id));
     ASSERT_DOUBLE_EQ(right_buttom, mat_b.second(node_id));
@@ -575,7 +579,7 @@ TEST(heat_equation_homogeneous, ConvertRight) {
     mesh.SetBoundaryType("right_top", Mesh2DRegular::DIRICHLET);
     mesh.SetBoundaryType("right_buttom", Mesh2DRegular::DIRICHLET);
 
-    heat_equation_homogeneous::ConvertRight(mat_b, mesh, node_id);
+    heat_equation_homogeneous::ConvertRight(mat_b, mesh, node_id, dummy_results);
 
     ASSERT_DOUBLE_EQ(1.0, mat_b.first(node_id, node_id));
     ASSERT_DOUBLE_EQ(0.5 * (right_top + right_buttom), mat_b.second(node_id));
@@ -595,12 +599,35 @@ TEST(heat_equation_homogeneous, ConvertRight) {
     mesh.SetBoundaryType("right_top", Mesh2DRegular::NEUMANN);
     mesh.SetBoundaryType("right_buttom", Mesh2DRegular::NEUMANN);
 
-    heat_equation_homogeneous::ConvertRight(mat_b, mesh, node_id);
+    heat_equation_homogeneous::ConvertRight(mat_b, mesh, node_id, dummy_results);
 
     ASSERT_DOUBLE_EQ(1.0, mat_b.first(node_id, node_id));
     ASSERT_DOUBLE_EQ(-1.0, mat_b.first(node_id, u_im_j));
 
     ASSERT_DOUBLE_EQ(0.5 * (right_top + right_buttom) * mesh.dx_, mat_b.second(node_id));
+
+    for (uint i = 0; i < mesh.nodes_.size(); i++) {
+        if (i != node_id) {
+            ASSERT_DOUBLE_EQ(0.0, mat_b.second(i));
+        }
+
+        for (uint j = 0; j < mesh.nodes_.size(); j++) {
+            if (((i != node_id) && (j != u_i_jp)) || ((i != node_id) && (j != u_im_j)) ||
+                ((i != node_id) && (j != u_i_jm))) {
+                ASSERT_DOUBLE_EQ(0.0, mat_b.first(i, j));
+            }
+        }
+    }
+
+    mesh.SetBoundaryType("right_top", Mesh2DRegular::RADIATION);
+    mesh.SetBoundaryType("right_buttom", Mesh2DRegular::NEUMANN);
+
+    heat_equation_homogeneous::ConvertRight(mat_b, mesh, node_id, dummy_results);
+
+    ASSERT_DOUBLE_EQ(-1.0, mat_b.first(node_id, u_im_j));
+    ASSERT_DOUBLE_EQ(1.0 + 4.0 * k * std::pow(dummy_results(node_id), 3), mat_b.first(node_id, node_id));
+
+    ASSERT_DOUBLE_EQ(3.0 * k * std::pow(dummy_results(node_id), 4), mat_b.second(node_id));
 
     for (uint i = 0; i < mesh.nodes_.size(); i++) {
         if (i != node_id) {
