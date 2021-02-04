@@ -66,9 +66,9 @@ void ConvertButtomRight(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegula
         const double thermal_conductivity(surface_tl.thermal_conductivity);
         const double k(constants::kStefanBoltzmann * mesh.dy_ / thermal_conductivity);
 
-        mat_b.first(row, row) = 8.0 * k * std::pow(results(row), 3);
+        mat_b.first(row, row) = 2 + 8.0 * k * std::pow(results(row), 3);
         mat_b.first(row, node.u_im_j) = -1.0;
-        mat_b.first(row, node.u_i_jp) = 1.0;
+        mat_b.first(row, node.u_i_jp) = -1.0;
 
         mat_b.second(row) = 6.0 * k * std::pow(results(row), 4);
     } else {
@@ -142,8 +142,8 @@ void ConvertTopLeft(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& m
         const double thermal_conductivity(surface_br.thermal_conductivity);
         const double k(constants::kStefanBoltzmann * mesh.dy_ / thermal_conductivity);
 
-        mat_b.first(row, row) = 8.0 * k * std::pow(results(row), 3);
-        mat_b.first(row, node.u_ip_j) = 1.0;
+        mat_b.first(row, row) = 2.0 + 8.0 * k * std::pow(results(row), 3);
+        mat_b.first(row, node.u_ip_j) = -1.0;
         mat_b.first(row, node.u_i_jm) = -1.0;
 
         mat_b.second(row) = 6.0 * k * std::pow(results(row), 4);
