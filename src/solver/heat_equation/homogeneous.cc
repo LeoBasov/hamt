@@ -261,15 +261,23 @@ void ConvertButtom(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& me
 
         mat_b.second(row) = boundary_right.value;
     } else if ((boundary_left.type == Mesh2DRegular::RADIATION) || (boundary_right.type == Mesh2DRegular::RADIATION)) {
+        if (boundary_left.type == Mesh2DRegular::RADIATION) {
+            CheckSurfaceEmissivityFactor(boundary_left.value);
+        }
+        if (boundary_right.type == Mesh2DRegular::RADIATION) {
+            CheckSurfaceEmissivityFactor(boundary_right.value);
+        }
+
         const Mesh2DRegular::Surface surface_tl(mesh.surfaces_.at(mesh.cells_.at(node.cell_tl).surface_id));
         const Mesh2DRegular::Surface surface_tr(mesh.surfaces_.at(mesh.cells_.at(node.cell_tr).surface_id));
+        const double surface_emissivity_factor(0.5 * (boundary_left.value + boundary_right.value));
         const double thermal_conductivity(0.5 * (surface_tl.thermal_conductivity + surface_tr.thermal_conductivity));
-        const double k(constants::kStefanBoltzmann * mesh.dy_ / thermal_conductivity);
+        const double k(surface_emissivity_factor * constants::kStefanBoltzmann * mesh.dy_ / thermal_conductivity);
 
-        mat_b.first(row, node.u_i_jp) = 1.0 + 4.0 * k * std::pow(results(node.u_i_jp), 3);
-        mat_b.first(row, row) = -1.0;
+        mat_b.first(row, node.u_i_jp) = -1.0;
+        mat_b.first(row, row) = 1.0 + 4.0 * k * std::pow(results(row), 3);
 
-        mat_b.second(row) = 3.0 * k * std::pow(results(node.u_i_jp), 4);
+        mat_b.second(row) = 3.0 * k * std::pow(results(row), 4);
     } else {
         mat_b.first(row, node.u_i_jp) = 1.0;
         mat_b.first(row, row) = -1.0;
