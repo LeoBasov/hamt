@@ -504,6 +504,10 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dRegularCylindircal(const Mesh2DRegula
     mat_b.second = VectorXd::Zero(mesh.nodes_.size());
 
     for (uint i = 0; i < mesh.nodes_.size(); i++) {
+        if (mesh.nodes_.at(i).position(0) < 0.0) {
+            throw Exception("r coordinate < 0.0 for node [" + std::to_string(i) + "].", __PRETTY_FUNCTION__);
+        }
+
         switch (mesh.nodes_.at(i).type) {
             case Mesh2DRegular::NodeType::BUTTOM_LEFT: {
                 ConvertButtomLeft(mat_b, mesh, i, results);
