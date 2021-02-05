@@ -76,9 +76,17 @@ void ConvertButtomRight(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegula
         mat_b.second(row) = boundary_buttom.value;
     } else if ((boundary_right.type == Mesh2DRegular::RADIATION) ||
                (boundary_buttom.type == Mesh2DRegular::RADIATION)) {
+        if (boundary_right.type == Mesh2DRegular::RADIATION) {
+            CheckSurfaceEmissivityFactor(boundary_right.value);
+        }
+        if (boundary_buttom.type == Mesh2DRegular::RADIATION) {
+            CheckSurfaceEmissivityFactor(boundary_buttom.value);
+        }
+
         const Mesh2DRegular::Surface surface_tl(mesh.surfaces_.at(mesh.cells_.at(node.cell_tl).surface_id));
+        const double surface_emissivity_factor(0.5 * (boundary_right.value + boundary_buttom.value));
         const double thermal_conductivity(surface_tl.thermal_conductivity);
-        const double k(constants::kStefanBoltzmann * mesh.dy_ / thermal_conductivity);
+        const double k(surface_emissivity_factor * constants::kStefanBoltzmann * mesh.dy_ / thermal_conductivity);
 
         mat_b.first(row, row) = 2 + 8.0 * k * std::pow(results(row), 3);
         mat_b.first(row, node.u_im_j) = -1.0;
