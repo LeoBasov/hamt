@@ -111,6 +111,7 @@ TEST(heat_equation_homogeneous, ConvertButtomLeft) {
     }
 
     mesh.SetBoundaryValue("left_buttom", 1.0);
+    mesh.SetBoundaryValue("butom_left", 1.0);
     mesh.SetBoundaryType("left_buttom", Mesh2DRegular::RADIATION);
     mesh.SetBoundaryType("butom_left", Mesh2DRegular::DIRICHLET);
 
@@ -235,6 +236,7 @@ TEST(heat_equation_homogeneous, ConvertButtomRight) {
     }
 
     mesh.SetBoundaryValue("right_buttom", 1.0);
+    mesh.SetBoundaryValue("butom_right", 1.0);
     mesh.SetBoundaryType("right_buttom", Mesh2DRegular::RADIATION);
     mesh.SetBoundaryType("butom_right", Mesh2DRegular::NEUMANN);
 
@@ -362,6 +364,7 @@ TEST(heat_equation_homogeneous, ConvertTopLeft) {
     }
 
     mesh.SetBoundaryValue("left_top", 1.0);
+    mesh.SetBoundaryValue("top_left", 1.0);
     mesh.SetBoundaryType("left_top", Mesh2DRegular::RADIATION);
     mesh.SetBoundaryType("top_left", Mesh2DRegular::NEUMANN);
 
@@ -489,6 +492,7 @@ TEST(heat_equation_homogeneous, ConvertTopRight) {
     }
 
     mesh.SetBoundaryValue("top_right", 1.0);
+    mesh.SetBoundaryValue("right_top", 1.0);
     mesh.SetBoundaryType("top_right", Mesh2DRegular::RADIATION);
     mesh.SetBoundaryType("right_top", Mesh2DRegular::NEUMANN);
 
@@ -622,6 +626,7 @@ TEST(heat_equation_homogeneous, ConvertButtom) {
     }
 
     mesh.SetBoundaryValue("butom_left", 1.0);
+    mesh.SetBoundaryValue("butom_right", 1.0);
     mesh.SetBoundaryType("butom_left", Mesh2DRegular::RADIATION);
     mesh.SetBoundaryType("butom_right", Mesh2DRegular::NEUMANN);
 
@@ -755,6 +760,7 @@ TEST(heat_equation_homogeneous, ConvertRight) {
     }
 
     mesh.SetBoundaryValue("right_top", 1.0);
+    mesh.SetBoundaryValue("right_buttom", 1.0);
     mesh.SetBoundaryType("right_top", Mesh2DRegular::RADIATION);
     mesh.SetBoundaryType("right_buttom", Mesh2DRegular::NEUMANN);
 
@@ -888,6 +894,7 @@ TEST(heat_equation_homogeneous, ConvertTop) {
     }
 
     mesh.SetBoundaryValue("top_left", 1.0);
+    mesh.SetBoundaryValue("top_right", 1.0);
     mesh.SetBoundaryType("top_left", Mesh2DRegular::RADIATION);
     mesh.SetBoundaryType("top_right", Mesh2DRegular::NEUMANN);
 
@@ -1021,6 +1028,7 @@ TEST(heat_equation_homogeneous, ConvertLeft) {
     }
 
     mesh.SetBoundaryValue("left_top", 1.0);
+    mesh.SetBoundaryValue("left_buttom", 1.0);
     mesh.SetBoundaryType("left_top", Mesh2DRegular::RADIATION);
     mesh.SetBoundaryType("left_buttom", Mesh2DRegular::NEUMANN);
 
