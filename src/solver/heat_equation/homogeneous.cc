@@ -3,6 +3,12 @@
 namespace hamt {
 namespace heat_equation_homogeneous {
 
+void CheckSurfaceEmissivityFactor(const double& value) {
+    if (value < 0.0 || value > 1.0) {
+        throw Exception("Surface emissivity factor [" + std::to_string(value) + "] outside boundary.", __FUNCTION__);
+    }
+}
+
 void ConvertButtomLeft(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row,
                        const VectorXd& results) {
     const Mesh2DRegular::Node node(mesh.nodes_.at(row));
@@ -23,9 +29,17 @@ void ConvertButtomLeft(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular
 
         mat_b.second(row) = boundary_buttom.value;
     } else if ((boundary_left.type == Mesh2DRegular::RADIATION) || (boundary_buttom.type == Mesh2DRegular::RADIATION)) {
+        if (boundary_left.type == Mesh2DRegular::RADIATION) {
+            CheckSurfaceEmissivityFactor(boundary_left.value);
+        }
+        if (boundary_buttom.type == Mesh2DRegular::RADIATION) {
+            CheckSurfaceEmissivityFactor(boundary_buttom.value);
+        }
+
         const Mesh2DRegular::Surface surface_tr(mesh.surfaces_.at(mesh.cells_.at(node.cell_tr).surface_id));
+        const double surface_emissivity_factor(0.5 * (boundary_left.value + boundary_buttom.value));
         const double thermal_conductivity(surface_tr.thermal_conductivity);
-        const double k(constants::kStefanBoltzmann * mesh.dy_ / thermal_conductivity);
+        const double k(surface_emissivity_factor * constants::kStefanBoltzmann * mesh.dy_ / thermal_conductivity);
 
         mat_b.first(row, row) = 2.0 + 8.0 * k * std::pow(results(row), 3);
         mat_b.first(row, node.u_ip_j) = -1.0;

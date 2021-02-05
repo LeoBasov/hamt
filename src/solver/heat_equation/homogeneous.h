@@ -10,6 +10,8 @@ namespace hamt {
 namespace heat_equation_homogeneous {
 using namespace Eigen;
 
+void CheckSurfaceEmissivityFactor(const double& value);
+
 void ConvertButtomLeft(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row,
                        const VectorXd& results);
 void ConvertButtomRight(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row,
