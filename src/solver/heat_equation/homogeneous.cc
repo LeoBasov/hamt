@@ -168,9 +168,17 @@ void ConvertTopLeft(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& m
 
         mat_b.second(row) = boundary_top.value;
     } else if ((boundary_left.type == Mesh2DRegular::RADIATION) || (boundary_top.type == Mesh2DRegular::RADIATION)) {
+        if (boundary_left.type == Mesh2DRegular::RADIATION) {
+            CheckSurfaceEmissivityFactor(boundary_left.value);
+        }
+        if (boundary_top.type == Mesh2DRegular::RADIATION) {
+            CheckSurfaceEmissivityFactor(boundary_top.value);
+        }
+
         const Mesh2DRegular::Surface surface_br(mesh.surfaces_.at(mesh.cells_.at(node.cell_br).surface_id));
+        const double surface_emissivity_factor(0.5 * (boundary_left.value + boundary_top.value));
         const double thermal_conductivity(surface_br.thermal_conductivity);
-        const double k(constants::kStefanBoltzmann * mesh.dy_ / thermal_conductivity);
+        const double k(surface_emissivity_factor * constants::kStefanBoltzmann * mesh.dy_ / thermal_conductivity);
 
         mat_b.first(row, row) = 2.0 + 8.0 * k * std::pow(results(row), 3);
         mat_b.first(row, node.u_ip_j) = -1.0;
