@@ -1,0 +1,32 @@
+# FMMR
+
+set writer reg_mesh vtk on
+set writer reg_mesh vtk output_freq 1
+set writer reg_mesh vtk file_name FMMR
+
+read reg_mesh FMMR.msh
+
+set reg_mesh bound_type top dirichlet
+set reg_mesh bound_value top 575
+
+set reg_mesh bound_type buttom radiation
+set reg_mesh bound_value buttom 1
+
+set reg_mesh bound_type left_buttom neumann
+set reg_mesh bound_value left_buttom 0
+
+set reg_mesh bound_type left_top neumann
+set reg_mesh bound_value left_top 0
+
+set reg_mesh bound_type right_buttom radiation
+set reg_mesh bound_value right_buttom 1
+
+set reg_mesh bound_type right_top radiation
+set reg_mesh bound_value right_top 1
+
+set reg_mesh surf_therm_conduct buttom_surf 1
+set reg_mesh surf_therm_conduct top_surf 1
+
+set solver coord_type cartesian
+
+run 30
