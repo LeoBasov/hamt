@@ -8,11 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 - Algorithms  to solve the 2d homogeneous heat equation on a regular mesh in cartesian coordinates with a volumetric heat source
 - Algorithms  to solve the 2d homogeneous heat equation on a regular mesh in cylinder coordinates with a volumetric heat source
-- Black body radiation boundary condition with adjustable emission coefficient and relative error
+- Relative error calculation for black body radiation boundary condition
 - Full heat equation on a 2d regular mesh in cartesian coordinates
 - Full heat equation on a 2d regular mesh in cylinder coordinates
 
 ## [1.0.1] - 2021-03-08
+### Added
+- Black body radiation boundary condition with adjustable emission coefficient
 ### Changed
 - Fixed typos in changelog
 
