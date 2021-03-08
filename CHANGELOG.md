@@ -12,13 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Full heat equation on a 2d regular mesh in cartesian coordinates
 - Full heat equation on a 2d regular mesh in cylinder coordinates
 
-## [1.1.0] - 2021-03-08
+## [1.1.0](https://github.com/LeoBasov/hamt/tree/v1.1.0) - 2021-03-08
 ### Added
 - Black body radiation boundary condition with adjustable emission coefficient
 ### Changed
 - Fixed typos in changelog
 
-## [1.0.0](https://github.com/LeoBasov/hamt/releases/latest) - 2021-01-21
+## [1.0.0](https://github.com/LeoBasov/hamt/tree/v1.0.0) - 2021-01-21
 ### Added
 - Functionality to read GMSH files of type msh2
 - Functionality to write to vtk file format readable by ParaView
