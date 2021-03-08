@@ -200,7 +200,8 @@ void ReadElementsMSH2(const std::string& file_name, MSH2& mesh) {
 }
 
 void CheckMeshMSH2(const MSH2& mesh) {
-    Vector3d normal_vec, last_normal_vec;
+    const Vector3d ref_normal_vec(0.0, 0.0, 1.0);
+    Vector3d normal_vec;
     bool first(true);
 
     for (auto& element : mesh.elements_) {
@@ -211,14 +212,12 @@ void CheckMeshMSH2(const MSH2& mesh) {
 
             normal_vec = (node2 - node1).cross(node3 - node1).normalized();
 
-            if (!first && (last_normal_vec != normal_vec)) {
-                throw Exception("Nonconsistant normal of element [" + std::to_string(element.elm_number) + "].",
+            if (!first && (ref_normal_vec != normal_vec)) {
+                throw Exception("Wrong element orientation of element [" + std::to_string(element.elm_number) + "].",
                                 __PRETTY_FUNCTION__);
             } else {
                 first = false;
             }
-
-            last_normal_vec = normal_vec;
         }
     }
 }

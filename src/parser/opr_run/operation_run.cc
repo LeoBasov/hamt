@@ -10,12 +10,7 @@ void OperationRun::Execute(const std::vector<std::string>& argv, const bool&) {
     Timer writer_timer, total_timer, solver_timer;
 
     if (argv.size()) {
-        if (std::stoi(argv.at(0)) > 0) {
-            throw IncompleteCodeError(__PRETTY_FUNCTION__);
-        } else {
-            number_iterations = std::stoi(argv.at(0));
-            throw CommandError("command 'run' Nr iter must be > 0", __PRETTY_FUNCTION__);
-        }
+        number_iterations = std::stoi(argv.at(0));
     }
 
     std::cout << "RUN STARTED" << std::endl;

@@ -21,6 +21,9 @@ void SetRegularMesh::Execute(const std::vector<std::string>& argv, const bool&) 
             } else if (argv.at(3) == "neumann") {
                 hamt_->data_->mesh2d_regular_.boundaries_.at(iter->second).type = Mesh2DRegular::NEUMANN;
                 std::cout << "SET BOUNDARY: " << argv.at(2) << " TO NEUMANN" << std::endl;
+            } else if (argv.at(3) == "radiation") {
+                hamt_->data_->mesh2d_regular_.boundaries_.at(iter->second).type = Mesh2DRegular::RADIATION;
+                std::cout << "SET BOUNDARY: " << argv.at(2) << " TO RADIATION" << std::endl;
             } else {
                 throw CommandError("unknown boundary type [" + argv.at(3) + "]", __PRETTY_FUNCTION__);
             }
