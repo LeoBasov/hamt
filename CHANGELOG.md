@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Full heat equation on a 2d regular mesh in cartesian coordinates
 - Full heat equation on a 2d regular mesh in cylinder coordinates
 
-## [1.0.1] - 2021-03-08
+## [1.1.0] - 2021-03-08
 ### Added
 - Black body radiation boundary condition with adjustable emission coefficient
 ### Changed
