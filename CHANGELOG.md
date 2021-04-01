@@ -11,11 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Relative error calculation for black body radiation boundary condition
 - Full heat equation on a 2d regular mesh in cartesian coordinates
 - Full heat equation on a 2d regular mesh in cylinder coordinates
+- Possibility to compile hampt as a python module
+
+## 1.1.1 - 2021-04-01
+### Added
+- Added new features to unreleased stack in changelog
+### Fixed
+- Fixed keyword usage in changelog
 
 ## [1.1.0](https://github.com/LeoBasov/hamt/tree/v1.1.0) - 2021-03-08
 ### Added
 - Black body radiation boundary condition with adjustable emission coefficient
-### Changed
+### Fixed
 - Fixed typos in changelog
 
 ## [1.0.0](https://github.com/LeoBasov/hamt/tree/v1.0.0) - 2021-01-21
