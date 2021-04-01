@@ -4,13 +4,29 @@
 
 namespace py = pybind11;
 
+void SetUpHAMT(::pybind11::module_ &m);
+void SetUpSolver(::pybind11::module_ &m);
+void SetUpReader(::pybind11::module_ &m);
+void SetUpWriter(::pybind11::module_ &m);
+void SetUpData(::pybind11::module_ &m);
+
 PYBIND11_MODULE(pyhamt, m) {
+    SetUpHAMT(m);
+    SetUpSolver(m);
+    SetUpReader(m);
+    SetUpWriter(m);
+    SetUpData(m);
+}
+
+void SetUpHAMT(::pybind11::module_ &m) {
     py::class_<hamt::HAMT>(m, "HAMT")
         .def(py::init<>())
         .def_readwrite("reader", &hamt::HAMT::reader_)
         .def_readwrite("writer", &hamt::HAMT::writer_)
         .def_readwrite("solver", &hamt::HAMT::solver_);
+}
 
+void SetUpSolver(::pybind11::module_ &m) {
     py::class_<hamt::Solver> solver(m, "Solver");
     solver.def(py::init<>())
         .def("execute", &hamt::Solver::Execute)
@@ -31,11 +47,14 @@ PYBIND11_MODULE(pyhamt, m) {
         .def(py::init<>())
         .def_readwrite("solver_type", &hamt::Solver::Config::solver_type)
         .def_readwrite("mesh_type", &hamt::Solver::Config::mesh_type)
-        .def_readwrite("coord_type", &hamt::Solver::Config::coord_type)
-        .def_readwrite("activate", &hamt::Solver::Config::activate);
+        .def_readwrite("coord_type", &hamt::Solver::Config::coord_type);
+}
 
+void SetUpReader(::pybind11::module_ &m) {
     py::class_<hamt::Reader>(m, "Reader").def(py::init<>()).def("read_reg_mesh", &hamt::Reader::ReadRegularMesh);
+}
 
+void SetUpWriter(::pybind11::module_ &m) {
     py::class_<hamt::Writer> writer(m, "Writer");
     writer.def(py::init<>())
         .def("write", &hamt::Writer::Write)
@@ -54,5 +73,22 @@ PYBIND11_MODULE(pyhamt, m) {
     py::enum_<hamt::Writer::FileFormat>(writer, "FileFormat")
         .value("VTK", hamt::Writer::VTK)
         .value("CSV", hamt::Writer::CSV)
+        .export_values();
+}
+
+void SetUpData(::pybind11::module_ &m) {
+    py::class_<hamt::Data>(m, "Data").def(py::init<>()).def_readwrite("mesh2d_regular", &hamt::Data::mesh2d_regular_);
+
+    py::class_<hamt::Mesh2DRegular> mesh2d_regular(m, "Mesh2DRegular");
+    mesh2d_regular.def(py::init<>());
+    mesh2d_regular.def("set_boundary_type", &hamt::Mesh2DRegular::SetBoundaryType)
+        .def("set_boundary_value", &hamt::Mesh2DRegular::SetBoundaryValue)
+        .def("set_surface_thermal_conductivity", &hamt::Mesh2DRegular::SetSurfaceThermalConductivity)
+        .def("clear", &hamt::Mesh2DRegular::Clear);
+
+    py::enum_<hamt::Mesh2DRegular::BoundaryType>(mesh2d_regular, "BoundaryType")
+        .value("NEUMANN", hamt::Mesh2DRegular::NEUMANN)
+        .value("DIRICHLET", hamt::Mesh2DRegular::DIRICHLET)
+        .value("RADIATION", hamt::Mesh2DRegular::RADIATION)
         .export_values();
 }
