@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Full heat equation on a 2d regular mesh in cylinder coordinates
 - Possibility to compile hampt as a python module
 
+## [To be Released]
+### Changed
+- Extended setup file to install pybind11 related libraries
+- Updated requirements section in README.md file
+
 ## 1.1.1 - 2021-04-01
 ### Added
 - Added new features to unreleased stack in changelog

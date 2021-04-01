@@ -12,14 +12,24 @@ Solver for heat and mass transfer
 Simulation suit to solve problems from the domain of heat and mass transfer.
 
 # 2. Requirements
+
+## 2.1 Base
 - Ubuntu 18.04.
 - g++ compiler
 - CMake
 - Eigen C++ template library for linear algebra
 - OpenMP
-- gtest (for unit tests only)
+
+## 2.2 Unit tests
+- gtest
+
+## 2.3 pybind11
+- python3
+- pybind11
 
 # 3. Installation
+
+## 3.1 Manual
 The only dependencies at the moment are Eigen and OpenMP.
 ```
 sudo apt install cmake
@@ -34,3 +44,14 @@ sudo cmake -DBUILD_SHARED_LIBS=ON
 sudo make
 sudo cp *.so /usr/lib
 ```
+
+## 3.2 Automatic
+```
+./setup.sh
+```
+
+or
+```
+bash setup.sh
+```
+
