@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Extended setup file to install pybind11 related libraries
 - Updated requirements section in README.md file
+### Fixed
+- Fixed typos
 
 ## 1.1.1 - 2021-04-01
 ### Added
