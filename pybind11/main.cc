@@ -23,7 +23,8 @@ void SetUpHAMT(::pybind11::module_ &m) {
         .def(py::init<>())
         .def_readwrite("reader", &hamt::HAMT::reader_)
         .def_readwrite("writer", &hamt::HAMT::writer_)
-        .def_readwrite("solver", &hamt::HAMT::solver_);
+        .def_readwrite("solver", &hamt::HAMT::solver_)
+        .def_readonly("data", &hamt::HAMT::data_);
 }
 
 void SetUpSolver(::pybind11::module_ &m) {
@@ -77,7 +78,10 @@ void SetUpWriter(::pybind11::module_ &m) {
 }
 
 void SetUpData(::pybind11::module_ &m) {
-    py::class_<hamt::Data>(m, "Data").def(py::init<>()).def_readwrite("mesh2d_regular", &hamt::Data::mesh2d_regular_);
+    //  to use for shared pointers
+    py::class_<hamt::Data, std::shared_ptr<hamt::Data>>(m, "Data")
+        .def(py::init<>())
+        .def_readwrite("mesh2d_regular", &hamt::Data::mesh2d_regular_);
 
     py::class_<hamt::Mesh2DRegular> mesh2d_regular(m, "Mesh2DRegular");
     mesh2d_regular.def(py::init<>());
