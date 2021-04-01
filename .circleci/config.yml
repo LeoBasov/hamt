@@ -25,6 +25,15 @@ commands:
       - run:
           name: Run SETUP
           command: ./setup.sh
+  set_up_pybind11_test_environment:
+    steps:
+      - checkout
+      - run:
+          name: Installing SUDO
+          command: 'apt-get update && apt install -y sudo && rm -rf /var/lib/apt/lists/*'
+      - run:
+          name: Run SETUP
+          command: ./setup.sh -pybind11
 
   build_tests:
     steps:
@@ -36,6 +45,11 @@ commands:
       - run:
           name: Build HAMT
           command: 'mkdir build-hamt && cd build-hamt && cmake -DCMAKE_BUILD_TYPE=Release ../src/ && make'
+  build_pyhamt:
+    steps:
+      - run:
+          name: Build PYHAMT
+          command: 'mkdir build-PYHAMT && cd build-PYHAMT && cmake -DCMAKE_BUILD_TYPE=Release ../pybind11/ && make'
 
   run_unit_tests:
     steps:
@@ -97,9 +111,15 @@ jobs:
       - build_hamt
       - run_analytical_tests_cartesian
       - run_analytical_tests_cylinder
+  pybind11_tests:
+    executor: docker-bionic
+    steps:
+      - set_up_pybind11_test_environment
+      - build_pyhamt
 
 workflows:
   build-and-run-tests:
     jobs:
       - unit_tests
       - analytical_tests
+      - pybind11_tests
