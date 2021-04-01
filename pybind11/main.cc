@@ -58,13 +58,12 @@ void SetUpReader(::pybind11::module_ &m) {
 void SetUpWriter(::pybind11::module_ &m) {
     py::class_<hamt::Writer> writer(m, "Writer");
     writer.def(py::init<>())
-        .def("write", &hamt::Writer::Write)
-        .def_property("config", &hamt::Writer::GetConfig, &hamt::Writer::SetConfig);
+        .def("write", &hamt::Writer::Write, py::arg("iter") = 0)
+        .def("get_config", &hamt::Writer::GetConfig)
+        .def("set_config", &hamt::Writer::SetConfig);
 
     py::class_<hamt::Writer::Config>(m, "WriterConfig")
         .def(py::init<>())
-        .def_readwrite("mesh_type", &hamt::Writer::Config::mesh_type)
-        .def_readwrite("file_format", &hamt::Writer::Config::file_format)
         .def_readwrite("frequency", &hamt::Writer::Config::frequency)
         .def_readwrite("file_name", &hamt::Writer::Config::file_name)
         .def_readwrite("activated", &hamt::Writer::Config::activated);

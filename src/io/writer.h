@@ -14,8 +14,6 @@ class Writer {
     enum FileFormat { VTK, CSV };
 
     struct Config {
-        MeshType mesh_type = REGULAR;
-        FileFormat file_format = VTK;
         uint frequency = 1;
         std::string file_name;
         bool activated = false;
@@ -27,7 +25,7 @@ class Writer {
     void SetData(const std::shared_ptr<Data>& data);
     void SetConfig(const MeshType mesh_type, const FileFormat file_format, const Config& config);
     Config GetConfig(const MeshType mesh_type, const FileFormat file_format) const;
-    void Write(const uint& iter);
+    void Write(const uint& iter = 0);
 
    private:
     std::shared_ptr<Data> data_;
