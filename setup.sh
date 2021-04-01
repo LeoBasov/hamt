@@ -14,6 +14,11 @@ if [ "$1" == "-gtest" ]; then
     sudo make
     sudo cp *.a /usr/lib
     echo "INSTALLATION COMPLETE"
+elif [ "$1" == "-pybind11" ]; then
+    sudo apt install -y python3
+    sudo apt install -y python3-pip
+    pip3 install "pybind11[global]"
+    echo "INSTALLATION COMPLETE"
 else
     echo "INSTALLATION COMPLETE"
 fi
