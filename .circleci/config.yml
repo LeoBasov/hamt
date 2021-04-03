@@ -52,7 +52,7 @@ commands:
           command: 'cd ./pybind11/pyhamt && cmake -DCMAKE_BUILD_TYPE=Release .. && make'
       - run:
           name: Install PYHAMT
-          command: 'pip3  install ./pybind11'
+          command: 'cd ./pybind11 && sudo python3 setup.py install'
 
   run_unit_tests:
     steps:
