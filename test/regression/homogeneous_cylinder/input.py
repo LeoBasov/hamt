@@ -3,7 +3,7 @@ import pyhamt
 hamt = pyhamt.HAMT()
 writer_config = pyhamt.WriterConfig()
 
-writer_config.file_name = "cylinder_test"
+writer_config.file_name = "cylinder_test_new"
 writer_config.activated = True
 
 hamt.writer.set_config(pyhamt.Writer.MeshType.REGULAR, pyhamt.Writer.FileFormat.VTK, writer_config)
