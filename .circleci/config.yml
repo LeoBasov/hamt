@@ -99,6 +99,15 @@ commands:
       - run:
           name: Run cartesian blocks test
           command: 'cd ./examples-pybind11/cartesian_two_block/ && python3 test.py'
+      - run:
+          name: Run cylindrical blocks test
+          command: 'cd ./examples-pybind11/cylinder_two_block/ && python3 test.py'
+      - run:
+          name: Run FMMR test
+          command: 'cd ./examples-pybind11/FMMR/ && python3 FMMR.py'
+      - run:
+          name: Run NTR test
+          command: 'cd ./examples-pybind11/NTR/ && python3 input.py'
 
 executors:
   docker-bionic:
