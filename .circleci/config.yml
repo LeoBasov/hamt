@@ -49,7 +49,7 @@ commands:
     steps:
       - run:
           name: Build PYHAMT
-          command: 'ls && cd ./pybind11/pyhamt && cmake -DCMAKE_BUILD_TYPE=Release ../pybind11/ && make'
+          command: 'cd ./pybind11/pyhamt && cmake -DCMAKE_BUILD_TYPE=Release .. && make'
 
   run_unit_tests:
     steps:
