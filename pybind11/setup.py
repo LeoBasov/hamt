@@ -7,6 +7,6 @@ setup(
     package_data={'pyhamt': ['pyhamt*']},
     include_package_data=True,
     install_requires=[
-        'importlib; python_version == "3.6"',
+        'python_version >= "3.6"',
     ],
 )
