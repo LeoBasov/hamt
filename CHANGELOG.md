@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Exposed Reader to python
 - Exposed Writer to python
 - Exposed Writer::Config to python
+- Added examples as python scripts
 ### Changed
 - Extended setup file to install pybind11 related libraries
 - Updated requirements section in README.md file
