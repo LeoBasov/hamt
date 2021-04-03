@@ -1,5 +1,7 @@
 import pyhamt
 
+print('CYLINDER BLOCKS TEST')
+
 hamt = pyhamt.HAMT()
 writer_config = pyhamt.WriterConfig()
 
@@ -36,3 +38,5 @@ hamt.solver.config = solver_config
 
 hamt.solver.execute()
 hamt.writer.write()
+
+print('DONE')

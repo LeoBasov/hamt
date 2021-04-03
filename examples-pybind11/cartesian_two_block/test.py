@@ -1,5 +1,7 @@
 import pyhamt
 
+print('CARTESIAN BLOCKS TEST')
+
 hamt = pyhamt.HAMT()
 writer_config = pyhamt.WriterConfig()
 
@@ -28,3 +30,5 @@ hamt.data.mesh2d_regular.set_boundary_value("right_top", 0.0)
 hamt.solver.execute()
 
 hamt.writer.write()
+
+print('DONE')
