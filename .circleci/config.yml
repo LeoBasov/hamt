@@ -108,6 +108,14 @@ commands:
       - run:
           name: Run NTR test
           command: 'cd ./examples-pybind11/NTR/ && python3 input.py'
+  run_pybind11_analytical_tests_cylinder:
+    steps:
+      - run:
+          name: Run cartesian homogenous cylinder block execution test
+          command: 'cd ./test/regression/homogeneous_cylinder/ && python3 input.py'
+      - run:
+          name: Run cartesian homogenous cylinder block analysis vertical
+          command: cd ./test/regression/homogeneous_cylinder/ && python3 asses.py ../../../cylinder_test.csv cylinder_test.csv
 
 executors:
   docker-bionic:
@@ -134,6 +142,7 @@ jobs:
       - set_up_pybind11_test_environment
       - build_pyhamt
       - run_pybind11_execution_tests
+      - run_pybind11_analytical_tests_cylinder
 
 workflows:
   build-and-run-tests:
