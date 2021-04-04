@@ -25,6 +25,15 @@ commands:
       - run:
           name: Run SETUP
           command: ./setup.sh
+  set_up_pybind11_test_environment:
+    steps:
+      - checkout
+      - run:
+          name: Installing SUDO
+          command: 'apt-get update && apt install -y sudo && rm -rf /var/lib/apt/lists/*'
+      - run:
+          name: Run SETUP
+          command: ./setup.sh -pybind11
 
   build_tests:
     steps:
@@ -36,6 +45,14 @@ commands:
       - run:
           name: Build HAMT
           command: 'mkdir build-hamt && cd build-hamt && cmake -DCMAKE_BUILD_TYPE=Release ../src/ && make'
+  build_pyhamt:
+    steps:
+      - run:
+          name: Build PYHAMT
+          command: 'cd ./pyhamt && cmake -DCMAKE_BUILD_TYPE=Release ../pybind11/ && make'
+      - run:
+          name: Install PYHAMT
+          command: 'pip3 install .'
 
   run_unit_tests:
     steps:
@@ -77,6 +94,45 @@ commands:
       - run:
           name: Run cartesian homogenous cylinder block analysis vertical
           command: cd ./test/regression/homogeneous_cylinder/ && python3 asses.py ../../../cylinder_test.csv cylinder_test.csv
+  run_pybind11_execution_tests:
+    steps:
+      - run:
+          name: Run cartesian blocks test
+          command: 'cd ./examples-pybind11/cartesian_two_block/ && python3 test.py'
+      - run:
+          name: Run cylindrical blocks test
+          command: 'cd ./examples-pybind11/cylinder_two_block/ && python3 test.py'
+      - run:
+          name: Run FMMR test
+          command: 'cd ./examples-pybind11/FMMR/ && python3 FMMR.py'
+      - run:
+          name: Run NTR test
+          command: 'cd ./examples-pybind11/NTR/ && python3 input.py'
+  run_pybind11_analytical_tests_cylinder:
+    steps:
+      - run:
+          name: Run cartesian homogenous cylinder block execution test
+          command: 'cd ./test/regression/homogeneous_cylinder/ && python3 input.py'
+      - run:
+          name: Run cartesian homogenous cylinder block analysis vertical
+          command: cd ./test/regression/homogeneous_cylinder/ && python3 asses.py cylinder_test_new.csv cylinder_test.csv
+  run_pybind11_analytical_tests_cartesian:
+    steps:
+      - run:
+          name: Run cartesian homogenous block execution test
+          command: cd ./test/regression/homogeneous_cartesian/ && python3 input.py
+      - run:
+          name: Run cartesian homogenous block analysis vertical
+          command: cd ./test/regression/homogeneous_cartesian/ && python3 asses.py reg_car_hom.csv reg_car_hom_ref.csv
+      - run:
+          name: Run cartesian homogenous block analysis horizontal
+          command: cd ./test/regression/homogeneous_cartesian/ && python3 asses.py reg_car_hom_1.csv reg_car_hom_1_ref.csv
+      - run:
+          name: Run cartesian homogenous block analysis horizontal heterogen.
+          command: cd ./test/regression/homogeneous_cartesian/ && python3 asses.py reg_car_hom_2.csv reg_car_hom_2_ref.csv
+      - run:
+          name: Run cartesian homogenous block analysis vertical heterogen.
+          command: cd ./test/regression/homogeneous_cartesian/ && python3 asses.py reg_car_hom_3.csv reg_car_hom_3_ref.csv
 
 executors:
   docker-bionic:
@@ -97,9 +153,18 @@ jobs:
       - build_hamt
       - run_analytical_tests_cartesian
       - run_analytical_tests_cylinder
+  pybind11_tests:
+    executor: docker-bionic
+    steps:
+      - set_up_pybind11_test_environment
+      - build_pyhamt
+      - run_pybind11_execution_tests
+      - run_pybind11_analytical_tests_cylinder
+      - run_pybind11_analytical_tests_cartesian
 
 workflows:
   build-and-run-tests:
     jobs:
       - unit_tests
       - analytical_tests
+      - pybind11_tests

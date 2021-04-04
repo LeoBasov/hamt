@@ -17,7 +17,6 @@ class Solver {
         SolverType solver_type = HOMOGENEOUS;
         MeshType mesh_type = REGULAR;
         CoordinatesType coord_type = CARTESIAN;
-        bool activate = true;
     };
 
     Solver();
