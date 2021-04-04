@@ -81,3 +81,12 @@ bash setup.sh
 ```
 ./setup.sh -pybind11
 ```
+
+# 3. Building
+
+## 3.1 pybind11
+```
+cd hamt/pyhamt/
+cmake -DCMAKE_BUILD_TYPE=Release ../pybind11
+pip3 install ..
+```
