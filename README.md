@@ -30,12 +30,16 @@ Simulation suit to solve problems from the domain of heat and mass transfer.
 # 3. Installation
 
 ## 3.1 Manual
+
+### 3.1.1 Pure c++
 The only dependencies at the moment are Eigen and OpenMP.
 ```
 sudo apt install cmake
 sudo apt install libeigen3-dev
 sudo apt install libomp-dev
 ```
+
+### 3.1.2 gtest
 To use gtest for unit tets
 ```
 sudo apt install libgtest-dev
@@ -45,7 +49,20 @@ sudo make
 sudo cp *.so /usr/lib
 ```
 
+### 3.1.3 pybind11
+```
+sudo apt install cmake
+sudo apt install libeigen3-dev
+sudo apt install libomp-dev
+sudo apt install python3
+sudo apt install python3-pip
+pip3 install "pybind11[global]"
+```
+
 ## 3.2 Automatic
+
+
+### 3.2.1 Pure c++
 ```
 ./setup.sh
 ```
@@ -55,3 +72,12 @@ or
 bash setup.sh
 ```
 
+### 3.2.2 gtest
+```
+./setup.sh -gtest
+```
+
+### 3.2.3 pybind11
+```
+./setup.sh -pybind11
+```
