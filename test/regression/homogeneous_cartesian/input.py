@@ -15,7 +15,7 @@ writer_config = pyhamt.WriterConfig()
 hamt.reader.read_reg_mesh("block_4_segments.msh")
 
 # set writer status
-writer_config.file_name = "reg_car_hom_new"
+writer_config.file_name = "reg_car_hom"
 writer_config.activated = True
 
 hamt.writer.set_config(pyhamt.Writer.MeshType.REGULAR, pyhamt.Writer.FileFormat.VTK, writer_config)
@@ -46,7 +46,7 @@ hamt.writer.write()
 # Horizontal homog surf
 #=====================================
 # set writer status
-writer_config.file_name = "reg_car_hom_1_new"
+writer_config.file_name = "reg_car_hom_1"
 writer_config.activated = True
 
 hamt.writer.set_config(pyhamt.Writer.MeshType.REGULAR, pyhamt.Writer.FileFormat.VTK, writer_config)
@@ -77,7 +77,7 @@ hamt.writer.write()
 # Horizontal heter surf
 #=====================================
 # set writer status
-writer_config.file_name = "reg_car_hom_2_new"
+writer_config.file_name = "reg_car_hom_2"
 writer_config.activated = True
 
 hamt.writer.set_config(pyhamt.Writer.MeshType.REGULAR, pyhamt.Writer.FileFormat.VTK, writer_config)
@@ -113,7 +113,7 @@ hamt.writer.write()
 # Vertical heter surf
 #=====================================
 # set writer status
-writer_config.file_name = "reg_car_hom_3_new"
+writer_config.file_name = "reg_car_hom_3"
 writer_config.activated = True
 
 hamt.writer.set_config(pyhamt.Writer.MeshType.REGULAR, pyhamt.Writer.FileFormat.VTK, writer_config)
