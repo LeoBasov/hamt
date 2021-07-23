@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Full heat equation on a 2d regular mesh in cylinder coordinates
 - Possibility to compile hampt as a python module
 
-## [To be Released]
+## 1.2.1 - 2021-07-23
 ### Added
 - Added cmake project using pybind11
 - Exposed HAMT to python
