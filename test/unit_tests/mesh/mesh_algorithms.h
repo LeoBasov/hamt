@@ -131,4 +131,15 @@ TEST(mesh_algorithms, MSH2ToMesh2DRegular) {
     ASSERT_EQ(7, mesh.boundary_tags_.at(8));
 }
 
+TEST(mesh_algorithms, MSH2ToMesh2DTriangular) {
+    const std::string file_name("./test/test_data/block_triangular.msh");
+    const gmsh::MSH2 msh2_mesh = gmsh::ReadMSH2(file_name);
+    const Mesh2DTriangular mesh = mesh_algorithms::MSH2ToMesh2DTriangular(msh2_mesh);
+
+    ASSERT_EQ(9, mesh.nodes_.size());
+    ASSERT_EQ(8, mesh.cells_.size());
+    ASSERT_EQ(2, mesh.surfaces_.size());
+    ASSERT_EQ(8, mesh.boundaries_.size());
+}
+
 }  // namespace hamt

@@ -183,5 +183,80 @@ void SetUpCellSize(Mesh2DRegular& mesh, const gmsh::MSH2& msh2_mesh) {
     }
 }
 
+Mesh2DTriangular MSH2ToMesh2DTriangular(const gmsh::MSH2& msh2_mesh) {
+    Mesh2DTriangular mesh;
+
+    SetUpBoundaries(mesh, msh2_mesh);
+    SetUpNodes(mesh, msh2_mesh);
+    SetUpCells(mesh, msh2_mesh);
+    CombineData(mesh, msh2_mesh);
+
+    return mesh;
+}
+
+void SetUpBoundaries(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh) {
+    for (const auto& name : msh2_mesh.physical_names_) {
+        if (name.physical_dimension == 1) {
+            Mesh2DTriangular::Boundary boundary;
+
+            auto ret_pair1 = mesh.boundary_tags_.insert({name.physical_tag, mesh.boundaries_.size()});
+            auto ret_pair2 = mesh.boundary_names_.insert({name.physical_name, mesh.boundaries_.size()});
+
+            if (!ret_pair1.second) {
+                throw Exception("Could not insert boundary tag [" + std::to_string(name.physical_tag) + "]",
+                                __PRETTY_FUNCTION__);
+            } else if (!ret_pair2.second) {
+                throw Exception("Could not insert boundary name [" + name.physical_name + "]", __PRETTY_FUNCTION__);
+            }
+
+            mesh.boundaries_.push_back(boundary);
+        } else if (name.physical_dimension == 2) {
+            Mesh2DTriangular::Surface surface;
+
+            auto ret_pair1 = mesh.surface_tags_.insert({name.physical_tag, mesh.surfaces_.size()});
+            auto ret_pair2 = mesh.surface_names_.insert({name.physical_name, mesh.surfaces_.size()});
+
+            if (!ret_pair1.second) {
+                throw Exception("Could not insert surface tag [" + std::to_string(name.physical_tag) + "]",
+                                __PRETTY_FUNCTION__);
+            } else if (!ret_pair2.second) {
+                throw Exception("Could not insert surface name [" + name.physical_name + "]", __PRETTY_FUNCTION__);
+            }
+
+            mesh.surfaces_.push_back(surface);
+        }
+    }
+}
+
+void SetUpNodes(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh) {
+    for (const auto& node : msh2_mesh.nodes_) {
+        Mesh2DTriangular::Node node_new;
+
+        node_new.position = node.second.coord;
+        mesh.nodes_.push_back(node_new);
+    }
+}
+
+void SetUpCells(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh) {
+    for (uint i = 0; i < msh2_mesh.elements_.size(); i++) {
+        const gmsh::MSH2::Element& element(msh2_mesh.elements_.at(i));
+
+        if (element.elm_type == 2) {
+            Mesh2DTriangular::Cell cell;
+
+            cell.surface_id = mesh.surface_tags_.at(element.tags.at(0));
+            mesh.cells_.push_back(cell);
+        } else if (element.elm_type == 1) {
+            // TODO  (LB): get boundary data
+        }
+    }
+}
+
+void CombineData(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh) {
+    // TODO (LB):
+    // implement algorithm to link the cells to nodes, surfaces and boundaries
+    // calculate barycentres
+}
+
 }  // namespace mesh2d_regular_algorithms
 }  // namespace hamt
