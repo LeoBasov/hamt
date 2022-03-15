@@ -131,7 +131,7 @@ TEST(mesh_algorithms, MSH2ToMesh2DRegular) {
     ASSERT_EQ(7, mesh.boundary_tags_.at(8));
 }
 
-TEST(mesh_algorithms, MSH2ToMesh2DTriangular) {
+TEST(mesh_algorithms, MSH2ToMesh2DTriangular_1) {
     const std::string file_name("./test/test_data/block_triangular.msh");
     const gmsh::MSH2 msh2_mesh = gmsh::ReadMSH2(file_name);
     const Mesh2DTriangular mesh = mesh_algorithms::MSH2ToMesh2DTriangular(msh2_mesh);
@@ -157,6 +157,58 @@ TEST(mesh_algorithms, MSH2ToMesh2DTriangular) {
     bool missing_cell_asignement = (std::find(node_ids.begin(), node_ids.end(), -1) != node_ids.end());
 
     ASSERT_EQ(false, missing_cell_asignement);
+
+    for (const auto& cell : mesh.cells_) {
+        Vector3d barycentre(0.0, 0.0, 0.0);
+
+        for (int i = 0; i < 3; i++) {
+            barycentre += mesh.nodes_.at(cell.nodes.at(i)).position / 3.0;
+        }
+
+        ASSERT_DOUBLE_EQ(barycentre(0), cell.barycentre(0));
+        ASSERT_DOUBLE_EQ(barycentre(1), cell.barycentre(1));
+        ASSERT_DOUBLE_EQ(barycentre(2), cell.barycentre(2));
+    }
+}
+
+TEST(mesh_algorithms, MSH2ToMesh2DTriangular_2) {
+    const std::string file_name("./test/test_data/block_single_triangular.msh");
+    const gmsh::MSH2 msh2_mesh = gmsh::ReadMSH2(file_name);
+    const Mesh2DTriangular mesh = mesh_algorithms::MSH2ToMesh2DTriangular(msh2_mesh);
+    std::vector<size_t> node_ids;
+
+    ASSERT_EQ(5, mesh.nodes_.size());
+    ASSERT_EQ(4, mesh.cells_.size());
+    ASSERT_EQ(1, mesh.surfaces_.size());
+    ASSERT_EQ(4, mesh.boundaries_.size());
+
+    for (const auto& cell : mesh.cells_) {
+        for (const auto& node_id : cell.nodes) {
+            node_ids.push_back(node_id);
+        }
+    }
+
+    for (size_t i = 0; i < mesh.nodes_.size(); i++) {
+        bool missing_cell = (std::find(node_ids.begin(), node_ids.end(), i) == node_ids.end());
+
+        ASSERT_EQ(false, missing_cell);
+    }
+
+    bool missing_cell_asignement = (std::find(node_ids.begin(), node_ids.end(), -1) != node_ids.end());
+
+    ASSERT_EQ(false, missing_cell_asignement);
+
+    for (const auto& cell : mesh.cells_) {
+        Vector3d barycentre(0.0, 0.0, 0.0);
+
+        for (int i = 0; i < 3; i++) {
+            barycentre += mesh.nodes_.at(cell.nodes.at(i)).position / 3.0;
+        }
+
+        ASSERT_DOUBLE_EQ(barycentre(0), cell.barycentre(0));
+        ASSERT_DOUBLE_EQ(barycentre(1), cell.barycentre(1));
+        ASSERT_DOUBLE_EQ(barycentre(2), cell.barycentre(2));
+    }
 }
 
 }  // namespace hamt

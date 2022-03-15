@@ -21,7 +21,7 @@ class Mesh2DTriangular {
     };
 
     struct Cell {
-        Vector3d barycentre;
+        Vector3d barycentre = Vector3d(0.0, 0.0, 0.0);
         std::array<int, 3> nodes = {-1, -1, -1};
         std::array<int, 3> boundaries = {-1, -1, -1};
         int surface_id = -1;

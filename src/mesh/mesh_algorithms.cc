@@ -246,9 +246,12 @@ void SetUpCellsAndNodes(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh) {
 
             cell.surface_id = mesh.surface_tags_.at(element.tags.at(0));
 
-            for (size_t n = 0; n < element.node_number_list.size(); n++) {
+            for (size_t n = 0; n < 3; n++) {
                 cell.nodes.at(n) = node_id_map.at(element.node_number_list.at(n));
+                cell.barycentre += mesh.nodes_.at(cell.nodes.at(n)).position;
             }
+
+            cell.barycentre /= 3.0;
 
             mesh.cells_.push_back(cell);
         } else if (element.elm_type == 1) {
