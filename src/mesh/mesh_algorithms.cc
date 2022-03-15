@@ -288,17 +288,16 @@ void SetUpCellsAndNodes(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh) {
 }
 
 void CombineData(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh) {
-    /*for (uint i = 0; i < msh2_mesh.elements_.size(); i++) {
-        const gmsh::MSH2::Element& element(msh2_mesh.elements_.at(i));
+    for (size_t i = 0; i < mesh.cells_.size(); i++) {
+        const Mesh2DTriangular::Cell& cell = mesh.cells_.at(i);
 
-        if (element.elm_type == 1) {
-            for (auto& cell : mesh.cells_){
-                const int node1(mesh.);
-
-                if(std::find(cell.nodes.begin(), cell.nodes.end(), ))
-            }
+        for (auto& node_id : cell.nodes) {
+            mesh.nodes_.at(node_id).adjacent_cells.push_back(i);
         }
-    }*/
+    }
+
+    // TODO (LB): implement sorting of the adjusted cells and the cycle through andjacent cells counterclockwise to
+    // created list of sorted andjacent nodes
 }
 
 }  // namespace mesh2d_regular_algorithms

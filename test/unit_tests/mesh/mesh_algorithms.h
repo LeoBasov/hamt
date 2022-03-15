@@ -169,6 +169,16 @@ TEST(mesh_algorithms, MSH2ToMesh2DTriangular_1) {
         ASSERT_DOUBLE_EQ(barycentre(1), cell.barycentre(1));
         ASSERT_DOUBLE_EQ(barycentre(2), cell.barycentre(2));
     }
+
+    for (uint i = 0; i < mesh.cells_.size(); i++) {
+        for (const auto& node_id : mesh.cells_.at(i).nodes) {
+            const auto node = mesh.nodes_.at(node_id);
+            const bool cell_in_nodes_list =
+                std::find(node.adjacent_cells.begin(), node.adjacent_cells.end(), i) != node.adjacent_cells.end();
+
+            ASSERT_TRUE(cell_in_nodes_list);
+        }
+    }
 }
 
 TEST(mesh_algorithms, MSH2ToMesh2DTriangular_2) {
