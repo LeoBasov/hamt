@@ -12,7 +12,7 @@ namespace hamt {
 using namespace Eigen;
 class Mesh2DTriangular {
    public:
-    enum BoundaryType { INERFACE };
+    enum BoundaryType { NEUMANN, DIRICHLET, RADIATION };
 
     struct Node {
         Vector3d position;
@@ -32,7 +32,7 @@ class Mesh2DTriangular {
     };
 
     struct Boundary {
-        BoundaryType type = INERFACE;
+        BoundaryType type = DIRICHLET;
         double value = 0.0;
     };
 
