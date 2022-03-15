@@ -20,7 +20,7 @@ void OperationRun::Execute(const std::vector<std::string>& argv, const bool&) {
         total_timer.Start();
 
         solver_timer.Start();
-        hamt_->solver_.Execute();
+        // hamt_->solver_.Execute();
         solver_timer.Stop();
 
         writer_timer.Start();

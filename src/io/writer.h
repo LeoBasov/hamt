@@ -10,7 +10,7 @@ namespace hamt {
 using namespace Eigen;
 class Writer {
    public:
-    enum MeshType { REGULAR };
+    enum MeshType { REGULAR, TRIANGULAR };
     enum FileFormat { VTK, CSV };
 
     struct Config {
@@ -32,5 +32,6 @@ class Writer {
     std::map<MeshType, std::map<FileFormat, Config>> configs_;
 
     void WriteRegularMesh(const std::map<FileFormat, Config>& configs, const uint& iter);
+    void WriteTriangularMesh(const std::map<FileFormat, Config>& configs, const uint& iter);
 };
 }  // namespace hamt

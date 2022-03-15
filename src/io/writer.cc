@@ -11,6 +11,7 @@ Writer::Writer() {
 
     // extend here for more meshes
     configs_[REGULAR] = file_configs;
+    configs_[TRIANGULAR] = file_configs;
 }
 
 void Writer::SetData(const std::shared_ptr<Data>& data) { data_ = data; }
@@ -40,6 +41,10 @@ void Writer::Write(const uint& iter) {
         switch (config_bins.first) {
             case REGULAR: {
                 WriteRegularMesh(config_bins.second, iter);
+                break;
+            }
+            case TRIANGULAR: {
+                WriteTriangularMesh(config_bins.second, iter);
                 break;
             }
             default: {
@@ -96,6 +101,39 @@ void Writer::WriteRegularMesh(const std::map<FileFormat, Config>& configs, const
                     }
 
                     stream.close();
+                    break;
+                }
+                default: {
+                    throw Exception("Undefined file format [" + std::to_string(bin.first) + "].", __PRETTY_FUNCTION__);
+                }
+            }
+        }
+    }
+}
+
+void Writer::WriteTriangularMesh(const std::map<FileFormat, Config>& configs, const uint& iter) {
+    for (const auto& bin : configs) {
+        if (!(iter % bin.second.frequency) && bin.second.activated) {
+            switch (bin.first) {
+                case VTK: {
+                    if (data_->results_.size()) {
+                        std::pair<std::string, std::vector<double>> vec{"temperature",
+                                                                        std::vector<double>(data_->results_.size())};
+
+                        for (uint i = 0; i < vec.second.size(); i++) {
+                            vec.second.at(i) = data_->results_(i);
+                        }
+
+                        vtk::unstructured_grid::WriteMesh2DTriangular(data_->mesh2d_triangular_,
+                                                                      bin.second.file_name + ".vtu", {vec});
+                    } else {
+                        vtk::unstructured_grid::WriteMesh2DTriangular(data_->mesh2d_triangular_,
+                                                                      bin.second.file_name + ".vtu", {});
+                    }
+                    break;
+                }
+                case CSV: {
+                    throw IncompleteCodeError("CSV writer for triangular mesh");
                     break;
                 }
                 default: {
