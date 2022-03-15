@@ -30,6 +30,11 @@ void OperationInfo::Execute(const std::vector<std::string>& argv, const bool&) {
                               << " ";
                     break;
                 }
+                case Mesh2DRegular::RADIATION: {
+                    std::cout << "TYPE: RADIATION"
+                              << " ";
+                    break;
+                }
             }
 
             std::cout << "VALUE: " << boundary.value << std::endl;
