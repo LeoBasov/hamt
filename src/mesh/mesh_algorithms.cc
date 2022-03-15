@@ -228,12 +228,12 @@ void SetUpBoundaries(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh) {
 }
 
 void SetUpCellsAndNodes(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh) {
-    std::map<int, size_t> node_id_map;
+    std::map<int, size_t> node_number_map;
 
     for (const auto& node : msh2_mesh.nodes_) {
         Mesh2DTriangular::Node node_new;
 
-        node_id_map[node.second.node_number] = mesh.nodes_.size();
+        node_number_map[node.second.node_number] = mesh.nodes_.size();
         node_new.position = node.second.coord;
         mesh.nodes_.push_back(node_new);
     }
@@ -247,23 +247,58 @@ void SetUpCellsAndNodes(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh) {
             cell.surface_id = mesh.surface_tags_.at(element.tags.at(0));
 
             for (size_t n = 0; n < 3; n++) {
-                cell.nodes.at(n) = node_id_map.at(element.node_number_list.at(n));
+                cell.nodes.at(n) = node_number_map.at(element.node_number_list.at(n));
                 cell.barycentre += mesh.nodes_.at(cell.nodes.at(n)).position;
             }
 
             cell.barycentre /= 3.0;
 
             mesh.cells_.push_back(cell);
-        } else if (element.elm_type == 1) {
-            // TODO  (LB): get boundary data
+        }
+    }
+
+    for (uint i = 0; i < msh2_mesh.elements_.size(); i++) {
+        const gmsh::MSH2::Element& element(msh2_mesh.elements_.at(i));
+
+        if (element.elm_type == 1) {
+            for (size_t c = 0; c < mesh.cells_.size(); c++) {
+                Mesh2DTriangular::Cell& cell = mesh.cells_.at(c);
+                const int node1(node_number_map.at(element.node_number_list.at(0)));
+                const int node2(node_number_map.at(element.node_number_list.at(1)));
+                const auto& iter1 = std::find(cell.nodes.begin(), cell.nodes.end(), node1);
+                const auto& iter2 = std::find(cell.nodes.begin(), cell.nodes.end(), node2);
+
+                if (iter1 != cell.nodes.end() && iter2 != cell.nodes.end()) {
+                    const int pos1 = std::min(iter1 - cell.nodes.begin(), iter2 - cell.nodes.begin());
+                    const int pos2 = std::max(iter1 - cell.nodes.begin(), iter2 - cell.nodes.begin());
+
+                    if (pos1 == 0 && pos2 == 1) {
+                        cell.boundaries.at(0) = mesh.boundary_tags_.at(element.elm_number);
+                    } else if (pos1 == 1 && pos2 == 2) {
+                        cell.boundaries.at(1) = mesh.boundary_tags_.at(element.elm_number);
+                    } else if (pos1 == 0 && pos2 == 2) {
+                        cell.boundaries.at(2) = mesh.boundary_tags_.at(element.elm_number);
+                    } else {
+                        throw Exception("unacceptrable combination of cell indices", __PRETTY_FUNCTION__);
+                    }
+                }
+            }
         }
     }
 }
 
 void CombineData(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh) {
-    // TODO (LB):
-    // implement algorithm to link the cells to nodes, surfaces and boundaries
-    // calculate barycentres
+    /*for (uint i = 0; i < msh2_mesh.elements_.size(); i++) {
+        const gmsh::MSH2::Element& element(msh2_mesh.elements_.at(i));
+
+        if (element.elm_type == 1) {
+            for (auto& cell : mesh.cells_){
+                const int node1(mesh.);
+
+                if(std::find(cell.nodes.begin(), cell.nodes.end(), ))
+            }
+        }
+    }*/
 }
 
 }  // namespace mesh2d_regular_algorithms

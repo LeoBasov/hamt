@@ -198,7 +198,8 @@ TEST(mesh_algorithms, MSH2ToMesh2DTriangular_2) {
 
     ASSERT_EQ(false, missing_cell_asignement);
 
-    for (const auto& cell : mesh.cells_) {
+    for (size_t i = 0; i < mesh.cells_.size(); i++) {
+        const auto& cell = mesh.cells_.at(i);
         Vector3d barycentre(0.0, 0.0, 0.0);
 
         for (int i = 0; i < 3; i++) {
@@ -209,6 +210,11 @@ TEST(mesh_algorithms, MSH2ToMesh2DTriangular_2) {
         ASSERT_DOUBLE_EQ(barycentre(1), cell.barycentre(1));
         ASSERT_DOUBLE_EQ(barycentre(2), cell.barycentre(2));
     }
+
+    ASSERT_DOUBLE_EQ(0, mesh.cells_.at(0).boundaries.at(2));
+    ASSERT_DOUBLE_EQ(3, mesh.cells_.at(1).boundaries.at(2));
+    ASSERT_DOUBLE_EQ(1, mesh.cells_.at(2).boundaries.at(2));
+    ASSERT_DOUBLE_EQ(2, mesh.cells_.at(3).boundaries.at(2));
 }
 
 }  // namespace hamt
