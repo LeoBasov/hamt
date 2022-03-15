@@ -1,0 +1,3 @@
+# First test
+
+read triangl_mesh block_single_triangular.msh
