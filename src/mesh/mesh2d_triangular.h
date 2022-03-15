@@ -40,6 +40,8 @@ class Mesh2DTriangular {
     Mesh2DTriangular();
     ~Mesh2DTriangular() = default;
 
+    void Clear();
+
     std::vector<Node> nodes_;
     std::vector<Cell> cells_;
     std::vector<Surface> surfaces_;

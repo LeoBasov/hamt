@@ -15,6 +15,7 @@ class Reader {
     void SetData(const std::shared_ptr<Data>& data);
 
     void ReadRegularMesh(const std::string& file_name);
+    void ReadTriangularMesh(const std::string& file_name);
 
    private:
     std::shared_ptr<Data> data_;
