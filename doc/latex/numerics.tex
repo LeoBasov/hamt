@@ -1,64 +1,51 @@
 \chapter{Numerics}
-\section{Finite Difference Method - FDM}
-First order Discritization.
-%----------------------------------------------------------------
+According to \cite{erlebacher1985finite} the Gaus divergenze theorem can be rewritten as
 \begin{equation}
-    f'_f = \frac{f_{i+1} - f_i}{\Delta x}
+  \label{eqn:gauss}
+  \int_V \nabla \vec{F} \,\, \mathrm{d}^n V = \oint_S \vec{F} \cdot \vec{n} \,\, \mathrm{d}^{n-1}S
 \end{equation}
-%----------------------------------------------------------------
+Using $\nabla f$ for $\vec{f}$ Eqn.~(\ref{eqn:gauss}) can be rewritten as
 \begin{equation}
-    f'_b = \frac{f_{i} - f_{i - 1}}{\Delta x}
+  \int_V \nabla^2 f \,\, \mathrm{d}^n V = \oint_S (\nabla f) \cdot \vec{n} \,\, \mathrm{d}^{n-1}S
 \end{equation}
-%----------------------------------------------------------------
+For the numerical solution a cell wise desrcitization is made.
+Assuming that $\nabla^2 f$ is constants over a cell the equation above reduces to
 \begin{equation}
-    f'_c = \frac{1}{2} \left( f'_f + f'_b \right) = \frac{1}{2} \left( \frac{f_{i+1} - f_i}{\Delta x} + \frac{f_{i} - f_{i - 1}}{\Delta x} \right) \\
-    = \frac{f_{i + 1} - f_{i - 1}}{2 \, \Delta x}
+  V_C \cdot \nabla^2 f = \sum_i^N (\nabla f) \cdot \vec{n}_i \cdot A_{i}.
 \end{equation}
-%----------------------------------------------------------------
-second order
-%----------------------------------------------------------------
-\begin{equation}
-    f'' = \frac{f'_f - f'_b}{\Delta x} = \frac{f_{i+1} - f_{i}}{\Delta x^2} - \frac{f_{i} - f_{i - 1}}{\Delta x^2} = \frac{f_{i + 1} - 2 \, f_{i} + f_{i-1}}{\Delta x^2}
-\end{equation}
-%----------------------------------------------------------------
-Assuming the differentials $a \, \pdv{f}{x}$ and $a \,\pdv[2]{f}{x}$ where $a$ is not constant.
-%----------------------------------------------------------------
-\begin{equation}
-  \label{eqn:fdm_1}
-    a\,f'_c\\
-    = \frac{1}{2} \left( \frac{a_{i+1}(f_{i+1} - f_i)}{\Delta x} + \frac{a_{i-1}(f_{i} - f_{i - 1})}{\Delta x} \right) \\
-    = \frac{a_{i+1}f_{i + 1} + (a_{i-1} - a_{i+1})f_{i} - a_{i-1}f_{i - 1}}{2 \, \Delta x}
-\end{equation}
-%----------------------------------------------------------------
-%----------------------------------------------------------------
-\begin{equation}
-  \label{eqn:fdm_2}
-    a\,f'' \\
-    = a_{i+1}\frac{f_{i+1} - f_{i}}{\Delta x^2} - a_{i-1}\frac{f_{i} - f_{i - 1}}{\Delta x^2} \\
-    = \frac{a_{i+1}f_{i + 1} - (a_{i+1} + a_{i-1}) f_{i} + a_{i-1}f_{i-1}}{\Delta x^2}
-\end{equation}
-%----------------------------------------------------------------
 
-\subsection{Dirichlet Boundary Conditions}
+\section{2D Application for triangular mesh}
+For a trinagular mesh assuming
+%----------------------------------------------------------------
+\begin{figure}[ht]
+    \label{fig:rod_heat_transfer}
+    \centering
+    \includegraphics[width=0.8\linewidth]{draft.png}
+    \caption{Test}
+\end{figure}
+%----------------------------------------------------------------
+one can write
 %----------------------------------------------------------------
 \begin{equation}
-    f\rvert_i = f_0
+  \nabla f \cdot \vec{n}_i = \frac{f_{i} - f_C}{|\vec{r}_{i}|}
 \end{equation}
 %----------------------------------------------------------------
-
-\subsection{Neumann Boundary Conditions}
+for a 2d geometriy $A_{C, i}$ becomes a line segment
 %----------------------------------------------------------------
 \begin{equation}
-    \left. \pdv{f}{x} \right|_{x = i} = c
+  A_{i} = |\vec{b}_{i + 1} - \vec{b}_{i}| = L_i
 \end{equation}
 %----------------------------------------------------------------
+where $\vec{b}_i$ is the barycentre of the last cell containing the point $i$.
+In this context $V_C$ becomes the volume of created new cell $A_C$ which is defined as
 %----------------------------------------------------------------
 \begin{equation}
-    \frac{f_i - f{i - i}}{\Delta x} = c
+  A_C = \frac{1}{2} \cdot \sum_i^N  \vec{b}_{i + 1} \times \vec{b}_{i}
 \end{equation}
 %----------------------------------------------------------------
+This leads to
 %----------------------------------------------------------------
 \begin{equation}
-    f_i - f_{i - i}= \Delta x \, c
+  \nabla^2 f = \frac{1}{A_C} \cdot \sum_i^N \frac{f_{i} - f_C}{|\vec{r}_{i}|} \cdot |\vec{b}_{i + 1} - \vec{b}_{i}| .
 \end{equation}
 %----------------------------------------------------------------

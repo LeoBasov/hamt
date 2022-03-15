@@ -52,15 +52,58 @@ $\dot{q}_v$ & Volumetric heat source & $\si{\watt\per\meter\cubed}$\\
 %----------------------------------------------------------------
 
 \section{Homogeneous Heat Transfer Equation}
-Aussuming...
+Aussuming no time dependance $\pdv{(c \, \rho \, T)}{t} = 0$ and no heat source $\dot{q}_v(\vec{r}, t) = 0$ Eqn.~(\ref{eqn:heat_transfer}) reduces to
 %----------------------------------------------------------------
 \begin{equation}
 \label{eqn:homogeneous_heat_transfer}
-    \lambda \, \Delta T  = 0
+    \nabla (\lambda \, \nabla T )  = 0
+\end{equation}
+%----------------------------------------------------------------
+where $\lambda = \mathrm{fn}(\vec{r})$.
+According to the prodcut rules for vector calculus Eqn.~(\ref{eqn:homogeneous_heat_transfer}) evaluates to
+\begin{equation}
+	\nabla (\lambda \, \nabla T ) = \nabla T \cdot (\nabla \lambda) +\lambda \left(\nabla \cdot \nabla T \right)
+\end{equation}
+\begin{equation}
+	\nabla (\lambda \, \nabla T ) = \nabla \lambda \cdot \nabla T + \lambda \cdot \nabla^2 T
+\end{equation}
+which leads to
+\begin{equation}
+	\nabla \lambda \cdot \nabla T + \lambda \cdot \nabla^2 T = 0.
+\end{equation}
+
+\subsection{2D Cartesian Formulation}
+Evaluating Eq.~(\ref{eqn:homogeneous_heat_transfer}) for two variables in cartesian form leads to
+%----------------------------------------------------------------
+\begin{align}
+    \nabla (\lambda \, \nabla T )  &= \pdv{}{x} \left(\lambda \pdv{T}{x} \right) + \pdv{}{y} \left(\lambda \pdv{T}{y} \right) \\
+    &= \pdv{\lambda}{x} \pdv{T}{x} + \lambda \pdv[2]{T}{x} + \pdv{\lambda}{y} \pdv{T}{y} + \lambda \pdv[2]{T}{y} \\
+    &= \pdv{\lambda}{x} \pdv{T}{x} + \pdv{\lambda}{y} \pdv{T}{y} + \lambda \pdv[2]{T}{x} + \lambda \pdv[2]{T}{y} \\
+    &= \nabla \lambda \cdot \nabla T + \lambda \cdot \nabla^2 T
+\end{align}
+%----------------------------------------------------------------
+
+\subsection{2D Cylindrical Formulation}
+Evaluating Eq.~(\ref{eqn:homogeneous_heat_transfer}) for two variables in cartesian form leads to
+%----------------------------------------------------------------
+\begin{align}
+    \nabla (\lambda \, \nabla T )  &= \pdv{}{r} \left(\lambda \pdv{T}{r} \right) + \frac{1}{r}\pdv{}{\phi} \left(\lambda \frac{1}{r} \pdv{T}{\phi} \right)  \\
+    &= \pdv{\lambda}{r} \pdv{T}{r} + \lambda \pdv[2]{T}{r} + \frac{1}{	r} \left[ \pdv{\lambda}{\phi}\frac{1}{r} \pdv{T}{\phi} + \lambda\frac{1}{r} \pdv[2]{T}{\phi}  \right] \\
+    &= \pdv{\lambda}{r} \pdv{T}{r} + \frac{1}{r} \pdv{\lambda}{\phi}\frac{1}{r} \pdv{T}{\phi} + \lambda \left[\pdv[2]{T}{r} + \frac{1}{r^2}\pdv[2]{T}{\phi} \right] \\
+    &= \nabla \lambda \cdot \nabla T + \lambda \left[\pdv[2]{T}{r} + \frac{1}{r^2}\pdv[2]{T}{\phi} \right]
+\end{align}
+%----------------------------------------------------------------
+
+\section{Finite-Difference Scheme - Triangular Unordered 2D Grid}
+Using a second order Taylor serias expansion around a arbitray point in space for two variables on can write
+%----------------------------------------------------------------
+\begin{equation}
+  \mathrm{T} \, f(x ; a) = f(a) + \sum_{j=1}^2 \pdv{f(a)}{x_j} (x_j - a_j) + \frac{1}{2} \sum_{j=1}^2 \sum_{k=1}^2 \pdv{f(a)}{x_j}{x_k} (x_j - a_j) (x_k - a_k) + O(\Delta^3)
 \end{equation}
 %----------------------------------------------------------------
 
-\section{FDM - Homogeneous Equidistant 2D}
+
+\section{Finite-Difference Scheme - Homogeneous Equidistant 2D Grid}
 \subsection{Boundary Conditions}
 For all boundary condition is present the dirichlet boundary condtions always orride other boudnary conditions on contact nodes.
 If two cells with different dirichlet boundary condtions touch, a arichmetical mean is taken.

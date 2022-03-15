@@ -1,0 +1,52 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.1 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nty/global//global/global}
+    \entry{erlebacher1985finite}{incollection}{}
+      \name{author}{1}{}{%
+        {{hash=cffb0eb325443347f5d19e45a9931775}{%
+           family={Erlebacher},
+           familyi={E\bibinitperiod},
+           given={G},
+           giveni={G\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{cffb0eb325443347f5d19e45a9931775}
+      \strng{fullhash}{cffb0eb325443347f5d19e45a9931775}
+      \strng{bibnamehash}{cffb0eb325443347f5d19e45a9931775}
+      \strng{authorbibnamehash}{cffb0eb325443347f5d19e45a9931775}
+      \strng{authornamehash}{cffb0eb325443347f5d19e45a9931775}
+      \strng{authorfullhash}{cffb0eb325443347f5d19e45a9931775}
+      \field{sortinit}{E}
+      \field{sortinithash}{c554bd1a0b76ea92b9f105fe36d9c7b0}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{The Free-Lagrange Method}
+      \field{title}{Finite difference operators on unstructured triangular meshes}
+      \field{year}{1985}
+      \field{pages}{22\bibrangedash 53}
+      \range{pages}{32}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+
