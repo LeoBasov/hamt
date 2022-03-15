@@ -15,8 +15,7 @@ void SetUpCellSize(Mesh2DRegular& mesh, const gmsh::MSH2& msh2_mesh);
 
 Mesh2DTriangular MSH2ToMesh2DTriangular(const gmsh::MSH2& msh2_mesh);
 void SetUpBoundaries(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh);
-void SetUpNodes(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh);
-void SetUpCells(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh);
+void SetUpCellsAndNodes(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh);
 void CombineData(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh);
 }
 }  // namespace hamt

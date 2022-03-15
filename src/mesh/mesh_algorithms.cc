@@ -187,8 +187,7 @@ Mesh2DTriangular MSH2ToMesh2DTriangular(const gmsh::MSH2& msh2_mesh) {
     Mesh2DTriangular mesh;
 
     SetUpBoundaries(mesh, msh2_mesh);
-    SetUpNodes(mesh, msh2_mesh);
-    SetUpCells(mesh, msh2_mesh);
+    SetUpCellsAndNodes(mesh, msh2_mesh);
     CombineData(mesh, msh2_mesh);
 
     return mesh;
@@ -228,16 +227,17 @@ void SetUpBoundaries(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh) {
     }
 }
 
-void SetUpNodes(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh) {
+void SetUpCellsAndNodes(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh) {
+    std::map<int, size_t> node_id_map;
+
     for (const auto& node : msh2_mesh.nodes_) {
         Mesh2DTriangular::Node node_new;
 
+        node_id_map[node.second.node_number] = mesh.nodes_.size();
         node_new.position = node.second.coord;
         mesh.nodes_.push_back(node_new);
     }
-}
 
-void SetUpCells(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh) {
     for (uint i = 0; i < msh2_mesh.elements_.size(); i++) {
         const gmsh::MSH2::Element& element(msh2_mesh.elements_.at(i));
 
@@ -245,6 +245,11 @@ void SetUpCells(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh) {
             Mesh2DTriangular::Cell cell;
 
             cell.surface_id = mesh.surface_tags_.at(element.tags.at(0));
+
+            for (size_t n = 0; n < element.node_number_list.size(); n++) {
+                cell.nodes.at(n) = node_id_map.at(element.node_number_list.at(n));
+            }
+
             mesh.cells_.push_back(cell);
         } else if (element.elm_type == 1) {
             // TODO  (LB): get boundary data

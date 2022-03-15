@@ -135,11 +135,28 @@ TEST(mesh_algorithms, MSH2ToMesh2DTriangular) {
     const std::string file_name("./test/test_data/block_triangular.msh");
     const gmsh::MSH2 msh2_mesh = gmsh::ReadMSH2(file_name);
     const Mesh2DTriangular mesh = mesh_algorithms::MSH2ToMesh2DTriangular(msh2_mesh);
+    std::vector<size_t> node_ids;
 
     ASSERT_EQ(9, mesh.nodes_.size());
     ASSERT_EQ(8, mesh.cells_.size());
     ASSERT_EQ(2, mesh.surfaces_.size());
     ASSERT_EQ(8, mesh.boundaries_.size());
+
+    for (const auto& cell : mesh.cells_) {
+        for (const auto& node_id : cell.nodes) {
+            node_ids.push_back(node_id);
+        }
+    }
+
+    for (size_t i = 0; i < mesh.nodes_.size(); i++) {
+        bool missing_cell = (std::find(node_ids.begin(), node_ids.end(), i) == node_ids.end());
+
+        ASSERT_EQ(false, missing_cell);
+    }
+
+    bool missing_cell_asignement = (std::find(node_ids.begin(), node_ids.end(), -1) != node_ids.end());
+
+    ASSERT_EQ(false, missing_cell_asignement);
 }
 
 }  // namespace hamt
