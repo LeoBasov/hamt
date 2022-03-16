@@ -671,6 +671,17 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTrian
                 mat_b.first(i, i) -= factor;
                 mat_b.first(i, adjacent_node_id) += factor;
             }
+
+            const size_t adjacent_node_id = node.adjacent_nodes.at(0);
+            const Mesh2DTriangular::Node& adjacent_node = mesh.nodes_.at(i);
+            const Vector3d barycentre1 =
+                mesh.cells_.at(node.adjacent_cells.at(node.adjacent_cells.size() - 1)).barycentre;
+            const Vector3d barycentre2 = mesh.cells_.at(node.adjacent_cells.at(0)).barycentre;
+            const double factor =
+                (barycentre2 - barycentre1).norm() / ((adjacent_node.position - node.position).norm() + surface);
+
+            mat_b.first(i, i) -= factor;
+            mat_b.first(i, adjacent_node_id) += factor;
         }
     }
 
