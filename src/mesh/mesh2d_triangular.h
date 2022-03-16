@@ -25,6 +25,9 @@ class Mesh2DTriangular {
         std::array<int, 3> nodes = {-1, -1, -1};
         std::array<int, 3> boundaries = {-1, -1, -1};
         int surface_id = -1;
+
+        size_t GetNodePos(const size_t& node_id) const;
+        bool IsInCell(const size_t& node_id) const;
     };
 
     struct Surface {

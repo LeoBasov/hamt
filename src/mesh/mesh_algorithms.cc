@@ -188,7 +188,7 @@ Mesh2DTriangular MSH2ToMesh2DTriangular(const gmsh::MSH2& msh2_mesh) {
 
     SetUpBoundaries(mesh, msh2_mesh);
     SetUpCellsAndNodes(mesh, msh2_mesh);
-    CombineData(mesh, msh2_mesh);
+    ConnectMesh(mesh);
 
     return mesh;
 }
@@ -287,7 +287,7 @@ void SetUpCellsAndNodes(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh) {
     }
 }
 
-void CombineData(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh) {
+void ConnectMesh(Mesh2DTriangular& mesh) {
     for (size_t i = 0; i < mesh.cells_.size(); i++) {
         const Mesh2DTriangular::Cell& cell = mesh.cells_.at(i);
 
@@ -296,8 +296,51 @@ void CombineData(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh) {
         }
     }
 
-    // TODO (LB): implement sorting of the adjusted cells and the cycle through andjacent cells counterclockwise to
-    // created list of sorted andjacent nodes
+    /*for (size_t n = 0; n < mesh.nodes_.size(); n++) {
+        Mesh2DTriangular::Node& node = mesh.nodes_.at(n);
+        std::vector<size_t> adjacent_cells = {FindStartingCell(n, mesh)};
+
+        while (adjacent_cells.size() < node.adjacent_cells.size()) {
+            adjacent_cells.push_back(FindNextCell(n, adjacent_cells.back(), mesh));
+        }
+
+        node.adjacent_cells = adjacent_cells;
+    }*/
+
+    // TODO (LB): created list of sorted andjacent nodes
+}
+
+size_t FindStartingCell(const size_t& node_id, const Mesh2DTriangular& mesh) {
+    const std::vector<Mesh2DTriangular::Cell>& cells = mesh.cells_;
+
+    for (const auto& next_cell_id : mesh.nodes_.at(node_id).adjacent_cells) {
+        const size_t pos = cells.at(next_cell_id).GetNodePos(node_id);
+
+        if (cells.at(next_cell_id).boundaries.at(pos) != -1) {
+            return next_cell_id;
+        }
+    }
+
+    return mesh.nodes_.at(node_id).adjacent_cells.front();
+}
+
+size_t FindNextCell(const size_t& node_id, const size_t& cell_id, const Mesh2DTriangular& mesh) {
+    const std::vector<Mesh2DTriangular::Cell>& cells = mesh.cells_;
+    const size_t pos = cells.at(cell_id).GetNodePos(node_id);
+    const size_t node_id2 = cells.at(cell_id).nodes.at(pos == 0 ? 2 : pos - 1);
+
+    for (const auto& next_cell_id : mesh.nodes_.at(node_id).adjacent_cells) {
+        if (cells.at(next_cell_id).IsInCell(node_id2)) {
+            const size_t pos1 = cells.at(next_cell_id).GetNodePos(node_id);
+            const size_t pos2 = cells.at(next_cell_id).GetNodePos(node_id2);
+
+            if (pos2 == (pos1 == 2 ? 0 : pos1 + 1)) {
+                return next_cell_id;
+            }
+        }
+    }
+
+    throw Exception("next cell not found", __PRETTY_FUNCTION__);
 }
 
 }  // namespace mesh2d_regular_algorithms
