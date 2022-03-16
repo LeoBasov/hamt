@@ -18,6 +18,7 @@ class Mesh2DTriangular {
         Vector3d position;
         std::vector<size_t> adjacent_nodes;  // ordered counter clockwise
         std::vector<size_t> adjacent_cells;  // ordered counter clockwise
+        std::vector<size_t> boundaries;
     };
 
     struct Cell {

@@ -312,6 +312,19 @@ void ConnectMesh(Mesh2DTriangular& mesh) {
 
             node.adjacent_nodes.push_back(node_id2);
         }
+
+        // set boundaries
+        for (const auto& cell_id : adjacent_cells) {
+            const size_t pos1 = mesh.cells_.at(cell_id).GetNodePos(n);
+            const size_t pos2 = pos1 == 0 ? 2 : pos1 - 1;
+
+            if (mesh.cells_.at(cell_id).boundaries.at(pos1) >= 0) {
+                node.boundaries.push_back(mesh.cells_.at(cell_id).boundaries.at(pos1));
+            }
+            if (mesh.cells_.at(cell_id).boundaries.at(pos2) >= 0) {
+                node.boundaries.push_back(mesh.cells_.at(cell_id).boundaries.at(pos2));
+            }
+        }
     }
 }
 
