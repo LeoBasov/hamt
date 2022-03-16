@@ -3,6 +3,11 @@
 read triangl_mesh block_single_triangular.msh
 info triangl_mesh
 
+set triangl_mesh bound_value buttom 300
+set triangl_mesh bound_value right 300
+set triangl_mesh bound_value top 300
+set triangl_mesh bound_value left 300
+
 set writer triangl_mesh vtk on
 set writer triangl_mesh vtk file_name cube_triangl
 
