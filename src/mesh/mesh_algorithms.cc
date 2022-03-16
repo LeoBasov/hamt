@@ -305,9 +305,14 @@ void ConnectMesh(Mesh2DTriangular& mesh) {
         }
 
         node.adjacent_cells = adjacent_cells;
-    }
 
-    // TODO (LB): created list of sorted andjacent nodes
+        for (const auto& cell_id : adjacent_cells) {
+            const size_t pos = mesh.cells_.at(cell_id).GetNodePos(n);
+            const size_t node_id2 = mesh.cells_.at(cell_id).nodes.at(pos == 2 ? 0 : pos + 1);
+
+            node.adjacent_nodes.push_back(node_id2);
+        }
+    }
 }
 
 size_t FindStartingCell(const size_t& node_id, const Mesh2DTriangular& mesh) {
