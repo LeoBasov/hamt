@@ -273,11 +273,11 @@ void SetUpCellsAndNodes(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh) {
                     const int pos2 = std::max(iter1 - cell.nodes.begin(), iter2 - cell.nodes.begin());
 
                     if (pos1 == 0 && pos2 == 1) {
-                        cell.boundaries.at(0) = mesh.boundary_tags_.at(element.elm_number);
+                        cell.boundaries.at(0) = mesh.boundary_tags_.at(element.tags.at(0));
                     } else if (pos1 == 1 && pos2 == 2) {
-                        cell.boundaries.at(1) = mesh.boundary_tags_.at(element.elm_number);
+                        cell.boundaries.at(1) = mesh.boundary_tags_.at(element.tags.at(0));
                     } else if (pos1 == 0 && pos2 == 2) {
-                        cell.boundaries.at(2) = mesh.boundary_tags_.at(element.elm_number);
+                        cell.boundaries.at(2) = mesh.boundary_tags_.at(element.tags.at(0));
                     } else {
                         throw Exception("unacceptrable combination of cell indices", __PRETTY_FUNCTION__);
                     }
