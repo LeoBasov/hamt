@@ -646,6 +646,7 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTrian
                 mat_b.second(i) = boundary2.value;
                 mat_b.first(i, i) = 1.0;
             } else {
+                throw IncompleteCodeError("undefined boundary condition for triangular mesh");
             }
         }
     }

@@ -4,6 +4,7 @@
 
 #include "../../common/constants.h"
 #include "../../exception/exception.h"
+#include "../../exception/incomplete_code_error.h"
 #include "../../mesh/mesh2d_regular.h"
 #include "../../mesh/mesh2d_triangular.h"
 
