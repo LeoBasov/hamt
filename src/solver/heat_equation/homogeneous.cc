@@ -637,7 +637,7 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTrian
 
             if (boundary1.type == Mesh2DTriangular::BoundaryType::DIRICHLET &&
                 boundary2.type == Mesh2DTriangular::BoundaryType::DIRICHLET) {
-                mat_b.second(i) = 0.5 * (boundary1.value + boundary2.type);
+                mat_b.second(i) = 0.5*(boundary1.value + boundary2.value);
                 mat_b.first(i, i) = 1.0;
             } else if (boundary1.type == Mesh2DTriangular::BoundaryType::DIRICHLET) {
                 mat_b.second(i) = boundary1.value;
