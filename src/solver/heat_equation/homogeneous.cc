@@ -622,5 +622,36 @@ void ConvertMidCylindrical(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DReg
     mat_b.first(row, node.u_i_jp) = (1 + r_dash) * mean_xt;
 }
 
+std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTriangular& mesh, const VectorXd& results) {
+    std::pair<MatrixXd, VectorXd> mat_b;
+
+    mat_b.first = MatrixXd::Identity(mesh.nodes_.size(), mesh.nodes_.size());
+    mat_b.second = VectorXd::Zero(mesh.nodes_.size());
+
+    for (size_t i = 0; i < mesh.nodes_.size(); i++) {
+        const Mesh2DTriangular::Node& node = mesh.nodes_.at(i);
+
+        if (node.boundaries.size()) {
+            const Mesh2DTriangular::Boundary& boundary1 = mesh.boundaries_.at(node.boundaries.at(0));
+            const Mesh2DTriangular::Boundary& boundary2 = mesh.boundaries_.at(node.boundaries.at(1));
+
+            if (boundary1.type == Mesh2DTriangular::BoundaryType::DIRICHLET &&
+                boundary2.type == Mesh2DTriangular::BoundaryType::DIRICHLET) {
+                mat_b.second(i) = 0.5 * (boundary1.value + boundary2.type);
+                mat_b.first(i, i) = 1.0;
+            } else if (boundary1.type == Mesh2DTriangular::BoundaryType::DIRICHLET) {
+                mat_b.second(i) = boundary1.value;
+                mat_b.first(i, i) = 1.0;
+            } else if (boundary2.type == Mesh2DTriangular::BoundaryType::DIRICHLET) {
+                mat_b.second(i) = boundary2.value;
+                mat_b.first(i, i) = 1.0;
+            } else {
+            }
+        }
+    }
+
+    return mat_b;
+}
+
 }  // namespace heat_equation_homogeneous
 }  // namespace hamt

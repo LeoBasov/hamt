@@ -6,4 +6,6 @@ info triangl_mesh
 set writer triangl_mesh vtk on
 set writer triangl_mesh vtk file_name cube_triangl
 
+set solver mesh_type triangular
+
 run
