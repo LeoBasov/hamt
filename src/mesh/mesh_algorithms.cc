@@ -296,7 +296,7 @@ void ConnectMesh(Mesh2DTriangular& mesh) {
         }
     }
 
-    /*for (size_t n = 0; n < mesh.nodes_.size(); n++) {
+    for (size_t n = 0; n < mesh.nodes_.size(); n++) {
         Mesh2DTriangular::Node& node = mesh.nodes_.at(n);
         std::vector<size_t> adjacent_cells = {FindStartingCell(n, mesh)};
 
@@ -305,7 +305,7 @@ void ConnectMesh(Mesh2DTriangular& mesh) {
         }
 
         node.adjacent_cells = adjacent_cells;
-    }*/
+    }
 
     // TODO (LB): created list of sorted andjacent nodes
 }

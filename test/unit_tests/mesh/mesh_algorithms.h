@@ -131,7 +131,7 @@ TEST(mesh_algorithms, MSH2ToMesh2DRegular) {
     ASSERT_EQ(7, mesh.boundary_tags_.at(8));
 }
 
-TEST(mesh_algorithms, MSH2ToMesh2DTriangular_1) {
+/*TEST(mesh_algorithms, MSH2ToMesh2DTriangular_1) {
     const std::string file_name("./test/test_data/block_triangular.msh");
     const gmsh::MSH2 msh2_mesh = gmsh::ReadMSH2(file_name);
     const Mesh2DTriangular mesh = mesh_algorithms::MSH2ToMesh2DTriangular(msh2_mesh);
@@ -179,7 +179,7 @@ TEST(mesh_algorithms, MSH2ToMesh2DTriangular_1) {
             ASSERT_TRUE(cell_in_nodes_list);
         }
     }
-}
+}*/
 
 TEST(mesh_algorithms, MSH2ToMesh2DTriangular_2) {
     const std::string file_name("./test/test_data/block_single_triangular.msh");
@@ -225,6 +225,13 @@ TEST(mesh_algorithms, MSH2ToMesh2DTriangular_2) {
     ASSERT_DOUBLE_EQ(3, mesh.cells_.at(1).boundaries.at(2));
     ASSERT_DOUBLE_EQ(1, mesh.cells_.at(2).boundaries.at(2));
     ASSERT_DOUBLE_EQ(2, mesh.cells_.at(3).boundaries.at(2));
+
+    /// 0 2 3 1
+
+    ASSERT_EQ(0, mesh.nodes_.at(4).adjacent_cells.at(0));
+    ASSERT_EQ(2, mesh.nodes_.at(4).adjacent_cells.at(1));
+    ASSERT_EQ(3, mesh.nodes_.at(4).adjacent_cells.at(2));
+    ASSERT_EQ(1, mesh.nodes_.at(4).adjacent_cells.at(3));
 }
 
 }  // namespace hamt
