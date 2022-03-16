@@ -625,7 +625,7 @@ void ConvertMidCylindrical(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DReg
 std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTriangular& mesh, const VectorXd& results) {
     std::pair<MatrixXd, VectorXd> mat_b;
 
-    mat_b.first = MatrixXd::Identity(mesh.nodes_.size(), mesh.nodes_.size());
+    mat_b.first = MatrixXd::Zero(mesh.nodes_.size(), mesh.nodes_.size());
     mat_b.second = VectorXd::Zero(mesh.nodes_.size());
 
     for (size_t i = 0; i < mesh.nodes_.size(); i++) {
@@ -647,6 +647,29 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTrian
                 mat_b.first(i, i) = 1.0;
             } else {
                 throw IncompleteCodeError("undefined boundary condition for triangular mesh");
+            }
+        } else {
+            double surface(0.0);
+
+            for (size_t c = 1; c < node.adjacent_cells.size(); c++) {
+                const Vector3d barycentre_dist1 =
+                    mesh.cells_.at(node.adjacent_cells.at(c - 1)).barycentre - node.position;
+                const Vector3d barycentre_dist2 = mesh.cells_.at(node.adjacent_cells.at(c)).barycentre - node.position;
+                const Vector3d cross = barycentre_dist1.cross(barycentre_dist2);
+
+                surface += 0.5 * cross.norm();
+            }
+
+            for (size_t c = 1; c < node.adjacent_cells.size(); c++) {
+                const size_t adjacent_node_id = node.adjacent_nodes.at(c);
+                const Mesh2DTriangular::Node& adjacent_node = mesh.nodes_.at(i);
+                const Vector3d barycentre1 = mesh.cells_.at(node.adjacent_cells.at(c - 1)).barycentre;
+                const Vector3d barycentre2 = mesh.cells_.at(node.adjacent_cells.at(c)).barycentre;
+                const double factor =
+                    (barycentre2 - barycentre1).norm() / ((adjacent_node.position - node.position).norm() + surface);
+
+                mat_b.first(i, i) -= factor;
+                mat_b.first(i, adjacent_node_id) += factor;
             }
         }
     }
