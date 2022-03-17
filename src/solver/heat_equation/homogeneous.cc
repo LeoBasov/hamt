@@ -647,58 +647,7 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTrian
                 mat_b.first(i, i) = 1.0;
             } else if (boundary1.type == Mesh2DTriangular::BoundaryType::NEUMANN &&
                        boundary2.type == Mesh2DTriangular::BoundaryType::NEUMANN) {
-                double surface(0.0);
-                Matrix3d rotmat;
-
-                rotmat(0, 0) = 0.0;
-                rotmat(0, 1) = 1.0;
-                rotmat(0, 2) = 0.0;
-                rotmat(1, 0) = -1.0;
-                rotmat(1, 1) = 0.0;
-                rotmat(1, 2) = 0.0;
-                rotmat(2, 0) = 0.0;
-                rotmat(2, 1) = 0.0;
-                rotmat(2, 2) = 1.0;
-
-                for (size_t c = 1; c < node.adjacent_nodes.size(); c++) {
-                    const Vector3d pos_dist1 = mesh.nodes_.at(node.adjacent_nodes.at(c - 1)).position - node.position;
-                    const Vector3d pos_dist2 = mesh.nodes_.at(node.adjacent_nodes.at(c)).position - node.position;
-                    const Vector3d cross = pos_dist1.cross(pos_dist2);
-
-                    surface += 0.5 * cross.norm();
-                }
-
-                const Vector3d r_q = mesh.nodes_.at(node.adjacent_nodes.front()).position -
-                                     mesh.nodes_.at(node.adjacent_nodes.back()).position;
-                const Vector3d n_q = rotmat * r_q.normalized();
-
-                for (size_t c = 1; c < node.adjacent_cells.size(); c++) {
-                    const size_t adjacent_node_id1 = node.adjacent_nodes.at(c - 1);
-                    const size_t adjacent_node_id2 = node.adjacent_nodes.at(c);
-                    const Mesh2DTriangular::Node& adjacent_node1 = mesh.nodes_.at(adjacent_node_id1);
-                    const Mesh2DTriangular::Node& adjacent_node2 = mesh.nodes_.at(adjacent_node_id2);
-
-                    const Vector3d r = adjacent_node2.position - adjacent_node1.position;
-                    const Vector3d n = rotmat * r.normalized();
-                    const double factor = r.norm() * n.dot(n_q) / (2.0 * surface);
-
-                    mat_b.first(i, adjacent_node_id2) += factor;
-                    mat_b.first(i, adjacent_node_id1) -= factor;
-                }
-
-                const size_t adjacent_node_id1 = node.adjacent_nodes.back();
-                const size_t adjacent_node_id2 = node.adjacent_nodes.front();
-                const Mesh2DTriangular::Node& adjacent_node1 = mesh.nodes_.at(adjacent_node_id1);
-                const Mesh2DTriangular::Node& adjacent_node2 = mesh.nodes_.at(adjacent_node_id2);
-
-                const Vector3d r = adjacent_node2.position - adjacent_node1.position;
-                const Vector3d n = rotmat * r.normalized();
-                const double factor = r.norm() * n.dot(n_q) / (2.0 * surface);
-
-                mat_b.first(i, adjacent_node_id2) += factor;
-                mat_b.first(i, adjacent_node_id1) -= factor;
-
-                mat_b.second(i) = mat_b.second(i) = 0.5 * (boundary1.value + boundary2.value);
+                NeumannTraingularMesh(mesh, i, mat_b);
             } else {
                 throw IncompleteCodeError("undefined boundary condition for triangular mesh");
             }
@@ -740,6 +689,82 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTrian
     }
 
     return mat_b;
+}
+
+void NeumannTraingularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b) {
+    const Mesh2DTriangular::Node& node = mesh.nodes_.at(node_id);
+    const Mesh2DTriangular::Boundary& boundary1 = mesh.boundaries_.at(node.boundaries.at(0));
+    const Mesh2DTriangular::Boundary& boundary2 = mesh.boundaries_.at(node.boundaries.at(1));
+    std::vector<Vector3d> r_i_ip1;
+    std::vector<Vector3d> r_c_ip1;
+    std::vector<Vector3d> n;
+    Vector3d n_q;  // normal vector of the neuman boundary condition gradient
+    double surface(0.0);
+
+    // set up vectors
+    for (size_t c = 0; c < node.adjacent_nodes.size(); c++) {
+        if (c == 0) {
+            const Vector3d p_ip1 = mesh.nodes_.at(node.adjacent_nodes.at(c)).position;
+
+            r_i_ip1.push_back(p_ip1 - node.position);
+        } else {
+            const Vector3d p_i = mesh.nodes_.at(node.adjacent_nodes.at(c - 1)).position;
+            const Vector3d p_ip1 = mesh.nodes_.at(node.adjacent_nodes.at(c)).position;
+
+            r_i_ip1.push_back(p_ip1 - p_i);
+            r_c_ip1.push_back(p_i - node.position);
+
+            if (c == node.adjacent_nodes.size() - 1) {
+                const Vector3d p_0 = mesh.nodes_.at(node.adjacent_nodes.at(0)).position;
+
+                r_i_ip1.push_back(node.position - p_ip1);
+                r_c_ip1.push_back(p_0 - node.position);
+            }
+        }
+    }
+
+    // set up normal vectors
+    n.resize(r_i_ip1.size());
+
+    for (size_t i = 0; i < r_i_ip1.size(); i++) {
+        n.at(i)(0) = r_i_ip1.at(i)(1);
+        n.at(i)(1) = -r_i_ip1.at(i)(0);
+        n.at(i)(2) = r_i_ip1.at(i)(2);
+
+        n.at(i).normalize();
+    }
+
+    // calc n_q
+    n_q = 0.5 * (n.back() + n.front());
+
+    // calculate effective cell surface
+    for (size_t i = 1; i < r_c_ip1.size(); i++) {
+        surface += 0.5 * (r_c_ip1.at(i).cross(r_c_ip1.at(i - 1)).norm());
+    }
+
+    for (size_t c = 0; c < node.adjacent_nodes.size(); c++) {
+        if (c == 0) {
+            const size_t adjacent_node_id2 = node.adjacent_nodes.at(c);
+            const double factor = r_i_ip1.at(c).norm() * n.at(c).dot(n_q) / (2.0 * surface);
+
+            mat_b.first(node_id, adjacent_node_id2) += factor;
+        } else {
+            const size_t adjacent_node_id1 = node.adjacent_nodes.at(c - 1);
+            const size_t adjacent_node_id2 = node.adjacent_nodes.at(c);
+            const double factor = r_i_ip1.at(c).norm() * n.at(c).dot(n_q) / (2.0 * surface);
+
+            mat_b.first(node_id, adjacent_node_id2) += factor;
+            mat_b.first(node_id, adjacent_node_id1) -= factor;
+        }
+    }
+
+    const size_t adjacent_node_id1 = node.adjacent_nodes.back();
+    const double factor =
+        r_i_ip1.at(node.adjacent_nodes.size()).norm() * n.at(node.adjacent_nodes.size()).dot(n_q) / (2.0 * surface);
+
+    mat_b.first(node_id, adjacent_node_id1) -= factor;
+
+    mat_b.second(node_id) = 0.5 * (boundary1.value + boundary2.value);
 }
 
 }  // namespace heat_equation_homogeneous
