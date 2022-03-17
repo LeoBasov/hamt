@@ -715,10 +715,10 @@ void NeumannTraingularMesh(const Mesh2DTriangular& mesh, const size_t node_id, s
             r_c_ip1.push_back(p_i - node.position);
 
             if (c == node.adjacent_nodes.size() - 1) {
-                const Vector3d p_0 = mesh.nodes_.at(node.adjacent_nodes.at(0)).position;
+                const Vector3d p_c = mesh.nodes_.at(node.adjacent_nodes.at(c)).position;
 
                 r_i_ip1.push_back(node.position - p_ip1);
-                r_c_ip1.push_back(p_0 - node.position);
+                r_c_ip1.push_back(p_c - node.position);
             }
         }
     }
@@ -742,7 +742,7 @@ void NeumannTraingularMesh(const Mesh2DTriangular& mesh, const size_t node_id, s
         surface += 0.5 * (r_c_ip1.at(i).cross(r_c_ip1.at(i - 1)).norm());
     }
 
-    for (size_t c = 0; c < node.adjacent_nodes.size(); c++) {
+    /*for (size_t c = 0; c < node.adjacent_nodes.size(); c++) {
         if (c == 0) {
             const size_t adjacent_node_id2 = node.adjacent_nodes.at(c);
             const double factor = r_i_ip1.at(c).norm() * n.at(c).dot(n_q) / (2.0 * surface);
@@ -763,6 +763,16 @@ void NeumannTraingularMesh(const Mesh2DTriangular& mesh, const size_t node_id, s
         r_i_ip1.at(node.adjacent_nodes.size()).norm() * n.at(node.adjacent_nodes.size()).dot(n_q) / (2.0 * surface);
 
     mat_b.first(node_id, adjacent_node_id1) -= factor;
+
+    mat_b.second(node_id) = 0.5 * (boundary1.value + boundary2.value);*/
+
+    for (size_t c = 0; c < node.adjacent_nodes.size(); c++) {
+        const double factor = r_c_ip1.at(c).dot(n_q) / (r_c_ip1.at(c).norm() * node.adjacent_nodes.size());
+        const size_t adjacent_node_id = node.adjacent_nodes.at(c);
+
+        mat_b.first(node_id, adjacent_node_id) += factor;
+        mat_b.first(node_id, node_id) -= factor;
+    }
 
     mat_b.second(node_id) = 0.5 * (boundary1.value + boundary2.value);
 }
