@@ -652,43 +652,58 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTrian
                 throw IncompleteCodeError("undefined boundary condition for triangular mesh");
             }
         } else {
-            double surface(0.0);
-
-            for (size_t c = 1; c < node.adjacent_cells.size(); c++) {
-                const Vector3d barycentre_dist1 =
-                    mesh.cells_.at(node.adjacent_cells.at(c - 1)).barycentre - node.position;
-                const Vector3d barycentre_dist2 = mesh.cells_.at(node.adjacent_cells.at(c)).barycentre - node.position;
-                const Vector3d cross = barycentre_dist1.cross(barycentre_dist2);
-
-                surface += 0.5 * cross.norm();
-            }
-
-            for (size_t c = 1; c < node.adjacent_cells.size(); c++) {
-                const size_t adjacent_node_id = node.adjacent_nodes.at(c);
-                const Mesh2DTriangular::Node& adjacent_node = mesh.nodes_.at(i);
-                const Vector3d barycentre1 = mesh.cells_.at(node.adjacent_cells.at(c - 1)).barycentre;
-                const Vector3d barycentre2 = mesh.cells_.at(node.adjacent_cells.at(c)).barycentre;
-                const double factor =
-                    (barycentre2 - barycentre1).norm() / ((adjacent_node.position - node.position).norm() + surface);
-
-                mat_b.first(i, i) -= factor;
-                mat_b.first(i, adjacent_node_id) += factor;
-            }
-
-            const size_t adjacent_node_id = node.adjacent_nodes.at(0);
-            const Mesh2DTriangular::Node& adjacent_node = mesh.nodes_.at(i);
-            const Vector3d barycentre1 =
-                mesh.cells_.at(node.adjacent_cells.at(node.adjacent_cells.size() - 1)).barycentre;
-            const Vector3d barycentre2 = mesh.cells_.at(node.adjacent_cells.at(0)).barycentre;
-            const double factor =
-                (barycentre2 - barycentre1).norm() / ((adjacent_node.position - node.position).norm() + surface);
-
-            mat_b.first(i, i) -= factor;
-            mat_b.first(i, adjacent_node_id) += factor;
+            CentreTriangularMesh(mesh, i, mat_b);
         }
     }
 
     return mat_b;
+}
+
+void CentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b) {
+    const Mesh2DTriangular::Node& node = mesh.nodes_.at(node_id);
+    double surface(0.0);
+
+    for (size_t c = 1; c < node.adjacent_cells.size(); c++) {
+        const Vector3d barycentre_dist1 = mesh.cells_.at(node.adjacent_cells.at(c - 1)).barycentre - node.position;
+        const Vector3d barycentre_dist2 = mesh.cells_.at(node.adjacent_cells.at(c)).barycentre - node.position;
+        const Vector3d cross = barycentre_dist1.cross(barycentre_dist2);
+
+        surface += 0.5 * cross.norm();
+    }
+
+    for (size_t c = 1; c < node.adjacent_cells.size(); c++) {
+        const size_t adjacent_node_id = node.adjacent_nodes.at(c);
+        const Mesh2DTriangular::Node& adjacent_node = mesh.nodes_.at(adjacent_node_id);
+        const Vector3d barycentre1 = mesh.cells_.at(node.adjacent_cells.at(c - 1)).barycentre;
+        const Vector3d barycentre2 = mesh.cells_.at(node.adjacent_cells.at(c)).barycentre;
+        const Vector3d diff = adjacent_node.position - node.position;
+        Vector3d def;
+
+        def(0) = std::abs(diff(0)) < 1e-15 ? 0.0 : 1.0 / diff(0);
+        def(1) = std::abs(diff(1)) < 1e-15 ? 0.0 : 1.0 / diff(1);
+        def(2) = std::abs(diff(2)) < 1e-15 ? 0.0 : 1.0 / diff(2);
+
+        const double factor = (barycentre2 - barycentre1).norm() * def.dot(diff.normalized()) / surface;
+
+        mat_b.first(node_id, node_id) -= factor;
+        mat_b.first(node_id, adjacent_node_id) += factor;
+    }
+
+    const size_t adjacent_node_id = node.adjacent_nodes.at(0);
+    const Mesh2DTriangular::Node& adjacent_node = mesh.nodes_.at(adjacent_node_id);
+    const Vector3d barycentre1 = mesh.cells_.at(node.adjacent_cells.at(node.adjacent_cells.size() - 1)).barycentre;
+    const Vector3d barycentre2 = mesh.cells_.at(node.adjacent_cells.at(0)).barycentre;
+    const Vector3d diff = adjacent_node.position - node.position;
+    Vector3d def;
+
+    def(0) = std::abs(diff(0)) < 1e-15 ? 0.0 : 1.0 / diff(0);
+    def(1) = std::abs(diff(1)) < 1e-15 ? 0.0 : 1.0 / diff(1);
+    def(2) = std::abs(diff(2)) < 1e-15 ? 0.0 : 1.0 / diff(2);
+
+    const double factor = (barycentre2 - barycentre1).norm() * def.dot(diff.normalized()) / surface;
+
+    mat_b.first(node_id, node_id) -= factor;
+    mat_b.first(node_id, adjacent_node_id) += factor;
 }
 
 void NeumannTraingularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b) {
