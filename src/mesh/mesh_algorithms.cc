@@ -306,11 +306,21 @@ void ConnectMesh(Mesh2DTriangular& mesh) {
 
         node.adjacent_cells = adjacent_cells;
 
-        for (const auto& cell_id : adjacent_cells) {
+        for (size_t i = 0; i < adjacent_cells.size(); i++) {
+            const size_t cell_id = adjacent_cells.at(i);
             const size_t pos = mesh.cells_.at(cell_id).GetNodePos(n);
             const size_t node_id2 = mesh.cells_.at(cell_id).nodes.at(pos == 2 ? 0 : pos + 1);
 
             node.adjacent_nodes.push_back(node_id2);
+
+            if (i == adjacent_cells.size() - 1) {
+                const size_t node_id2 = mesh.cells_.at(cell_id).nodes.at(pos == 0 ? 2 : pos - 1);
+
+                if (std::find(node.adjacent_nodes.begin(), node.adjacent_nodes.end(), node_id2) ==
+                    node.adjacent_nodes.end()) {
+                    node.adjacent_nodes.push_back(node_id2);
+                }
+            }
         }
 
         // set boundaries
