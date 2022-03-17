@@ -242,6 +242,10 @@ TEST(mesh_algorithms, MSH2ToMesh2DTriangular_2) {
     ASSERT_EQ(2, mesh.nodes_.at(2).boundaries.size());
     ASSERT_EQ(2, mesh.nodes_.at(3).boundaries.size());
     ASSERT_EQ(0, mesh.nodes_.at(4).boundaries.size());
+
+    ASSERT_EQ(1, mesh.nodes_.at(0).adjacent_nodes.at(0));
+    ASSERT_EQ(4, mesh.nodes_.at(0).adjacent_nodes.at(1));
+    ASSERT_EQ(3, mesh.nodes_.at(0).adjacent_nodes.at(2));
 }
 
 }  // namespace hamt
