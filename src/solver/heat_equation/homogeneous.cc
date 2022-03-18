@@ -664,31 +664,27 @@ void CentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, st
     double surface(0.0);
 
     for (size_t c = 1; c < node.adjacent_cells.size(); c++) {
-        const Vector3d barycentre1 = mesh.cells_.at(node.adjacent_cells.at(c - 1)).barycentre;
-        const Vector3d barycentre2 = mesh.cells_.at(node.adjacent_cells.at(c)).barycentre;
+        const Vector3d barycentre1 = mesh.GetBarycentre(node_id, c - 1);
+        const Vector3d barycentre2 = mesh.GetBarycentre(node_id, c);
 
         surface += CalcTriangleSurface(node.position, barycentre1, barycentre2);
     }
 
     for (size_t c = 1; c < node.adjacent_cells.size(); c++) {
-        const size_t adjacent_node_id = node.adjacent_nodes.at(c);
-        const Mesh2DTriangular::Node& adjacent_node = mesh.nodes_.at(adjacent_node_id);
-        const Vector3d barycentre1 = mesh.cells_.at(node.adjacent_cells.at(c - 1)).barycentre;
-        const Vector3d barycentre2 = mesh.cells_.at(node.adjacent_cells.at(c)).barycentre;
-        const double factor = CalcElementFactor(node.position, adjacent_node.position, barycentre1, barycentre2);
+        const Vector3d barycentre1 = mesh.GetBarycentre(node_id, c - 1);
+        const Vector3d barycentre2 = mesh.GetBarycentre(node_id, c);
+        const double factor = CalcElementFactor(node.position, mesh.GetNodePos(node_id, c), barycentre1, barycentre2);
 
         mat_b.first(node_id, node_id) -= factor / surface;
-        mat_b.first(node_id, adjacent_node_id) += factor / surface;
+        mat_b.first(node_id, mesh.GetAdjNodeId(node_id, c)) += factor / surface;
     }
 
-    const size_t adjacent_node_id = node.adjacent_nodes.at(0);
-    const Mesh2DTriangular::Node& adjacent_node = mesh.nodes_.at(adjacent_node_id);
-    const Vector3d barycentre1 = mesh.cells_.at(node.adjacent_cells.at(node.adjacent_cells.size() - 1)).barycentre;
-    const Vector3d barycentre2 = mesh.cells_.at(node.adjacent_cells.at(0)).barycentre;
-    const double factor = CalcElementFactor(node.position, adjacent_node.position, barycentre1, barycentre2);
+    const Vector3d barycentre1 = mesh.GetBarycentre(node_id, node.adjacent_cells.size() - 1);
+    const Vector3d barycentre2 = mesh.GetBarycentre(node_id, 0);
+    const double factor = CalcElementFactor(node.position, mesh.GetNodePos(node_id, 0), barycentre1, barycentre2);
 
     mat_b.first(node_id, node_id) -= factor / surface;
-    mat_b.first(node_id, adjacent_node_id) += factor / surface;
+    mat_b.first(node_id, mesh.GetAdjNodeId(node_id, 0)) += factor / surface;
 }
 
 double CalcTriangleSurface(const Vector3d& point1, const Vector3d& point2, const Vector3d& point3) {
