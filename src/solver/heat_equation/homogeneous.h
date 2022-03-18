@@ -39,6 +39,10 @@ void ConvertMidCylindrical(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DReg
 
 std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTriangular& mesh, const VectorXd& results);
 void CentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b);
+
+double CalcElementFactor(const Vector3d& node_pos, const Vector3d& adj_node_pos, const Vector3d& last_barycenter,
+                         const Vector3d& next_barycenter);
+
 // calculates the vector from distance vector of two points which when pultiplied with the value distance of two points
 // equals the gradient
 Vector3d CalcGradientDiff(const Vector3d& pointing_vec);

@@ -696,6 +696,14 @@ void CentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, st
     mat_b.first(node_id, adjacent_node_id) += factor;
 }
 
+double CalcElementFactor(const Vector3d& node_pos, const Vector3d& adj_node_pos, const Vector3d& last_barycenter,
+                         const Vector3d& next_barycenter) {
+    const Vector3d diff = adj_node_pos - node_pos;
+    const Vector3d grad_diff = CalcGradientDiff(diff);
+
+    return (next_barycenter - last_barycenter).norm() * grad_diff.dot(diff.normalized());
+}
+
 Vector3d CalcGradientDiff(const Vector3d& pointing_vec) {
     Vector3d diff;
 

@@ -1167,4 +1167,20 @@ TEST(heat_equation_homogeneous, GradientDiff) {
     }
 }
 
+TEST(heat_equation_homogeneous, CalcElementFactor) {
+    const Vector3d node_pos(0.0, 0.0, 0.0);
+    const Vector3d adj_node_pos(3.0, 0.0, 0.0);
+    const Vector3d last_barycenter(1.0, -1.0, 0.0);
+    const Vector3d next_barycenter(1.0, 1.0, 0.0);
+
+    const double L = 2.0;
+    const double dx = 3.0;
+    const double ref = L / dx;
+
+    const double result =
+        heat_equation_homogeneous::CalcElementFactor(node_pos, adj_node_pos, last_barycenter, next_barycenter);
+
+    ASSERT_DOUBLE_EQ(ref, result);
+}
+
 }  // namespace hamt
