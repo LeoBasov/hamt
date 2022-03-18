@@ -677,13 +677,8 @@ void CentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, st
         const Vector3d barycentre1 = mesh.cells_.at(node.adjacent_cells.at(c - 1)).barycentre;
         const Vector3d barycentre2 = mesh.cells_.at(node.adjacent_cells.at(c)).barycentre;
         const Vector3d diff = adjacent_node.position - node.position;
-        Vector3d def;
-
-        def(0) = std::abs(diff(0)) < 1e-15 ? 0.0 : 1.0 / diff(0);
-        def(1) = std::abs(diff(1)) < 1e-15 ? 0.0 : 1.0 / diff(1);
-        def(2) = std::abs(diff(2)) < 1e-15 ? 0.0 : 1.0 / diff(2);
-
-        const double factor = (barycentre2 - barycentre1).norm() * def.dot(diff.normalized()) / surface;
+        const Vector3d grad_diff = CalcGradientDiff(diff);
+        const double factor = (barycentre2 - barycentre1).norm() * grad_diff.dot(diff.normalized()) / surface;
 
         mat_b.first(node_id, node_id) -= factor;
         mat_b.first(node_id, adjacent_node_id) += factor;
@@ -694,16 +689,21 @@ void CentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, st
     const Vector3d barycentre1 = mesh.cells_.at(node.adjacent_cells.at(node.adjacent_cells.size() - 1)).barycentre;
     const Vector3d barycentre2 = mesh.cells_.at(node.adjacent_cells.at(0)).barycentre;
     const Vector3d diff = adjacent_node.position - node.position;
-    Vector3d def;
-
-    def(0) = std::abs(diff(0)) < 1e-15 ? 0.0 : 1.0 / diff(0);
-    def(1) = std::abs(diff(1)) < 1e-15 ? 0.0 : 1.0 / diff(1);
-    def(2) = std::abs(diff(2)) < 1e-15 ? 0.0 : 1.0 / diff(2);
-
-    const double factor = (barycentre2 - barycentre1).norm() * def.dot(diff.normalized()) / surface;
+    const Vector3d grad_diff = CalcGradientDiff(diff);
+    const double factor = (barycentre2 - barycentre1).norm() * grad_diff.dot(diff.normalized()) / surface;
 
     mat_b.first(node_id, node_id) -= factor;
     mat_b.first(node_id, adjacent_node_id) += factor;
+}
+
+Vector3d CalcGradientDiff(const Vector3d& pointing_vec) {
+    Vector3d diff;
+
+    for (long i = 0; i < pointing_vec.size(); i++) {
+        diff(i) = (std::abs(pointing_vec(i)) < 1e-15 ? 0.0 : 1.0 / pointing_vec(i));
+    }
+
+    return diff;
 }
 
 void NeumannTraingularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b) {
@@ -790,16 +790,6 @@ void NeumannTraingularMesh(const Mesh2DTriangular& mesh, const size_t node_id, s
     }
 
     mat_b.second(node_id) = 0.5 * (boundary1.value + boundary2.value);
-}
-
-Vector3d CalcGradientDiff(const Vector3d& pointing_vec) {
-    Vector3d diff;
-
-    for (long i = 0; i < pointing_vec.size(); i++) {
-        diff(i) = (std::abs(pointing_vec(i)) < 1e-15 ? 0.0 : 1.0 / pointing_vec(i));
-    }
-
-    return diff;
 }
 
 }  // namespace heat_equation_homogeneous
