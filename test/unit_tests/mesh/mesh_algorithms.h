@@ -219,6 +219,10 @@ TEST(mesh_algorithms, MSH2ToMesh2DTriangular_2) {
         ASSERT_DOUBLE_EQ(barycentre(0), cell.barycentre(0));
         ASSERT_DOUBLE_EQ(barycentre(1), cell.barycentre(1));
         ASSERT_DOUBLE_EQ(barycentre(2), cell.barycentre(2));
+
+        ASSERT_DOUBLE_EQ(barycentre(0), mesh.GetBarycentre(i)(0));
+        ASSERT_DOUBLE_EQ(barycentre(1), mesh.GetBarycentre(i)(1));
+        ASSERT_DOUBLE_EQ(barycentre(2), mesh.GetBarycentre(i)(2));
     }
 
     ASSERT_DOUBLE_EQ(0, mesh.cells_.at(0).boundaries.at(2));
@@ -230,6 +234,10 @@ TEST(mesh_algorithms, MSH2ToMesh2DTriangular_2) {
     ASSERT_EQ(2, mesh.nodes_.at(4).adjacent_cells.at(1));
     ASSERT_EQ(3, mesh.nodes_.at(4).adjacent_cells.at(2));
     ASSERT_EQ(1, mesh.nodes_.at(4).adjacent_cells.at(3));
+
+    ASSERT_DOUBLE_EQ(mesh.nodes_.at(0).position(0), mesh.GetNodePos(4, 0)(0));
+    ASSERT_DOUBLE_EQ(mesh.nodes_.at(0).position(1), mesh.GetNodePos(4, 0)(1));
+    ASSERT_DOUBLE_EQ(mesh.nodes_.at(0).position(2), mesh.GetNodePos(4, 0)(2));
 
     ASSERT_EQ(3, mesh.nodes_.at(0).adjacent_nodes.size());
     ASSERT_EQ(3, mesh.nodes_.at(1).adjacent_nodes.size());

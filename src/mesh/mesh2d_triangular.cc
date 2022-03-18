@@ -17,6 +17,18 @@ void Mesh2DTriangular::Clear() {
     boundary_names_.clear();
 }
 
+Vector3d Mesh2DTriangular::GetBarycentre(size_t celld_id) const { return cells_.at(celld_id).barycentre; }
+
+Vector3d Mesh2DTriangular::GetBarycentre(size_t node_id, size_t adjacent_cell_id) const {
+    return GetBarycentre(nodes_.at(node_id).adjacent_cells.at(adjacent_cell_id));
+}
+
+Vector3d Mesh2DTriangular::GetNodePos(size_t node_id) const { return nodes_.at(node_id).position; }
+
+Vector3d Mesh2DTriangular::GetNodePos(size_t node_id, size_t adjacent_node_id) const {
+    return GetNodePos(nodes_.at(node_id).adjacent_nodes.at(adjacent_node_id));
+}
+
 size_t Mesh2DTriangular::Cell::GetNodePos(const size_t& node_id) const {
     const auto& iter = std::find(nodes.begin(), nodes.end(), node_id);
 
