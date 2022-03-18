@@ -792,5 +792,15 @@ void NeumannTraingularMesh(const Mesh2DTriangular& mesh, const size_t node_id, s
     mat_b.second(node_id) = 0.5 * (boundary1.value + boundary2.value);
 }
 
+Vector3d CalcGradientDiff(const Vector3d& pointing_vec) {
+    Vector3d diff;
+
+    for (long i = 0; i < pointing_vec.size(); i++) {
+        diff(i) = (std::abs(pointing_vec(i)) < 1e-15 ? 0.0 : 1.0 / pointing_vec(i));
+    }
+
+    return diff;
+}
+
 }  // namespace heat_equation_homogeneous
 }  // namespace hamt

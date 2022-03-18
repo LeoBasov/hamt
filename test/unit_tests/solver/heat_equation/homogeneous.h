@@ -1157,4 +1157,14 @@ TEST(heat_equation_homogeneous, ConvertMesh2dRegularCartesian) {
     }
 }
 
+TEST(heat_equation_homogeneous, GradientDiff) {
+    const Vector3d pointing_vec(-3.0, 5.0, 0.0);
+    const Vector3d ref(-1.0 / 3.0, 1.0 / 5.0, 0.0);
+    const Vector3d resutls = heat_equation_homogeneous::CalcGradientDiff(pointing_vec);
+
+    for (long i = 0; i < 3; i++) {
+        ASSERT_DOUBLE_EQ(ref(i), resutls(i));
+    }
+}
+
 }  // namespace hamt
