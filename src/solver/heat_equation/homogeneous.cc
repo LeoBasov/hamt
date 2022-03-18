@@ -676,24 +676,20 @@ void CentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, st
         const Mesh2DTriangular::Node& adjacent_node = mesh.nodes_.at(adjacent_node_id);
         const Vector3d barycentre1 = mesh.cells_.at(node.adjacent_cells.at(c - 1)).barycentre;
         const Vector3d barycentre2 = mesh.cells_.at(node.adjacent_cells.at(c)).barycentre;
-        const Vector3d diff = adjacent_node.position - node.position;
-        const Vector3d grad_diff = CalcGradientDiff(diff);
-        const double factor = (barycentre2 - barycentre1).norm() * grad_diff.dot(diff.normalized()) / surface;
+        const double factor = CalcElementFactor(node.position, adjacent_node.position, barycentre1, barycentre2);
 
-        mat_b.first(node_id, node_id) -= factor;
-        mat_b.first(node_id, adjacent_node_id) += factor;
+        mat_b.first(node_id, node_id) -= factor / surface;
+        mat_b.first(node_id, adjacent_node_id) += factor / surface;
     }
 
     const size_t adjacent_node_id = node.adjacent_nodes.at(0);
     const Mesh2DTriangular::Node& adjacent_node = mesh.nodes_.at(adjacent_node_id);
     const Vector3d barycentre1 = mesh.cells_.at(node.adjacent_cells.at(node.adjacent_cells.size() - 1)).barycentre;
     const Vector3d barycentre2 = mesh.cells_.at(node.adjacent_cells.at(0)).barycentre;
-    const Vector3d diff = adjacent_node.position - node.position;
-    const Vector3d grad_diff = CalcGradientDiff(diff);
-    const double factor = (barycentre2 - barycentre1).norm() * grad_diff.dot(diff.normalized()) / surface;
+    const double factor = CalcElementFactor(node.position, adjacent_node.position, barycentre1, barycentre2);
 
-    mat_b.first(node_id, node_id) -= factor;
-    mat_b.first(node_id, adjacent_node_id) += factor;
+    mat_b.first(node_id, node_id) -= factor / surface;
+    mat_b.first(node_id, adjacent_node_id) += factor / surface;
 }
 
 double CalcElementFactor(const Vector3d& node_pos, const Vector3d& adj_node_pos, const Vector3d& last_barycenter,
