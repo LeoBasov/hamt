@@ -46,11 +46,14 @@ class Mesh2DTriangular {
 
     void Clear();
 
+    size_t GetAdjNodeId(size_t node_id, size_t adjacent_node_pos) const;
+    size_t GetAdjCellId(size_t node_id, size_t adjacent_cell_pos) const;
+
     Vector3d GetBarycentre(size_t celld_id) const;
-    Vector3d GetBarycentre(size_t node_id, size_t adjacent_cell_id) const;
+    Vector3d GetBarycentre(size_t node_id, size_t adjacent_cell_pos) const;
 
     Vector3d GetNodePos(size_t node_id) const;
-    Vector3d GetNodePos(size_t node_id, size_t adjacent_node_id) const;
+    Vector3d GetNodePos(size_t node_id, size_t adjacent_node_pos) const;
 
     std::vector<Node> nodes_;
     std::vector<Cell> cells_;
