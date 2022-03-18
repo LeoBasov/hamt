@@ -664,11 +664,10 @@ void CentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, st
     double surface(0.0);
 
     for (size_t c = 1; c < node.adjacent_cells.size(); c++) {
-        const Vector3d barycentre_dist1 = mesh.cells_.at(node.adjacent_cells.at(c - 1)).barycentre - node.position;
-        const Vector3d barycentre_dist2 = mesh.cells_.at(node.adjacent_cells.at(c)).barycentre - node.position;
-        const Vector3d cross = barycentre_dist1.cross(barycentre_dist2);
+        const Vector3d barycentre1 = mesh.cells_.at(node.adjacent_cells.at(c - 1)).barycentre;
+        const Vector3d barycentre2 = mesh.cells_.at(node.adjacent_cells.at(c)).barycentre;
 
-        surface += 0.5 * cross.norm();
+        surface += CalcTriangleSurface(node.position, barycentre1, barycentre2);
     }
 
     for (size_t c = 1; c < node.adjacent_cells.size(); c++) {
