@@ -40,6 +40,7 @@ void ConvertMidCylindrical(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DReg
 std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTriangular& mesh, const VectorXd& results);
 void CentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b);
 
+double CalcTriangleSurface(const Vector3d& point1, const Vector3d& point2, const Vector3d& point3);
 double CalcElementFactor(const Vector3d& node_pos, const Vector3d& adj_node_pos, const Vector3d& last_barycenter,
                          const Vector3d& next_barycenter);
 

@@ -692,6 +692,14 @@ void CentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, st
     mat_b.first(node_id, adjacent_node_id) += factor / surface;
 }
 
+double CalcTriangleSurface(const Vector3d& point1, const Vector3d& point2, const Vector3d& point3) {
+    const Vector3d dist1 = point2 - point1;
+    const Vector3d dist2 = point3 - point1;
+    const Vector3d cross = dist1.cross(dist2);
+
+    return 0.5 * cross.norm();
+}
+
 double CalcElementFactor(const Vector3d& node_pos, const Vector3d& adj_node_pos, const Vector3d& last_barycenter,
                          const Vector3d& next_barycenter) {
     const Vector3d diff = adj_node_pos - node_pos;

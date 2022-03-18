@@ -1183,4 +1183,14 @@ TEST(heat_equation_homogeneous, CalcElementFactor) {
     ASSERT_DOUBLE_EQ(ref, result);
 }
 
+TEST(heat_equation_homogeneous, CalcTriangleSurface) {
+    const Vector3d point1(0.0, 0.0, 0.0);
+    const Vector3d point2(1.0, 0.0, 0.0);
+    const Vector3d point3(0.0, 1.0, 0.0);
+    const double ref = 0.5;
+    const double result = heat_equation_homogeneous::CalcTriangleSurface(point2, point1, point3);
+
+    ASSERT_DOUBLE_EQ(ref, result);
+}
+
 }  // namespace hamt
