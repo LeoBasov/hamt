@@ -49,3 +49,40 @@ This leads to
   \nabla^2 f = \frac{1}{A_C} \cdot \sum_i^N \frac{f_{i} - f_C}{|\vec{r}_{i}|} \cdot |\vec{b}_{i + 1} - \vec{b}_{i}| .
 \end{equation}
 %----------------------------------------------------------------
+
+\section{Gradient}
+Is given as
+\begin{equation}
+  \nabla f_c = \frac{1}{2 A_c} \sum_{i = 1}^3 f_i \cdot
+  \begin{bmatrix}
+    -e_{i, y} \\
+    e_{i, x} \\
+    e_{i, z}
+  \end{bmatrix}
+\end{equation}
+where $\vec{e}_i$ is the vector reptreseting the ith vertex and is rotated to point to the cell centre and $f_i$ is the function value at the vertix i.
+\begin{equation}
+  f_i = \frac{1}{2} \cdot (f_{i, 0} + f_{i, 1})
+\end{equation}
+where $f_{i, k}$ is the value of the kth node of the vertex.
+\begin{equation}
+  \vec{e}_i = \vec{e}_{i, 1} - \vec{e}_{i, 0}
+\end{equation}
+Leads to
+\begin{equation}
+  \nabla f_c = \frac{1}{4 A_c} \sum_{k = 2}^3 \left( (f_k + f_{k - 1}) \cdot
+  \begin{bmatrix}
+    -(\vec{x}_{k} - \vec{x}_{k - 1})_y\\
+    (\vec{x}_{k} - \vec{x}_{k - 1})_x \\
+    (\vec{x}_{k} - \vec{x}_{k - 1})_z
+  \end{bmatrix}
+  \right)
+\end{equation}
+The derevative at given point $p$ sorounded by cells is given as
+\begin{equation}
+  \nabla f_p = \frac{1}{\sum_{c = 1}^N A_c} \cdot \sum_{c = 1}^N \nabla f_c \cdot A_c
+\end{equation}
+since we are only interested in the normal derivative at point p
+\begin{equation}
+  \left|\nabla f_p\right|_{\vec{n}_p} = \frac{1}{\sum_{c = 1}^N A_c} \cdot \sum_{c = 1}^N \nabla f_c \cdot \vec{n}_p \cdot A_c
+\end{equation}
