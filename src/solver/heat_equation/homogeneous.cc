@@ -661,30 +661,42 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTrian
 
 void CentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b) {
     const Mesh2DTriangular::Node& node = mesh.nodes_.at(node_id);
-    double surface(0.0);
+    Matrix3d rot_mat = Matrix3d::Zero();
 
-    for (size_t c = 1; c < node.adjacent_cells.size(); c++) {
-        const Vector3d barycentre1 = mesh.GetBarycentre(node_id, c - 1);
-        const Vector3d barycentre2 = mesh.GetBarycentre(node_id, c);
+    rot_mat(0, 1) = 1.0;
+    rot_mat(1, 0) = -1.0;
+    rot_mat(2, 2) = 1.0;
 
-        surface += CalcTriangleSurface(node.position, barycentre1, barycentre2);
+    for (size_t c = 0; c < node.adjacent_cells.size(); c++) {
+        const size_t pos_i = c;
+        const size_t pos_ip = c == node.adjacent_cells.size() - 1 ? 0 : c + 1;
+        const size_t cell_id_i = node.adjacent_cells.at(pos_i);
+        const size_t cell_id_ip = node.adjacent_cells.at(pos_ip);
+        const Mesh2DTriangular::Cell& cell_i = mesh.cells_.at(cell_id_i);
+        const Mesh2DTriangular::Cell& cell_ip = mesh.cells_.at(cell_id_ip);
+        const double surface = mesh.GetCellArea(cell_id_i) + mesh.GetCellArea(cell_id_ip);
+        const Vector3d bary_vec = rot_mat * (mesh.GetBarycentre(node_id, pos_ip) - mesh.GetBarycentre(node_id, pos_i));
+
+        for (size_t i = 0; i < 3; i++) {
+            const size_t pos_im = i == 0 ? 2 : i - 1;
+            const size_t pos_ip = i == 2 ? 0 : i + 1;
+            const size_t node_id_b_im = cell_i.nodes.at(pos_im);
+            const size_t node_id_b_ip = cell_i.nodes.at(pos_ip);
+            const size_t node_id_bp_im = cell_ip.nodes.at(pos_im);
+            const size_t node_id_bp_ip = cell_ip.nodes.at(pos_ip);
+            const size_t node_id_b_i = cell_i.nodes.at(i);
+            const size_t node_id_bp_i = cell_ip.nodes.at(i);
+            const Vector3d node_pos_b_im = mesh.GetNodePos(node_id_b_im);
+            const Vector3d node_pos_b_ip = mesh.GetNodePos(node_id_b_ip);
+            const Vector3d node_pos_bp_im = mesh.GetNodePos(node_id_bp_im);
+            const Vector3d node_pos_bp_ip = mesh.GetNodePos(node_id_bp_ip);
+
+            mat_b.first(node_id, node_id_b_i) +=
+                (1.0 / (2.0 * surface)) * (rot_mat * (node_pos_b_ip - node_pos_b_im)).dot(bary_vec);
+            mat_b.first(node_id, node_id_bp_i) +=
+                (1.0 / (2.0 * surface)) * (rot_mat * (node_pos_bp_ip - node_pos_bp_im)).dot(bary_vec);
+        }
     }
-
-    for (size_t c = 1; c < node.adjacent_cells.size(); c++) {
-        const Vector3d barycentre1 = mesh.GetBarycentre(node_id, c - 1);
-        const Vector3d barycentre2 = mesh.GetBarycentre(node_id, c);
-        const double factor = CalcElementFactor(node.position, mesh.GetNodePos(node_id, c), barycentre1, barycentre2);
-
-        mat_b.first(node_id, node_id) -= factor / surface;
-        mat_b.first(node_id, mesh.GetAdjNodeId(node_id, c)) += factor / surface;
-    }
-
-    const Vector3d barycentre1 = mesh.GetBarycentre(node_id, node.adjacent_cells.size() - 1);
-    const Vector3d barycentre2 = mesh.GetBarycentre(node_id, 0);
-    const double factor = CalcElementFactor(node.position, mesh.GetNodePos(node_id, 0), barycentre1, barycentre2);
-
-    mat_b.first(node_id, node_id) -= factor / surface;
-    mat_b.first(node_id, mesh.GetAdjNodeId(node_id, 0)) += factor / surface;
 }
 
 double CalcTriangleSurface(const Vector3d& point1, const Vector3d& point2, const Vector3d& point3) {
