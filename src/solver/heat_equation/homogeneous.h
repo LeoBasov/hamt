@@ -39,17 +39,7 @@ void ConvertMidCylindrical(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DReg
 
 std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTriangular& mesh, const VectorXd& results);
 void CentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b);
-
-double CalcTriangleSurface(const Vector3d& point1, const Vector3d& point2, const Vector3d& point3);
-double CalcElementFactor(const Vector3d& node_pos, const Vector3d& adj_node_pos, const Vector3d& last_barycenter,
-                         const Vector3d& next_barycenter);
-
-// calculates the vector from distance vector of two points which when pultiplied with the value distance of two points
-// equals the gradient
-Vector3d CalcGradientDiff(const Vector3d& pointing_vec);
 void NeumannTraingularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b);
-std::array<double, 3> GetNeumannCoefficients(const Mesh2DTriangular& mesh, const size_t cell_id,
-                                             const size_t boundary_id);
 
 }  // namespace heat_equation_homogeneous
 }  // namespace hamt

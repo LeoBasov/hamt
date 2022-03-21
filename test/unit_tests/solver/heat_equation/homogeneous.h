@@ -1157,40 +1157,4 @@ TEST(heat_equation_homogeneous, ConvertMesh2dRegularCartesian) {
     }
 }
 
-TEST(heat_equation_homogeneous, GradientDiff) {
-    const Vector3d pointing_vec(-3.0, 5.0, 0.0);
-    const Vector3d ref(-1.0 / 3.0, 1.0 / 5.0, 0.0);
-    const Vector3d resutls = heat_equation_homogeneous::CalcGradientDiff(pointing_vec);
-
-    for (long i = 0; i < 3; i++) {
-        ASSERT_DOUBLE_EQ(ref(i), resutls(i));
-    }
-}
-
-TEST(heat_equation_homogeneous, CalcElementFactor) {
-    const Vector3d node_pos(0.0, 0.0, 0.0);
-    const Vector3d adj_node_pos(3.0, 0.0, 0.0);
-    const Vector3d last_barycenter(1.0, -1.0, 0.0);
-    const Vector3d next_barycenter(1.0, 1.0, 0.0);
-
-    const double L = 2.0;
-    const double dx = 3.0;
-    const double ref = L / dx;
-
-    const double result =
-        heat_equation_homogeneous::CalcElementFactor(node_pos, adj_node_pos, last_barycenter, next_barycenter);
-
-    ASSERT_DOUBLE_EQ(ref, result);
-}
-
-TEST(heat_equation_homogeneous, CalcTriangleSurface) {
-    const Vector3d point1(0.0, 0.0, 0.0);
-    const Vector3d point2(1.0, 0.0, 0.0);
-    const Vector3d point3(0.0, 1.0, 0.0);
-    const double ref = 0.5;
-    const double result = heat_equation_homogeneous::CalcTriangleSurface(point2, point1, point3);
-
-    ASSERT_DOUBLE_EQ(ref, result);
-}
-
 }  // namespace hamt
