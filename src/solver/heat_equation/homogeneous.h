@@ -48,6 +48,8 @@ double CalcElementFactor(const Vector3d& node_pos, const Vector3d& adj_node_pos,
 // equals the gradient
 Vector3d CalcGradientDiff(const Vector3d& pointing_vec);
 void NeumannTraingularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b);
+std::array<double, 3> GetNeumannCoefficients(const Mesh2DTriangular& mesh, const size_t cell_id,
+                                             const size_t boundary_id);
 
 }  // namespace heat_equation_homogeneous
 }  // namespace hamt

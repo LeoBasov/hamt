@@ -55,8 +55,6 @@ class Mesh2DTriangular {
     Vector3d GetNodePos(size_t node_id) const;
     Vector3d GetNodePos(size_t node_id, size_t adjacent_node_pos) const;
 
-    std::array<double, 3> GetNeumannCoefficients(const size_t cell_id, const size_t boundary_id) const;
-
     double GetCellArea(const size_t cell_id) const;
 
     std::vector<Node> nodes_;

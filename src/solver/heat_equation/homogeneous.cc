@@ -719,8 +719,8 @@ void NeumannTraingularMesh(const Mesh2DTriangular& mesh, const size_t node_id, s
     const Mesh2DTriangular::Boundary& boundary2 = mesh.boundaries_.at(node.boundaries.at(1));
     const size_t cell_id1 = node.adjacent_cells.front();
     const size_t cell_id2 = node.adjacent_cells.back();
-    const std::array<double, 3> coeffs1 = mesh.GetNeumannCoefficients(cell_id1, node.boundaries.at(0));
-    const std::array<double, 3> coeffs2 = mesh.GetNeumannCoefficients(cell_id2, node.boundaries.at(1));
+    const std::array<double, 3> coeffs1 = GetNeumannCoefficients(mesh, cell_id1, node.boundaries.at(0));
+    const std::array<double, 3> coeffs2 = GetNeumannCoefficients(mesh, cell_id2, node.boundaries.at(1));
     const Mesh2DTriangular::Cell& cell1 = mesh.cells_.at(cell_id1);
     const Mesh2DTriangular::Cell& cell2 = mesh.cells_.at(cell_id2);
     const double area1 = mesh.GetCellArea(cell_id1);
@@ -740,6 +740,47 @@ void NeumannTraingularMesh(const Mesh2DTriangular& mesh, const size_t node_id, s
     }
 
     mat_b.second(node_id) = (area1 * boundary1.value + area2 * boundary2.value) / area_tot;
+}
+
+std::array<double, 3> GetNeumannCoefficients(const Mesh2DTriangular& mesh, const size_t cell_id,
+                                             const size_t boundary_id) {
+    const Mesh2DTriangular::Cell& cell = mesh.cells_.at(cell_id);
+    std::array<double, 3> coeffs;
+    Vector3d boundary_normal;
+    Matrix3d rot_mat = Matrix3d::Zero();
+    int node_pos2, node_pos1 = -1;
+    size_t node_id1, node_id2;
+
+    rot_mat(0, 1) = 1.0;
+    rot_mat(1, 0) = -1.0;
+    rot_mat(2, 2) = 1.0;
+
+    for (int i = 0; i < 3; i++) {
+        if (cell.boundaries.at(i) == boundary_id) {
+            node_pos1 = i;
+            break;
+        }
+    }
+
+    rot_mat(0, 0) = 0.0;
+
+    node_pos2 = node_pos1 == 2 ? 0 : node_pos1 + 1;
+    node_id1 = cell.nodes.at(node_pos1);
+    node_id2 = cell.nodes.at(node_pos2);
+
+    boundary_normal = (mesh.GetNodePos(node_id2) - mesh.GetNodePos(node_id1)).normalized();
+    boundary_normal = rot_mat * boundary_normal;
+
+    for (size_t i = 0; i < 3; i++) {
+        Vector3d r_ip_im;
+
+        node_pos1 = i == 0 ? 2 : i - 1;
+        node_pos2 = i == 2 ? 0 : i + 1;
+        r_ip_im = mesh.GetNodePos(cell.nodes.at(node_pos2)) - mesh.GetNodePos(cell.nodes.at(node_pos1));
+        coeffs.at(i) = 0.5 * (rot_mat * r_ip_im).dot(boundary_normal);
+    }
+
+    return coeffs;
 }
 
 }  // namespace heat_equation_homogeneous

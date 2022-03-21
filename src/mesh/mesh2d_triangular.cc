@@ -37,46 +37,6 @@ Vector3d Mesh2DTriangular::GetNodePos(size_t node_id, size_t adjacent_node_pos) 
     return GetNodePos(GetAdjNodeId(node_id, adjacent_node_pos));
 }
 
-std::array<double, 3> Mesh2DTriangular::GetNeumannCoefficients(const size_t cell_id, const size_t boundary_id) const {
-    const Cell& cell = cells_.at(cell_id);
-    std::array<double, 3> coeffs;
-    Vector3d boundary_normal;
-    Matrix3d rot_mat = Matrix3d::Zero();
-    int node_pos2, node_pos1 = -1;
-    size_t node_id1, node_id2;
-
-    rot_mat(0, 1) = 1.0;
-    rot_mat(1, 0) = -1.0;
-    rot_mat(2, 2) = 1.0;
-
-    for (int i = 0; i < 3; i++) {
-        if (cell.boundaries.at(i) == boundary_id) {
-            node_pos1 = i;
-            break;
-        }
-    }
-
-    rot_mat(0, 0) = 0.0;
-
-    node_pos2 = node_pos1 == 2 ? 0 : node_pos1 + 1;
-    node_id1 = cell.nodes.at(node_pos1);
-    node_id2 = cell.nodes.at(node_pos2);
-
-    boundary_normal = (GetNodePos(node_id2) - GetNodePos(node_id1)).normalized();
-    boundary_normal = rot_mat * boundary_normal;
-
-    for (size_t i = 0; i < 3; i++) {
-        Vector3d r;
-
-        node_pos1 = i == 0 ? 2 : i - 1;
-        node_pos2 = i == 2 ? 0 : i + 1;
-        r = GetNodePos(cell.nodes.at(node_pos2)) - GetNodePos(cell.nodes.at(node_pos1));
-        coeffs.at(i) = 0.5 * (rot_mat * r).dot(boundary_normal);
-    }
-
-    return coeffs;
-}
-
 double Mesh2DTriangular::GetCellArea(const size_t cell_id) const {
     const Cell& cell = cells_.at(cell_id);
     const Vector3d point1 = GetNodePos(cell.nodes.at(0));
