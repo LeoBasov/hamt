@@ -729,29 +729,42 @@ void NeumannTraingularMesh(const Mesh2DTriangular& mesh, const size_t node_id, s
     const Mesh2DTriangular::Node& node = mesh.nodes_.at(node_id);
     const Mesh2DTriangular::Boundary& boundary1 = mesh.boundaries_.at(node.boundaries.at(0));
     const Mesh2DTriangular::Boundary& boundary2 = mesh.boundaries_.at(node.boundaries.at(1));
-    const size_t cell_id1 = node.adjacent_cells.front();
-    const size_t cell_id2 = node.adjacent_cells.back();
-    const std::array<double, 3> coeffs1 = GetNeumannCoefficients(mesh, cell_id1, node.boundaries.at(0));
-    const std::array<double, 3> coeffs2 = GetNeumannCoefficients(mesh, cell_id2, node.boundaries.at(1));
-    const Mesh2DTriangular::Cell& cell1 = mesh.cells_.at(cell_id1);
-    const Mesh2DTriangular::Cell& cell2 = mesh.cells_.at(cell_id2);
-    const double area1 = mesh.GetCellArea(cell_id1);
-    const double area2 = mesh.GetCellArea(cell_id2);
-    const double area_tot = area1 + area2;
+    const Vector3d node_im = mesh.GetNodePos(node_id, 0);
+    const Vector3d node_ip = mesh.GetNodePos(node_id, node.adjacent_nodes.size() - 1);
+    Vector3d nomal;
+    Matrix3d rot_mat = Matrix3d::Zero();
+    double surface = 0.0;
 
-    for (size_t i = 0; i < 3; i++) {
-        const size_t loc_node_id = cell1.nodes.at(i);
+    rot_mat(0, 1) = 1.0;
+    rot_mat(1, 0) = -1.0;
+    rot_mat(2, 2) = 1.0;
 
-        mat_b.first(node_id, loc_node_id) += coeffs1.at(i) / area_tot;
+    nomal = (0.5*rot_mat*(node_im - node.position) + 0.5*rot_mat*(node.position - node_ip)).normalized();
+
+    for (size_t c = 0; c < node.adjacent_cells.size(); c++) {
+        const size_t cell_id = node.adjacent_cells.at(c);
+        const Mesh2DTriangular::Cell& cell = mesh.cells_.at(cell_id);
+        surface += mesh.GetCellArea(cell_id);
     }
 
-    for (size_t i = 0; i < 3; i++) {
-        const size_t loc_node_id = cell2.nodes.at(i);
+    for (size_t c = 0; c < node.adjacent_cells.size(); c++) {
+        const size_t cell_id = node.adjacent_cells.at(c);
+        const Mesh2DTriangular::Cell& cell = mesh.cells_.at(cell_id);
 
-        mat_b.first(node_id, loc_node_id) += coeffs2.at(i) / area_tot;
+        for (size_t i = 0; i < 3; i++) {
+            const size_t pos_im = i == 0 ? 2 : i - 1;
+            const size_t pos_ip = i == 2 ? 0 : i + 1;
+            const size_t node_id_im = cell.nodes.at(pos_im);
+            const size_t node_id_ip = cell.nodes.at(pos_ip);
+            const size_t node_id_i = cell.nodes.at(i);
+            const Vector3d node_pos_im = mesh.GetNodePos(node_id_im);
+            const Vector3d node_pos_ip = mesh.GetNodePos(node_id_ip);
+
+            mat_b.first(node_id, node_id_i) += (1.0 / (2.0 * surface)) * (rot_mat * (node_pos_ip - node_pos_im)).dot(nomal);
+        }
     }
 
-    mat_b.second(node_id) = (area1 * boundary1.value + area2 * boundary2.value) / area_tot;
+    mat_b.second(node_id) = (boundary1.value + boundary2.value) / 2.0;
 }
 
 std::array<double, 3> GetNeumannCoefficients(const Mesh2DTriangular& mesh, const size_t cell_id,
