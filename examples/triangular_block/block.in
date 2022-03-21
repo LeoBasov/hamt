@@ -1,17 +1,17 @@
 # First test
 
-read triangl_mesh block_single_very_fine.msh
+read triangl_mesh block_single.msh
 info triangl_mesh
 
-set triangl_mesh bound_value buttom 300
-set triangl_mesh bound_value right 100
+set triangl_mesh bound_value buttom 100
+set triangl_mesh bound_value right 0
 set triangl_mesh bound_value top 300
-set triangl_mesh bound_value left 100
+set triangl_mesh bound_value left 0
 
 set triangl_mesh bound_type buttom dirichlet
-set triangl_mesh bound_type right dirichlet
+set triangl_mesh bound_type right neumann
 set triangl_mesh bound_type top dirichlet
-set triangl_mesh bound_type left dirichlet
+set triangl_mesh bound_type left neumann
 
 set writer triangl_mesh vtk on
 set writer triangl_mesh vtk file_name cube_triangl

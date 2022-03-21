@@ -34,6 +34,6 @@ Physical Surface("surf", 1) = {1};
 //+
 Transfinite Surface {1} = {1, 2, 3, 4};
 //+
-Transfinite Curve {4, 2} = 10 Using Progression 1;
+Transfinite Curve {4, 2} = 3 Using Progression 1;
 //+
-Transfinite Curve {3, 1} = 10 Using Progression 1;
+Transfinite Curve {3, 1} = 3 Using Progression 1;
