@@ -637,7 +637,7 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTrian
 
             if (boundary1.type == Mesh2DTriangular::BoundaryType::DIRICHLET &&
                 boundary2.type == Mesh2DTriangular::BoundaryType::DIRICHLET) {
-                mat_b.second(i) = 0.5*(boundary1.value + boundary2.value);
+                mat_b.second(i) = 0.5 * (boundary1.value + boundary2.value);
                 mat_b.first(i, i) = 1.0;
             } else if (boundary1.type == Mesh2DTriangular::BoundaryType::DIRICHLET) {
                 mat_b.second(i) = boundary1.value;
@@ -739,7 +739,7 @@ void NeumannTraingularMesh(const Mesh2DTriangular& mesh, const size_t node_id, s
     rot_mat(1, 0) = -1.0;
     rot_mat(2, 2) = 1.0;
 
-    nomal = (0.5*rot_mat*(node_im - node.position) + 0.5*rot_mat*(node.position - node_ip)).normalized();
+    nomal = (0.5 * rot_mat * (node_im - node.position) + 0.5 * rot_mat * (node.position - node_ip)).normalized();
 
     for (size_t c = 0; c < node.adjacent_cells.size(); c++) {
         const size_t cell_id = node.adjacent_cells.at(c);
@@ -760,7 +760,8 @@ void NeumannTraingularMesh(const Mesh2DTriangular& mesh, const size_t node_id, s
             const Vector3d node_pos_im = mesh.GetNodePos(node_id_im);
             const Vector3d node_pos_ip = mesh.GetNodePos(node_id_ip);
 
-            mat_b.first(node_id, node_id_i) += (1.0 / (2.0 * surface)) * (rot_mat * (node_pos_ip - node_pos_im)).dot(nomal);
+            mat_b.first(node_id, node_id_i) +=
+                (1.0 / (2.0 * surface)) * (rot_mat * (node_pos_ip - node_pos_im)).dot(nomal);
         }
     }
 
