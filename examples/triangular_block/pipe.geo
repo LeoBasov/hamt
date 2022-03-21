@@ -16,6 +16,8 @@ Physical Curve("outer") = {2};
 //+
 Physical Curve("inner") = {1};
 //+
-Physical Curve("cut") = {4, 3};
+Physical Curve("cut1") = {4};
+//+
+Physical Curve("cut2") = {3};
 //+
 Physical Surface("surf") = {1};
