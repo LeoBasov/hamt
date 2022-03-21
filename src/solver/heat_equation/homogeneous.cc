@@ -690,11 +690,13 @@ void CentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, st
             const Vector3d node_pos_b_ip = mesh.GetNodePos(node_id_b_ip);
             const Vector3d node_pos_bp_im = mesh.GetNodePos(node_id_bp_im);
             const Vector3d node_pos_bp_ip = mesh.GetNodePos(node_id_bp_ip);
+            const Mesh2DTriangular::Surface& surface_i = mesh.surfaces_.at(cell_i.surface_id);
+            const Mesh2DTriangular::Surface& surface_ip = mesh.surfaces_.at(cell_ip.surface_id);
 
-            mat_b.first(node_id, node_id_b_i) +=
-                (1.0 / (2.0 * surface)) * (rot_mat * (node_pos_b_ip - node_pos_b_im)).dot(bary_vec);
-            mat_b.first(node_id, node_id_bp_i) +=
-                (1.0 / (2.0 * surface)) * (rot_mat * (node_pos_bp_ip - node_pos_bp_im)).dot(bary_vec);
+            mat_b.first(node_id, node_id_b_i) += surface_i.thermal_conductivity * (1.0 / (2.0 * surface)) *
+                                                 (rot_mat * (node_pos_b_ip - node_pos_b_im)).dot(bary_vec);
+            mat_b.first(node_id, node_id_bp_i) += surface_ip.thermal_conductivity * (1.0 / (2.0 * surface)) *
+                                                  (rot_mat * (node_pos_bp_ip - node_pos_bp_im)).dot(bary_vec);
         }
     }
 }
