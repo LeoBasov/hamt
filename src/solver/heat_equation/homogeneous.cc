@@ -717,18 +717,29 @@ void NeumannTraingularMesh(const Mesh2DTriangular& mesh, const size_t node_id, s
     const Mesh2DTriangular::Node& node = mesh.nodes_.at(node_id);
     const Mesh2DTriangular::Boundary& boundary1 = mesh.boundaries_.at(node.boundaries.at(0));
     const Mesh2DTriangular::Boundary& boundary2 = mesh.boundaries_.at(node.boundaries.at(1));
+    const size_t cell_id1 = node.adjacent_cells.front();
+    const size_t cell_id2 = node.adjacent_cells.back();
+    const std::array<double, 3> coeffs1 = mesh.GetNeumannCoefficients(cell_id1, node.boundaries.at(0));
+    const std::array<double, 3> coeffs2 = mesh.GetNeumannCoefficients(cell_id2, node.boundaries.at(1));
+    const Mesh2DTriangular::Cell& cell1 = mesh.cells_.at(cell_id1);
+    const Mesh2DTriangular::Cell& cell2 = mesh.cells_.at(cell_id2);
+    const double area1 = mesh.GetCellArea(cell_id1);
+    const double area2 = mesh.GetCellArea(cell_id2);
+    const double area_tot = area1 + area2;
 
-    for (size_t c = 0; c < node.adjacent_nodes.size(); c++) {
-        const Vector3d diff = mesh.GetNodePos(node_id, c) - node.position;
-        const Vector3d grad_diff = CalcGradientDiff(diff);
-        const double factor = grad_diff.dot(diff.normalized()) / static_cast<double>(node.adjacent_nodes.size());
-        const size_t adjacent_node_id = node.adjacent_nodes.at(c);
+    for (size_t i = 0; i < 3; i++) {
+        const size_t loc_node_id = cell1.nodes.at(i);
 
-        mat_b.first(node_id, adjacent_node_id) += factor;
-        mat_b.first(node_id, node_id) -= factor;
+        mat_b.first(node_id, loc_node_id) += coeffs1.at(i) / area_tot;
     }
 
-    mat_b.second(node_id) = 0.5 * (boundary1.value + boundary2.value);
+    for (size_t i = 0; i < 3; i++) {
+        const size_t loc_node_id = cell2.nodes.at(i);
+
+        mat_b.first(node_id, loc_node_id) += coeffs2.at(i) / area_tot;
+    }
+
+    mat_b.second(node_id) = (area1 * boundary1.value + area2 * boundary2.value) / area_tot;
 }
 
 }  // namespace heat_equation_homogeneous
