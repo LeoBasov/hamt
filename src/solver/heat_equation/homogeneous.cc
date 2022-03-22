@@ -740,6 +740,7 @@ void NeumannTraingularMesh(const Mesh2DTriangular& mesh, const size_t node_id, s
         }
     }
 
+    // TODO (LB): implement correct area dependant average
     mat_b.second(node_id) = (boundary1.value + boundary2.value) / 2.0;
 }
 
