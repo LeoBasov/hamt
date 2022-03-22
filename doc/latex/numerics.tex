@@ -11,118 +11,82 @@ Using $\nabla f$ for $\vec{f}$ Eqn.~(\ref{eqn:gauss}) can be rewritten as
 For the numerical solution a cell wise desrcitization is made.
 Assuming that $\nabla^2 f$ is constants over a cell the equation above reduces to
 \begin{equation}
-  V_C \cdot \nabla^2 f = \sum_i^N (\nabla f) \cdot \vec{n}_i \cdot A_{i}.
+  V_C \cdot \nabla^2 f = \sum_i^N (\nabla f) \cdot \vec{n}_i \cdot S_{i}.
 \end{equation}
-
-\section{2D Application for triangular mesh}
-For a trinagular mesh assuming
-%----------------------------------------------------------------
-\begin{figure}[ht]
-    \label{fig:rod_heat_transfer}
-    \centering
-    \includegraphics[width=0.8\linewidth]{draft.png}
-    \caption{Test}
-\end{figure}
-%----------------------------------------------------------------
-one can write
-%----------------------------------------------------------------
-\begin{equation}
-  \nabla f \cdot \vec{n}_i = \frac{f_{i} - f_C}{|\vec{r}_{i}|}
-\end{equation}
-%----------------------------------------------------------------
-for a 2d geometriy $A_{C, i}$ becomes a line segment
-%----------------------------------------------------------------
-\begin{equation}
-  A_{i} = |\vec{b}_{i + 1} - \vec{b}_{i}| = L_i
-\end{equation}
-%----------------------------------------------------------------
-where $\vec{b}_i$ is the barycentre of the last cell containing the point $i$.
-In this context $V_C$ becomes the volume of created new cell $A_C$ which is defined as
-%----------------------------------------------------------------
-\begin{equation}
-  A_C = \frac{1}{2} \cdot \sum_i^N  \vec{b}_{i + 1} \times \vec{b}_{i}
-\end{equation}
-%----------------------------------------------------------------
-This leads to
-%----------------------------------------------------------------
-\begin{equation}
-  \nabla^2 f = \frac{1}{A_C} \cdot \sum_i^N \frac{f_{i} - f_C}{|\vec{r}_{i}|} \cdot |\vec{b}_{i + 1} - \vec{b}_{i}| .
-\end{equation}
-%----------------------------------------------------------------
 
 \section{Gradient}
-Is given as
+The base equation is given as
 \begin{equation}
-  \nabla f_c = \frac{1}{2 A_c} \sum_{i = 1}^3 f_i \cdot
-  \begin{bmatrix}
-    -e_{i, y} \\
-    e_{i, x} \\
-    e_{i, z}
-  \end{bmatrix}
+    \int_A \nabla f \, \mathrm{d}A = \oint_S f \cdot \vec{n} \, \mathrm{d}S
 \end{equation}
-where $\vec{e}_i$ is the vector reptreseting the ith vertex and is rotated to point to the cell centre and $f_i$ is the function value at the vertix i.
+The left hand side of the equation can be rewritten as
 \begin{equation}
-  f_i = \frac{1}{2} \cdot (f_{i, 0} + f_{i, 1})
+    \int_A \nabla f \, \mathrm{d}A = A_c \cdot \nabla f_c
 \end{equation}
-where $f_{i, k}$ is the value of the kth node of the vertex.
+The right hand side can be written as
 \begin{equation}
-  \vec{e}_i = \vec{e}_{i, 1} - \vec{e}_{i, 0}
+    \oint_S f \cdot \vec{n} \, \mathrm{d}S = \sum_{i = 1}^N \frac{f_{i + 1} + f_i}{2} \cdot \vec{n}_i \cdot |\vec{r}_{i+1, i}|
 \end{equation}
-Leads to
+where $\vec{r}_{i+1, i} = \vec{x}_{i + 1} - \vec{x}_i$ and it can be written
 \begin{equation}
-  \nabla f_c = \frac{1}{4 A_c} \sum_{k = 2}^3 \left( (f_k + f_{k - 1}) \cdot
-  \begin{bmatrix}
-    -(\vec{x}_{k} - \vec{x}_{k - 1})_y\\
-    (\vec{x}_{k} - \vec{x}_{k - 1})_x \\
-    (\vec{x}_{k} - \vec{x}_{k - 1})_z
-  \end{bmatrix}
-  \right)
+    \vec{n}_i \cdot |\vec{r}_{i+1, i}| = M_{rot} \cdot \vec{r}_{i+1, i}
 \end{equation}
-The derevative at given point $p$ sorounded by cells is given as
+where
 \begin{equation}
-  \nabla f_p = \frac{1}{\sum_{c = 1}^N A_c} \cdot \sum_{c = 1}^N \nabla f_c \cdot A_c
+    M_{rot} = 
+    \begin{bmatrix}
+       \cos(\theta) & -\sin(\theta) & 0 \\
+       \sin(\theta) &  \cos(\theta) & 0 \\
+       0 & 0 & 1
+     \end{bmatrix}
 \end{equation}
-since we are only interested in the normal derivative at point p
+with $\theta = -\pi /2$
 \begin{equation}
-  \left|\nabla f_p\right|_{\vec{n}_p} = \frac{1}{\sum_{c = 1}^N A_c} \cdot \sum_{c = 1}^N \nabla f_c \cdot \vec{n}_p \cdot A_c
+    M_{rot} = 
+    \begin{bmatrix}
+       0 & 1 & 0 \\
+       -1 &  0 & 0 \\
+       0 & 0 & 1
+     \end{bmatrix}
+\end{equation}
+Since the integral mus be performed over a closed loop
+\begin{equation}
+    \begin{split}
+         \nabla f_c &= \frac{1}{2 \cdot A_c} \cdot \sum_{i = 1}^N (f_{i + 1} + f_i) \cdot M \cdot \vec{r}_{i + 1,i} \\
+         &= \frac{1}{2 \cdot A_c} \cdot \left[ (f_{i + 1} + f_i) \cdot M \cdot (\vec{x}_{i + 1} - \vec{x}_i) + \dots + (f_{i} + f_{i - 1}) \cdot M \cdot \vec{x}_{i} - \vec{x}_{i - 1} \right] \\
+         &= \frac{1}{2 \cdot A_c} \cdot \left[ f_i \cdot M \cdot (\vec{x}_{i + 1} - \vec{x}_{i - 1}) + f_{i + 1} \cdot M \cdot (\vec{x}_{i + 2} - \vec{x}_{i}) + \dots \right]
+    \end{split}
+\end{equation}
+Thus
+\begin{equation}
+    \nabla f_c = \frac{1}{2 \cdot A_c} \cdot \sum_{i = 1}^N f_i \cdot M \cdot \vec{r}_{i + 1,i - 1}
 \end{equation}
 
-\section{Gradient 2}
-Eqn.~(\ref{eqn:gauss})
+\section{Normal derivative}
+For the normal derivative at the cell wall $w$ with the normal vector $n_w$ one can write
 \begin{equation}
-  \int_V \vec{c} \cdot \nabla f \,\, \mathrm{d}^n V = \oint_S \vec{c} f \cdot \vec{n} \,\, \mathrm{d}^{n-1}S + \underbrace{\int_V f (\nabla \cdot \vec{c}) \,\, \mathrm{d}^n V}_{=0 \text{ for } \vec{c} = const}
+    \underbrace{\nabla f_c \cdot \vec{n}_w}_{\nabla_{w} f_c} = \frac{1}{2 \cdot A_c} \cdot \sum_{i = 1}^N f_i \cdot (M \cdot \vec{r}_{i + 1,i - 1}) \cdot \vec{n}_w
 \end{equation}
-interpreting $\vec{c}$ as the normal of the wall at which the gradient is given ($\vec{n}_g$) leads to
+To find the derivative on a node surrounded by $K$ neighbouring cells with the total surface $A_{tot} = \sum_{c=1}^K A_c$
 \begin{equation}
-  \int_V \nabla_{\vec{n}_g} f \,\, \mathrm{d}^n V = \oint_S f \cdot (\vec{n}_g  \cdot \vec{n}) \,\, \mathrm{d}^{n-1}S
+    \sum_{c=1}^K \frac{A_c}{A_{tot}} \cdot \nabla_{c, w} f_c = \sum_{c=1}^K \frac{A_c}{A_{tot}} \cdot \frac{1}{2 \cdot A_c} \cdot \sum_{i = 1}^N f_{c, i} \cdot (M \cdot \vec{r}_{c, i + 1,i - 1}) \cdot \vec{n}_{c,w}
 \end{equation}
-Discritezising over a cell and assuming const $\nabla_{\vec{n}_g} f$ over cell leads to
+using $\overline{A_c} = \frac{A_c}{A_{tot}}$
 \begin{equation}
-  A_c \cdot \nabla_{\vec{n}_g}f  = \sum_{i=1}^3 \frac{1}{2} \cdot (f_{i + 1} + f_i) \cdot (\vec{n}_g  \cdot \underbrace{\vec{n}_i \cdot S_i}_{M \cdot (\vec{x}_{i + 1} - \vec{x}_{i})})
+    \sum_{c=1}^K \overline{A_c} \cdot \nabla_{c, w} f_c = \frac{1}{2 \cdot A_{tot}} \cdot\sum_{c=1}^K  \sum_{i = 1}^N f_{c, i} \cdot (M \cdot \vec{r}_{c, i + 1,i - 1}) \cdot \vec{n}_{c, w}
 \end{equation}
-within\begin{equation}
-  \vec{r}_{i+1, i} = \vec{x}_{i + 1} - \vec{x}_{i}
-\end{equation}
-and
+
+\section{Laplace}
+The integral is made over a pseudo cell which connects the barycentres of adjacent cells
 \begin{equation}
-  M =
-  \begin{bmatrix}
-    0 & 1 & 0 \\
-    -1 & 0 & 0 \\
-    0 & 0 & 1
-  \end{bmatrix}
+    \begin{split}
+        \nabla^2 f \cdot \underbrace{\sum_{b=1}^N A_b}_{A_{b, tot}}  &=  \sum_{b = 1}^N \nabla f \cdot M \cdot \vec{r}_{b + 1,b} \\
+        &= \sum_{b = 1}^N \frac{A_b \cdot\nabla f_{b+1} + A_{b+ 1} \cdot \nabla f_b}{A_{b+1, b}} \cdot M \cdot \vec{r}_{b + 1,b} \\
+        &= \sum_{b = 1}^N \frac{1}{2 \cdot A_{b+ 1, b}} \cdot \left( \sum_{q=0}^1\sum_{i = 1}^3 f^{b + q}_{i} \cdot M \cdot \vec{r}^{\:b + q}_{i + 1,i - 1}  \right) \cdot M \cdot \vec{r}_{b + 1,b}
+    \end{split}
 \end{equation}
-is
+As the gradient is considered constant inside the cell
 \begin{equation}
-  M \cdot \vec{r}_{i+1, i} =
-  \begin{bmatrix}
-    r_{i+1, i, y} \\
-    -r_{i+1, i, x} \\
-    r_{i+1, i, z}
-  \end{bmatrix}
-  = \vec{p}_{i+1, i}
+    \nabla f_b \approx \sum_{b = 1}^N \frac{1}{2 \cdot A_{b+ 1, b}} \cdot \left( \sum_{q=0}^1\sum_{i = 1}^3 f^{b + q}_{i} \cdot M \cdot \vec{r}^{\:b + q}_{i + 1,i - 1}  \right) \cdot M \cdot \vec{r}_{b + 1,b}
 \end{equation}
-leads to
-\begin{equation}
-  \nabla_{\vec{n}_g}f  = \sum_{i=1}^2   \frac{f_{i + 1} + f_i}{2 A_c} \cdot \vec{n}_g  \cdot \vec{p}_{i+1, i} + \frac{f_1 + f_3}{2 A_c} \cdot \vec{n}_g  \cdot \vec{p}_{1, 3}
-\end{equation}
+therefor
