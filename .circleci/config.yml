@@ -76,16 +76,16 @@ commands:
           command: ./build-hamt/hamt ./test/regression/regular_mesh/homogeneous_cartesian/input.in
       - run:
           name: Run cartesian homogenous block analysis vertical
-          command: cd ./test/regression/regular_mesh/homogeneous_cartesian/ && python3 asses.py ../../../reg_car_hom.csv reg_car_hom_ref.csv
+          command: cd ./test/regression/regular_mesh/homogeneous_cartesian/ && python3 asses.py ../../../../reg_car_hom.csv reg_car_hom_ref.csv
       - run:
           name: Run cartesian homogenous block analysis horizontal
-          command: cd ./test/regression/regular_mesh/homogeneous_cartesian/ && python3 asses.py ../../../reg_car_hom_1.csv reg_car_hom_1_ref.csv
+          command: cd ./test/regression/regular_mesh/homogeneous_cartesian/ && python3 asses.py ../../../../reg_car_hom_1.csv reg_car_hom_1_ref.csv
       - run:
           name: Run cartesian homogenous block analysis horizontal heterogen.
-          command: cd ./test/regression/regular_mesh/homogeneous_cartesian/ && python3 asses.py ../../../reg_car_hom_2.csv reg_car_hom_2_ref.csv
+          command: cd ./test/regression/regular_mesh/homogeneous_cartesian/ && python3 asses.py ../../../../reg_car_hom_2.csv reg_car_hom_2_ref.csv
       - run:
           name: Run cartesian homogenous block analysis vertical heterogen.
-          command: cd ./test/regression/regular_mesh/homogeneous_cartesian/ && python3 asses.py ../../../reg_car_hom_3.csv reg_car_hom_3_ref.csv
+          command: cd ./test/regression/regular_mesh/homogeneous_cartesian/ && python3 asses.py ../../../../reg_car_hom_3.csv reg_car_hom_3_ref.csv
   run_analytical_tests_cylinder:
     steps:
       - run:
@@ -93,7 +93,7 @@ commands:
           command: ./build-hamt/hamt ./test/regression/regular_mesh/homogeneous_cylinder/input.in
       - run:
           name: Run cartesian homogenous cylinder block analysis vertical
-          command: cd ./test/regression/regular_mesh/homogeneous_cylinder/ && python3 asses.py ../../../cylinder_test.csv cylinder_test.csv
+          command: cd ./test/regression/regular_mesh/homogeneous_cylinder/ && python3 asses.py ../../../../cylinder_test.csv cylinder_test.csv
   run_pybind11_execution_tests:
     steps:
       - run:
