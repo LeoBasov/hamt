@@ -133,7 +133,30 @@ void Writer::WriteTriangularMesh(const std::map<FileFormat, Config>& configs, co
                     break;
                 }
                 case CSV: {
-                    throw IncompleteCodeError("CSV writer for triangular mesh");
+                    std::ofstream stream(bin.second.file_name + ".csv");
+
+                    if (!stream.is_open()) {
+                        throw Exception("Could not open file [" + bin.second.file_name + ".csv" + "]",
+                                        __PRETTY_FUNCTION__);
+                    }
+
+                    if (data_->results_.size()) {
+                        for (uint i = 0; i < data_->mesh2d_triangular_.nodes_.size(); i++) {
+                            const Vector3d position(data_->mesh2d_triangular_.nodes_.at(i).position);
+
+                            stream << data_->results_(i) << "," << position(0) << "," << position(1) << ","
+                                   << position(2) << std::endl;
+                        }
+                    } else {
+                        for (uint i = 0; i < data_->mesh2d_triangular_.nodes_.size(); i++) {
+                            const Vector3d position(data_->mesh2d_triangular_.nodes_.at(i).position);
+
+                            stream << 0.0 << "," << position(0) << "," << position(1) << "," << position(2)
+                                   << std::endl;
+                        }
+                    }
+
+                    stream.close();
                     break;
                 }
                 default: {
