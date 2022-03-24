@@ -1,0 +1,9 @@
+read triangl_mesh block.msh
+
+set writer triangl_mesh vtk on
+set writer triangl_mesh vtk file_name cyl_block
+
+set solver mesh_type triangular
+set solver coord_type cylinder
+
+run
