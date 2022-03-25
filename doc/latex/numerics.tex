@@ -59,6 +59,7 @@ Since the integral mus be performed over a closed loop
 \end{equation}
 Thus
 \begin{equation}
+    \label{eqn:gradient}
     \nabla f_c = \frac{1}{2 \cdot A_c} \cdot \sum_{i = 1}^N f_i \cdot M \cdot \vec{r}_{i + 1,i - 1}
 \end{equation}
 
@@ -81,12 +82,14 @@ The integral is made over a pseudo cell which connects the barycentres of adjace
 \begin{equation}
     \begin{split}
         \nabla^2 f \cdot \underbrace{\sum_{b=1}^N A_b}_{A_{b, tot}}  &=  \sum_{b = 1}^N \nabla f \cdot M \cdot \vec{r}_{b + 1,b} \\
-        &= \sum_{b = 1}^N \frac{A_b \cdot\nabla f_{b+1} + A_{b+ 1} \cdot \nabla f_b}{A_{b+1, b}} \cdot M \cdot \vec{r}_{b + 1,b} \\
-        &= \sum_{b = 1}^N \frac{1}{2 \cdot A_{b+ 1, b}} \cdot \left( \sum_{q=0}^1\sum_{i = 1}^3 f^{b + q}_{i} \cdot M \cdot \vec{r}^{\:b + q}_{i + 1,i - 1}  \right) \cdot M \cdot \vec{r}_{b + 1,b}
+        &= \sum_{b = 1}^N \frac{A_b \cdot\nabla f_{b} + A_{b+ 1} \cdot \nabla f_{b + 1}}{A_{b+1, b}} \cdot M \cdot \vec{r}_{b + 1,b} 
     \end{split}
+\end{equation}
+Using Eqn.~(\ref{eqn:gradient}) 
+\begin{equation}
+    \nabla^2 f \cdot A_{b, tot}  = \sum_{b = 1}^N \frac{1}{2 \cdot A_{b+ 1, b}} \cdot \left( \sum_{q=0}^1\sum_{i = 1}^3 f^{b + q}_{i} \cdot M \cdot \vec{r}^{\:b + q}_{i + 1,i - 1}  \right) \cdot M \cdot \vec{r}_{b + 1,b}
 \end{equation}
 As the gradient is considered constant inside the cell
 \begin{equation}
-    \nabla f_b \approx \sum_{b = 1}^N \frac{1}{2 \cdot A_{b+ 1, b}} \cdot \left( \sum_{q=0}^1\sum_{i = 1}^3 f^{b + q}_{i} \cdot M \cdot \vec{r}^{\:b + q}_{i + 1,i - 1}  \right) \cdot M \cdot \vec{r}_{b + 1,b}
+    \nabla^2 f \approx \frac{1}{2 \cdot A_{b, tot}} \cdot\sum_{b = 1}^N \frac{1}{A_{b+ 1, b}} \cdot \left( \sum_{q=0}^1\sum_{i = 1}^3 f^{b + q}_{i} \cdot M \cdot \vec{r}^{\:b + q}_{i + 1,i - 1}  \right) \cdot M \cdot \vec{r}_{b + 1,b}
 \end{equation}
-therefor
