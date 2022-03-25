@@ -661,11 +661,16 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTrian
 
 void CentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b) {
     const Mesh2DTriangular::Node& node = mesh.nodes_.at(node_id);
+    double total_cell_area = 0.0;
     Matrix3d rot_mat = Matrix3d::Zero();
 
     rot_mat(0, 1) = 1.0;
     rot_mat(1, 0) = -1.0;
     rot_mat(2, 2) = 1.0;
+
+    for (size_t c = 0; c < node.adjacent_cells.size(); c++) {
+        total_cell_area += mesh.GetCellArea(node.adjacent_cells.at(c));
+    }
 
     for (size_t c = 0; c < node.adjacent_cells.size(); c++) {
         const size_t pos_i = c;
@@ -678,8 +683,8 @@ void CentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, st
         const Vector3d bary_vec = rot_mat * (mesh.GetBarycentre(node_id, pos_ip) - mesh.GetBarycentre(node_id, pos_i));
         const Mesh2DTriangular::Surface& surface_i = mesh.surfaces_.at(cell_i.surface_id);
         const Mesh2DTriangular::Surface& surface_ip = mesh.surfaces_.at(cell_ip.surface_id);
-        const double factor_i = surface_i.thermal_conductivity * (1.0 / (2.0 * surface));
-        const double factor_ip = surface_ip.thermal_conductivity * (1.0 / (2.0 * surface));
+        const double factor_i = surface_i.thermal_conductivity * (1.0 / (2.0 * surface * total_cell_area));
+        const double factor_ip = surface_ip.thermal_conductivity * (1.0 / (2.0 * surface * total_cell_area));
 
         for (size_t i = 0; i < 3; i++) {
             const size_t pos_im = i == 0 ? 2 : i - 1;
