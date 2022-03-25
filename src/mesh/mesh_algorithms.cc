@@ -183,5 +183,193 @@ void SetUpCellSize(Mesh2DRegular& mesh, const gmsh::MSH2& msh2_mesh) {
     }
 }
 
+Mesh2DTriangular MSH2ToMesh2DTriangular(const gmsh::MSH2& msh2_mesh) {
+    Mesh2DTriangular mesh;
+
+    SetUpBoundaries(mesh, msh2_mesh);
+    SetUpCellsAndNodes(mesh, msh2_mesh);
+    ConnectMesh(mesh);
+
+    return mesh;
+}
+
+void SetUpBoundaries(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh) {
+    for (const auto& name : msh2_mesh.physical_names_) {
+        if (name.physical_dimension == 1) {
+            Mesh2DTriangular::Boundary boundary;
+
+            auto ret_pair1 = mesh.boundary_tags_.insert({name.physical_tag, mesh.boundaries_.size()});
+            auto ret_pair2 = mesh.boundary_names_.insert({name.physical_name, mesh.boundaries_.size()});
+
+            if (!ret_pair1.second) {
+                throw Exception("Could not insert boundary tag [" + std::to_string(name.physical_tag) + "]",
+                                __PRETTY_FUNCTION__);
+            } else if (!ret_pair2.second) {
+                throw Exception("Could not insert boundary name [" + name.physical_name + "]", __PRETTY_FUNCTION__);
+            }
+
+            mesh.boundaries_.push_back(boundary);
+        } else if (name.physical_dimension == 2) {
+            Mesh2DTriangular::Surface surface;
+
+            auto ret_pair1 = mesh.surface_tags_.insert({name.physical_tag, mesh.surfaces_.size()});
+            auto ret_pair2 = mesh.surface_names_.insert({name.physical_name, mesh.surfaces_.size()});
+
+            if (!ret_pair1.second) {
+                throw Exception("Could not insert surface tag [" + std::to_string(name.physical_tag) + "]",
+                                __PRETTY_FUNCTION__);
+            } else if (!ret_pair2.second) {
+                throw Exception("Could not insert surface name [" + name.physical_name + "]", __PRETTY_FUNCTION__);
+            }
+
+            mesh.surfaces_.push_back(surface);
+        }
+    }
+}
+
+void SetUpCellsAndNodes(Mesh2DTriangular& mesh, const gmsh::MSH2& msh2_mesh) {
+    std::map<int, size_t> node_number_map;
+
+    for (const auto& node : msh2_mesh.nodes_) {
+        Mesh2DTriangular::Node node_new;
+
+        node_number_map[node.second.node_number] = mesh.nodes_.size();
+        node_new.position = node.second.coord;
+        mesh.nodes_.push_back(node_new);
+    }
+
+    for (uint i = 0; i < msh2_mesh.elements_.size(); i++) {
+        const gmsh::MSH2::Element& element(msh2_mesh.elements_.at(i));
+
+        if (element.elm_type == 2) {
+            Mesh2DTriangular::Cell cell;
+
+            cell.surface_id = mesh.surface_tags_.at(element.tags.at(0));
+
+            for (size_t n = 0; n < 3; n++) {
+                cell.nodes.at(n) = node_number_map.at(element.node_number_list.at(n));
+                cell.barycentre += mesh.nodes_.at(cell.nodes.at(n)).position;
+            }
+
+            cell.barycentre /= 3.0;
+
+            mesh.cells_.push_back(cell);
+        }
+    }
+
+    for (uint i = 0; i < msh2_mesh.elements_.size(); i++) {
+        const gmsh::MSH2::Element& element(msh2_mesh.elements_.at(i));
+
+        if (element.elm_type == 1) {
+            for (size_t c = 0; c < mesh.cells_.size(); c++) {
+                Mesh2DTriangular::Cell& cell = mesh.cells_.at(c);
+                const int node1(node_number_map.at(element.node_number_list.at(0)));
+                const int node2(node_number_map.at(element.node_number_list.at(1)));
+                const auto& iter1 = std::find(cell.nodes.begin(), cell.nodes.end(), node1);
+                const auto& iter2 = std::find(cell.nodes.begin(), cell.nodes.end(), node2);
+
+                if (iter1 != cell.nodes.end() && iter2 != cell.nodes.end()) {
+                    const int pos1 = std::min(iter1 - cell.nodes.begin(), iter2 - cell.nodes.begin());
+                    const int pos2 = std::max(iter1 - cell.nodes.begin(), iter2 - cell.nodes.begin());
+
+                    if (pos1 == 0 && pos2 == 1) {
+                        cell.boundaries.at(0) = mesh.boundary_tags_.at(element.tags.at(0));
+                    } else if (pos1 == 1 && pos2 == 2) {
+                        cell.boundaries.at(1) = mesh.boundary_tags_.at(element.tags.at(0));
+                    } else if (pos1 == 0 && pos2 == 2) {
+                        cell.boundaries.at(2) = mesh.boundary_tags_.at(element.tags.at(0));
+                    } else {
+                        throw Exception("unacceptrable combination of cell indices", __PRETTY_FUNCTION__);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void ConnectMesh(Mesh2DTriangular& mesh) {
+    for (size_t i = 0; i < mesh.cells_.size(); i++) {
+        const Mesh2DTriangular::Cell& cell = mesh.cells_.at(i);
+
+        for (auto& node_id : cell.nodes) {
+            mesh.nodes_.at(node_id).adjacent_cells.push_back(i);
+        }
+    }
+
+    for (size_t n = 0; n < mesh.nodes_.size(); n++) {
+        Mesh2DTriangular::Node& node = mesh.nodes_.at(n);
+        std::vector<size_t> adjacent_cells = {FindStartingCell(n, mesh)};
+
+        while (adjacent_cells.size() < node.adjacent_cells.size()) {
+            adjacent_cells.push_back(FindNextCell(n, adjacent_cells.back(), mesh));
+        }
+
+        node.adjacent_cells = adjacent_cells;
+
+        for (size_t i = 0; i < adjacent_cells.size(); i++) {
+            const size_t cell_id = adjacent_cells.at(i);
+            const size_t pos = mesh.cells_.at(cell_id).GetNodePos(n);
+            const size_t node_id2 = mesh.cells_.at(cell_id).nodes.at(pos == 2 ? 0 : pos + 1);
+
+            node.adjacent_nodes.push_back(node_id2);
+
+            if (i == adjacent_cells.size() - 1) {
+                const size_t node_id2 = mesh.cells_.at(cell_id).nodes.at(pos == 0 ? 2 : pos - 1);
+
+                if (std::find(node.adjacent_nodes.begin(), node.adjacent_nodes.end(), node_id2) ==
+                    node.adjacent_nodes.end()) {
+                    node.adjacent_nodes.push_back(node_id2);
+                }
+            }
+        }
+
+        // set boundaries
+        for (const auto& cell_id : adjacent_cells) {
+            const size_t pos1 = mesh.cells_.at(cell_id).GetNodePos(n);
+            const size_t pos2 = pos1 == 0 ? 2 : pos1 - 1;
+
+            if (mesh.cells_.at(cell_id).boundaries.at(pos1) >= 0) {
+                node.boundaries.push_back(mesh.cells_.at(cell_id).boundaries.at(pos1));
+            }
+            if (mesh.cells_.at(cell_id).boundaries.at(pos2) >= 0) {
+                node.boundaries.push_back(mesh.cells_.at(cell_id).boundaries.at(pos2));
+            }
+        }
+    }
+}
+
+size_t FindStartingCell(const size_t& node_id, const Mesh2DTriangular& mesh) {
+    const std::vector<Mesh2DTriangular::Cell>& cells = mesh.cells_;
+
+    for (const auto& next_cell_id : mesh.nodes_.at(node_id).adjacent_cells) {
+        const size_t pos = cells.at(next_cell_id).GetNodePos(node_id);
+
+        if (cells.at(next_cell_id).boundaries.at(pos) != -1) {
+            return next_cell_id;
+        }
+    }
+
+    return mesh.nodes_.at(node_id).adjacent_cells.front();
+}
+
+size_t FindNextCell(const size_t& node_id, const size_t& cell_id, const Mesh2DTriangular& mesh) {
+    const std::vector<Mesh2DTriangular::Cell>& cells = mesh.cells_;
+    const size_t pos = cells.at(cell_id).GetNodePos(node_id);
+    const size_t node_id2 = cells.at(cell_id).nodes.at(pos == 0 ? 2 : pos - 1);
+
+    for (const auto& next_cell_id : mesh.nodes_.at(node_id).adjacent_cells) {
+        if (cells.at(next_cell_id).IsInCell(node_id2)) {
+            const size_t pos1 = cells.at(next_cell_id).GetNodePos(node_id);
+            const size_t pos2 = cells.at(next_cell_id).GetNodePos(node_id2);
+
+            if (pos2 == (pos1 == 2 ? 0 : pos1 + 1)) {
+                return next_cell_id;
+            }
+        }
+    }
+
+    throw Exception("next cell not found", __PRETTY_FUNCTION__);
+}
+
 }  // namespace mesh2d_regular_algorithms
 }  // namespace hamt

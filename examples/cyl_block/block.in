@@ -1,0 +1,17 @@
+read triangl_mesh block.msh
+
+set writer triangl_mesh vtk on
+set writer triangl_mesh vtk file_name cyl_block
+
+set triangl_mesh bound_value buttom 100
+set triangl_mesh bound_value top 300
+set triangl_mesh bound_value right 0
+set triangl_mesh bound_value left 0
+
+set triangl_mesh bound_type right neumann
+set triangl_mesh bound_type left neumann
+
+set solver mesh_type triangular
+#set solver coord_type cylinder
+
+run

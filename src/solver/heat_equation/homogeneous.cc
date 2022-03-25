@@ -622,5 +622,134 @@ void ConvertMidCylindrical(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DReg
     mat_b.first(row, node.u_i_jp) = (1 + r_dash) * mean_xt;
 }
 
+std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTriangular& mesh, const VectorXd& results) {
+    std::pair<MatrixXd, VectorXd> mat_b;
+
+    mat_b.first = MatrixXd::Zero(mesh.nodes_.size(), mesh.nodes_.size());
+    mat_b.second = VectorXd::Zero(mesh.nodes_.size());
+
+    for (size_t i = 0; i < mesh.nodes_.size(); i++) {
+        const Mesh2DTriangular::Node& node = mesh.nodes_.at(i);
+
+        if (node.boundaries.size()) {
+            const Mesh2DTriangular::Boundary& boundary1 = mesh.boundaries_.at(node.boundaries.at(0));
+            const Mesh2DTriangular::Boundary& boundary2 = mesh.boundaries_.at(node.boundaries.at(1));
+
+            if (boundary1.type == Mesh2DTriangular::BoundaryType::DIRICHLET &&
+                boundary2.type == Mesh2DTriangular::BoundaryType::DIRICHLET) {
+                mat_b.second(i) = 0.5 * (boundary1.value + boundary2.value);
+                mat_b.first(i, i) = 1.0;
+            } else if (boundary1.type == Mesh2DTriangular::BoundaryType::DIRICHLET) {
+                mat_b.second(i) = boundary1.value;
+                mat_b.first(i, i) = 1.0;
+            } else if (boundary2.type == Mesh2DTriangular::BoundaryType::DIRICHLET) {
+                mat_b.second(i) = boundary2.value;
+                mat_b.first(i, i) = 1.0;
+            } else if (boundary1.type == Mesh2DTriangular::BoundaryType::NEUMANN &&
+                       boundary2.type == Mesh2DTriangular::BoundaryType::NEUMANN) {
+                NeumannTraingularMesh(mesh, i, mat_b);
+            } else {
+                throw IncompleteCodeError("undefined boundary condition for triangular mesh");
+            }
+        } else {
+            CentreTriangularMesh(mesh, i, mat_b);
+        }
+    }
+
+    return mat_b;
+}
+
+void CentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b) {
+    const Mesh2DTriangular::Node& node = mesh.nodes_.at(node_id);
+    double total_cell_area = 0.0;
+    Matrix3d rot_mat = Matrix3d::Zero();
+
+    rot_mat(0, 1) = 1.0;
+    rot_mat(1, 0) = -1.0;
+    rot_mat(2, 2) = 1.0;
+
+    for (size_t c = 0; c < node.adjacent_cells.size(); c++) {
+        total_cell_area += mesh.GetCellArea(node.adjacent_cells.at(c));
+    }
+
+    for (size_t c = 0; c < node.adjacent_cells.size(); c++) {
+        const size_t pos_i = c;
+        const size_t pos_ip = c == node.adjacent_cells.size() - 1 ? 0 : c + 1;
+        const size_t cell_id_i = node.adjacent_cells.at(pos_i);
+        const size_t cell_id_ip = node.adjacent_cells.at(pos_ip);
+        const Mesh2DTriangular::Cell& cell_i = mesh.cells_.at(cell_id_i);
+        const Mesh2DTriangular::Cell& cell_ip = mesh.cells_.at(cell_id_ip);
+        const double surface = mesh.GetCellArea(cell_id_i) + mesh.GetCellArea(cell_id_ip);
+        const Vector3d bary_vec = rot_mat * (mesh.GetBarycentre(node_id, pos_ip) - mesh.GetBarycentre(node_id, pos_i));
+        const Mesh2DTriangular::Surface& surface_i = mesh.surfaces_.at(cell_i.surface_id);
+        const Mesh2DTriangular::Surface& surface_ip = mesh.surfaces_.at(cell_ip.surface_id);
+        const double factor_i = surface_i.thermal_conductivity * (1.0 / (2.0 * surface * total_cell_area));
+        const double factor_ip = surface_ip.thermal_conductivity * (1.0 / (2.0 * surface * total_cell_area));
+
+        for (size_t i = 0; i < 3; i++) {
+            const size_t pos_im = i == 0 ? 2 : i - 1;
+            const size_t pos_ip = i == 2 ? 0 : i + 1;
+            const size_t node_id_b_im = cell_i.nodes.at(pos_im);
+            const size_t node_id_b_ip = cell_i.nodes.at(pos_ip);
+            const size_t node_id_bp_im = cell_ip.nodes.at(pos_im);
+            const size_t node_id_bp_ip = cell_ip.nodes.at(pos_ip);
+            const size_t node_id_b_i = cell_i.nodes.at(i);
+            const size_t node_id_bp_i = cell_ip.nodes.at(i);
+            const Vector3d node_pos_b_im = mesh.GetNodePos(node_id_b_im);
+            const Vector3d node_pos_b_ip = mesh.GetNodePos(node_id_b_ip);
+            const Vector3d node_pos_bp_im = mesh.GetNodePos(node_id_bp_im);
+            const Vector3d node_pos_bp_ip = mesh.GetNodePos(node_id_bp_ip);
+
+            mat_b.first(node_id, node_id_b_i) += factor_i * (rot_mat * (node_pos_b_ip - node_pos_b_im)).dot(bary_vec);
+            mat_b.first(node_id, node_id_bp_i) +=
+                factor_ip * (rot_mat * (node_pos_bp_ip - node_pos_bp_im)).dot(bary_vec);
+        }
+    }
+}
+
+void NeumannTraingularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b) {
+    const Mesh2DTriangular::Node& node = mesh.nodes_.at(node_id);
+    const Mesh2DTriangular::Boundary& boundary1 = mesh.boundaries_.at(node.boundaries.at(0));
+    const Mesh2DTriangular::Boundary& boundary2 = mesh.boundaries_.at(node.boundaries.at(1));
+    const Vector3d node_im = mesh.GetNodePos(node_id, 0);
+    const Vector3d node_ip = mesh.GetNodePos(node_id, node.adjacent_nodes.size() - 1);
+    Vector3d nomal;
+    Matrix3d rot_mat = Matrix3d::Zero();
+    double total_cell_area = 0.0;
+
+    rot_mat(0, 1) = 1.0;
+    rot_mat(1, 0) = -1.0;
+    rot_mat(2, 2) = 1.0;
+
+    nomal = (0.5 * rot_mat * (node_im - node.position) + 0.5 * rot_mat * (node.position - node_ip)).normalized();
+
+    for (size_t c = 0; c < node.adjacent_cells.size(); c++) {
+        const size_t cell_id = node.adjacent_cells.at(c);
+        total_cell_area += mesh.GetCellArea(cell_id);
+    }
+
+    for (size_t c = 0; c < node.adjacent_cells.size(); c++) {
+        const size_t cell_id = node.adjacent_cells.at(c);
+        const Mesh2DTriangular::Cell& cell = mesh.cells_.at(cell_id);
+        const Mesh2DTriangular::Surface& surface = mesh.surfaces_.at(cell.surface_id);
+        const double factor = surface.thermal_conductivity * (1.0 / (2.0 * total_cell_area));
+
+        for (size_t i = 0; i < 3; i++) {
+            const size_t pos_im = i == 0 ? 2 : i - 1;
+            const size_t pos_ip = i == 2 ? 0 : i + 1;
+            const size_t node_id_im = cell.nodes.at(pos_im);
+            const size_t node_id_ip = cell.nodes.at(pos_ip);
+            const size_t node_id_i = cell.nodes.at(i);
+            const Vector3d node_pos_im = mesh.GetNodePos(node_id_im);
+            const Vector3d node_pos_ip = mesh.GetNodePos(node_id_ip);
+
+            mat_b.first(node_id, node_id_i) += factor * (rot_mat * (node_pos_ip - node_pos_im)).dot(nomal);
+        }
+    }
+
+    // TODO (LB): implement correct area dependant average
+    mat_b.second(node_id) = (boundary1.value + boundary2.value) / 2.0;
+}
+
 }  // namespace heat_equation_homogeneous
 }  // namespace hamt

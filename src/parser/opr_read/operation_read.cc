@@ -13,6 +13,14 @@ void OperationRead::Execute(const std::vector<std::string>& argv, const bool&) {
         std::cout << "NUMBER CELLS : " << hamt_->data_->mesh2d_regular_.cells_.size() << std::endl;
         std::cout << "BOUNDARIES: " << hamt_->data_->mesh2d_regular_.boundaries_.size() << std::endl;
         std::cout << "SURFACES: " << hamt_->data_->mesh2d_regular_.surfaces_.size() << std::endl;
+    } else if (argv.at(0) == "triangl_mesh") {
+        hamt_->reader_.ReadTriangularMesh(rel_dir_ + argv.at(1));
+
+        std::cout << "TRIANGULAR MESH LOADED" << std::endl;
+        std::cout << "NUMBER NODES : " << hamt_->data_->mesh2d_triangular_.nodes_.size() << std::endl;
+        std::cout << "NUMBER CELLS : " << hamt_->data_->mesh2d_triangular_.cells_.size() << std::endl;
+        std::cout << "BOUNDARIES: " << hamt_->data_->mesh2d_triangular_.boundaries_.size() << std::endl;
+        std::cout << "SURFACES: " << hamt_->data_->mesh2d_triangular_.surfaces_.size() << std::endl;
     } else {
         throw CommandError("Command 'read' undfedined argument [" + argv.at(0) + "].");
     }

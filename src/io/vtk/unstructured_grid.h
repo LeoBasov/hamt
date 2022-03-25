@@ -6,6 +6,7 @@
 
 #include "../../exception/exception.h"
 #include "../../mesh/mesh2d_regular.h"
+#include "../../mesh/mesh2d_triangular.h"
 
 namespace hamt {
 namespace vtk {
@@ -23,6 +24,14 @@ void WritePoints(std::ofstream& stream, const Mesh2DRegular& mesh);
 void WriteCells(std::ofstream& stream, const Mesh2DRegular& mesh);
 
 void WritePointData(std::ofstream& stream, const std::vector<std::pair<std::string, std::vector<double>>>& point_data);
+
+void WriteMesh2DTriangular(const Mesh2DTriangular& mesh, const std::string& file_name,
+                           const std::vector<std::pair<std::string, std::vector<double>>>& point_data);
+
+void WriteBody(std::ofstream& stream, const Mesh2DTriangular& mesh,
+               const std::vector<std::pair<std::string, std::vector<double>>>& point_data);
+void WritePoints(std::ofstream& stream, const Mesh2DTriangular& mesh);
+void WriteCells(std::ofstream& stream, const Mesh2DTriangular& mesh);
 
 }  // namespace unstructured_grid
 }  // namespace vtk

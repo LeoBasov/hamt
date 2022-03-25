@@ -4,7 +4,9 @@
 
 #include "../../common/constants.h"
 #include "../../exception/exception.h"
+#include "../../exception/incomplete_code_error.h"
 #include "../../mesh/mesh2d_regular.h"
+#include "../../mesh/mesh2d_triangular.h"
 
 namespace hamt {
 namespace heat_equation_homogeneous {
@@ -34,6 +36,10 @@ void ConvertMidCartesian(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegul
 
 std::pair<MatrixXd, VectorXd> ConvertMesh2dRegularCylindircal(const Mesh2DRegular& mesh, const VectorXd& results);
 void ConvertMidCylindrical(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row);
+
+std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTriangular& mesh, const VectorXd& results);
+void CentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b);
+void NeumannTraingularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b);
 
 }  // namespace heat_equation_homogeneous
 }  // namespace hamt

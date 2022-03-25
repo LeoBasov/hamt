@@ -189,6 +189,9 @@ int ProcessFile(Controller &controller, const std::string &file_name, const std:
             if (ProcessFile(controller, e.what(), parser.relative_directory_, test_mode)) {
                 return 1;
             }
+        } catch (Exception &e) {
+            std::cout << "Exception trhown: " << e.what() << " In: " << e.where() << std::endl;
+            return 1;
         }
     }
 

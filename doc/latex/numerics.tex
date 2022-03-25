@@ -1,64 +1,95 @@
 \chapter{Numerics}
-\section{Finite Difference Method - FDM}
-First order Discritization.
-%----------------------------------------------------------------
+According to \cite{erlebacher1985finite} the Gaus divergenze theorem can be rewritten as
 \begin{equation}
-    f'_f = \frac{f_{i+1} - f_i}{\Delta x}
+  \label{eqn:gauss}
+  \int_V \nabla \vec{F} \,\, \mathrm{d}^n V = \oint_S \vec{F} \cdot \vec{n} \,\, \mathrm{d}^{n-1}S
 \end{equation}
-%----------------------------------------------------------------
+Using $\nabla f$ for $\vec{f}$ Eqn.~(\ref{eqn:gauss}) can be rewritten as
 \begin{equation}
-    f'_b = \frac{f_{i} - f_{i - 1}}{\Delta x}
+  \int_V \nabla^2 f \,\, \mathrm{d}^n V = \oint_S (\nabla f) \cdot \vec{n} \,\, \mathrm{d}^{n-1}S
 \end{equation}
-%----------------------------------------------------------------
+For the numerical solution a cell wise desrcitization is made.
+Assuming that $\nabla^2 f$ is constants over a cell the equation above reduces to
 \begin{equation}
-    f'_c = \frac{1}{2} \left( f'_f + f'_b \right) = \frac{1}{2} \left( \frac{f_{i+1} - f_i}{\Delta x} + \frac{f_{i} - f_{i - 1}}{\Delta x} \right) \\
-    = \frac{f_{i + 1} - f_{i - 1}}{2 \, \Delta x}
+  V_C \cdot \nabla^2 f = \sum_i^N (\nabla f) \cdot \vec{n}_i \cdot S_{i}.
 \end{equation}
-%----------------------------------------------------------------
-second order
-%----------------------------------------------------------------
-\begin{equation}
-    f'' = \frac{f'_f - f'_b}{\Delta x} = \frac{f_{i+1} - f_{i}}{\Delta x^2} - \frac{f_{i} - f_{i - 1}}{\Delta x^2} = \frac{f_{i + 1} - 2 \, f_{i} + f_{i-1}}{\Delta x^2}
-\end{equation}
-%----------------------------------------------------------------
-Assuming the differentials $a \, \pdv{f}{x}$ and $a \,\pdv[2]{f}{x}$ where $a$ is not constant.
-%----------------------------------------------------------------
-\begin{equation}
-  \label{eqn:fdm_1}
-    a\,f'_c\\
-    = \frac{1}{2} \left( \frac{a_{i+1}(f_{i+1} - f_i)}{\Delta x} + \frac{a_{i-1}(f_{i} - f_{i - 1})}{\Delta x} \right) \\
-    = \frac{a_{i+1}f_{i + 1} + (a_{i-1} - a_{i+1})f_{i} - a_{i-1}f_{i - 1}}{2 \, \Delta x}
-\end{equation}
-%----------------------------------------------------------------
-%----------------------------------------------------------------
-\begin{equation}
-  \label{eqn:fdm_2}
-    a\,f'' \\
-    = a_{i+1}\frac{f_{i+1} - f_{i}}{\Delta x^2} - a_{i-1}\frac{f_{i} - f_{i - 1}}{\Delta x^2} \\
-    = \frac{a_{i+1}f_{i + 1} - (a_{i+1} + a_{i-1}) f_{i} + a_{i-1}f_{i-1}}{\Delta x^2}
-\end{equation}
-%----------------------------------------------------------------
 
-\subsection{Dirichlet Boundary Conditions}
-%----------------------------------------------------------------
+\section{Gradient}
+The base equation is given as
 \begin{equation}
-    f\rvert_i = f_0
+    \int_A \nabla f \, \mathrm{d}A = \oint_S f \cdot \vec{n} \, \mathrm{d}S
 \end{equation}
-%----------------------------------------------------------------
+The left hand side of the equation can be rewritten as
+\begin{equation}
+    \int_A \nabla f \, \mathrm{d}A = A_c \cdot \nabla f_c
+\end{equation}
+The right hand side can be written as
+\begin{equation}
+    \oint_S f \cdot \vec{n} \, \mathrm{d}S = \sum_{i = 1}^N \frac{f_{i + 1} + f_i}{2} \cdot \vec{n}_i \cdot |\vec{r}_{i+1, i}|
+\end{equation}
+where $\vec{r}_{i+1, i} = \vec{x}_{i + 1} - \vec{x}_i$ and it can be written
+\begin{equation}
+    \vec{n}_i \cdot |\vec{r}_{i+1, i}| = M_{rot} \cdot \vec{r}_{i+1, i}
+\end{equation}
+where
+\begin{equation}
+    M_{rot} = 
+    \begin{bmatrix}
+       \cos(\theta) & -\sin(\theta) & 0 \\
+       \sin(\theta) &  \cos(\theta) & 0 \\
+       0 & 0 & 1
+     \end{bmatrix}
+\end{equation}
+with $\theta = -\pi /2$
+\begin{equation}
+    M_{rot} = 
+    \begin{bmatrix}
+       0 & 1 & 0 \\
+       -1 &  0 & 0 \\
+       0 & 0 & 1
+     \end{bmatrix}
+\end{equation}
+Since the integral mus be performed over a closed loop
+\begin{equation}
+    \begin{split}
+         \nabla f_c &= \frac{1}{2 \cdot A_c} \cdot \sum_{i = 1}^N (f_{i + 1} + f_i) \cdot M \cdot \vec{r}_{i + 1,i} \\
+         &= \frac{1}{2 \cdot A_c} \cdot \left[ (f_{i + 1} + f_i) \cdot M \cdot (\vec{x}_{i + 1} - \vec{x}_i) + \dots + (f_{i} + f_{i - 1}) \cdot M \cdot \vec{x}_{i} - \vec{x}_{i - 1} \right] \\
+         &= \frac{1}{2 \cdot A_c} \cdot \left[ f_i \cdot M \cdot (\vec{x}_{i + 1} - \vec{x}_{i - 1}) + f_{i + 1} \cdot M \cdot (\vec{x}_{i + 2} - \vec{x}_{i}) + \dots \right]
+    \end{split}
+\end{equation}
+Thus
+\begin{equation}
+    \label{eqn:gradient}
+    \nabla f_c = \frac{1}{2 \cdot A_c} \cdot \sum_{i = 1}^N f_i \cdot M \cdot \vec{r}_{i + 1,i - 1}
+\end{equation}
 
-\subsection{Neumann Boundary Conditions}
-%----------------------------------------------------------------
+\section{Normal derivative}
+For the normal derivative at the cell wall $w$ with the normal vector $n_w$ one can write
 \begin{equation}
-    \left. \pdv{f}{x} \right|_{x = i} = c
+    \underbrace{\nabla f_c \cdot \vec{n}_w}_{\nabla_{w} f_c} = \frac{1}{2 \cdot A_c} \cdot \sum_{i = 1}^N f_i \cdot (M \cdot \vec{r}_{i + 1,i - 1}) \cdot \vec{n}_w
 \end{equation}
-%----------------------------------------------------------------
-%----------------------------------------------------------------
+To find the derivative on a node surrounded by $K$ neighbouring cells with the total surface $A_{tot} = \sum_{c=1}^K A_c$
 \begin{equation}
-    \frac{f_i - f{i - i}}{\Delta x} = c
+    \sum_{c=1}^K \frac{A_c}{A_{tot}} \cdot \nabla_{c, w} f_c = \sum_{c=1}^K \frac{A_c}{A_{tot}} \cdot \frac{1}{2 \cdot A_c} \cdot \sum_{i = 1}^N f_{c, i} \cdot (M \cdot \vec{r}_{c, i + 1,i - 1}) \cdot \vec{n}_{c,w}
 \end{equation}
-%----------------------------------------------------------------
-%----------------------------------------------------------------
+using $\overline{A_c} = \frac{A_c}{A_{tot}}$
 \begin{equation}
-    f_i - f_{i - i}= \Delta x \, c
+    \sum_{c=1}^K \overline{A_c} \cdot \nabla_{c, w} f_c = \frac{1}{2 \cdot A_{tot}} \cdot\sum_{c=1}^K  \sum_{i = 1}^N f_{c, i} \cdot (M \cdot \vec{r}_{c, i + 1,i - 1}) \cdot \vec{n}_{c, w}
 \end{equation}
-%----------------------------------------------------------------
+
+\section{Laplace}
+The integral is made over a pseudo cell which connects the barycentres of adjacent cells
+\begin{equation}
+    \begin{split}
+        \nabla^2 f \cdot \underbrace{\sum_{b=1}^N A_b}_{A_{b, tot}}  &=  \sum_{b = 1}^N \nabla f \cdot M \cdot \vec{r}_{b + 1,b} \\
+        &= \sum_{b = 1}^N \frac{A_b \cdot\nabla f_{b} + A_{b+ 1} \cdot \nabla f_{b + 1}}{A_{b+1, b}} \cdot M \cdot \vec{r}_{b + 1,b} 
+    \end{split}
+\end{equation}
+Using Eqn.~(\ref{eqn:gradient}) 
+\begin{equation}
+    \nabla^2 f \cdot A_{b, tot}  = \sum_{b = 1}^N \frac{1}{2 \cdot A_{b+ 1, b}} \cdot \left( \sum_{q=0}^1\sum_{i = 1}^3 f^{b + q}_{i} \cdot M \cdot \vec{r}^{\:b + q}_{i + 1,i - 1}  \right) \cdot M \cdot \vec{r}_{b + 1,b}
+\end{equation}
+As the gradient is considered constant inside the cell
+\begin{equation}
+    \nabla^2 f \approx \frac{1}{2 \cdot A_{b, tot}} \cdot\sum_{b = 1}^N \frac{1}{A_{b+ 1, b}} \cdot \left( \sum_{q=0}^1\sum_{i = 1}^3 f^{b + q}_{i} \cdot M \cdot \vec{r}^{\:b + q}_{i + 1,i - 1}  \right) \cdot M \cdot \vec{r}_{b + 1,b}
+\end{equation}

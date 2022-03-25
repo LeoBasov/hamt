@@ -25,6 +25,18 @@ void SetSolver::Execute(const std::vector<std::string>& argv, const bool&) {
         } else {
             throw CommandError("unknown command 'set solver coord_type' [" + argv.at(2) + "]", __PRETTY_FUNCTION__);
         }
+    } else if (argv.at(1) == "mesh_type") {
+        if (argv.at(2) == "regular") {
+            config.mesh_type = Solver::REGULAR;
+
+            std::cout << "SET SOLVER MESH TYPE: REGULAR" << std::endl;
+        } else if (argv.at(2) == "triangular") {
+            config.mesh_type = Solver::TRIANGULAR;
+
+            std::cout << "SET SOLVER MESH TYPE: TRIANGULAR" << std::endl;
+        } else {
+            throw CommandError("unknown command 'set solver meshtype' [" + argv.at(2) + "]", __PRETTY_FUNCTION__);
+        }
     } else {
         throw CommandError("unknown command 'set solver' [" + argv.at(1) + "]", __PRETTY_FUNCTION__);
     }

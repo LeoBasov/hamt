@@ -10,7 +10,7 @@ namespace hamt {
 class Solver {
    public:
     enum SolverType { HOMOGENEOUS };
-    enum MeshType { REGULAR };
+    enum MeshType { REGULAR, TRIANGULAR };
     enum CoordinatesType { CARTESIAN, CYLINDER };
 
     struct Config {
@@ -32,5 +32,6 @@ class Solver {
     Config config_;
 
     void ExecuteHomogenRegMesh();
+    void ExecuteHomogenTrianglMesh();
 };
 }  // namespace hamt

@@ -93,6 +93,88 @@ void SetWriter::Execute(const std::vector<std::string>& argv, const bool&) {
         } else {
             throw CommandError("unknown command 'set writer reg_mesh' [" + argv.at(2) + "]", __PRETTY_FUNCTION__);
         }
+    } else if (argv.at(1) == "triangl_mesh") {
+        if (argv.at(2) == "vtk") {
+            Writer::Config config(hamt_->writer_.GetConfig(Writer::TRIANGULAR, Writer::VTK));
+
+            if (argv.at(3) == "on") {
+                ChecArgvExact(4, argv);
+
+                config.activated = true;
+
+                std::cout << "SET WRITER FOR TRIANGL_MESH VTK: ON" << std::endl;
+            } else if (argv.at(3) == "off") {
+                ChecArgvExact(4, argv);
+
+                config.activated = false;
+
+                std::cout << "SET WRITER FOR TRIANGL_MESH VTK: OFF" << std::endl;
+            } else if (argv.at(3) == "file_name") {
+                ChecArgvExact(5, argv);
+
+                config.file_name = argv.at(4);
+
+                std::cout << "SET WRITER FOR TRIANGL_MESH VTK FILE NAME: " << config.file_name << std::endl;
+            } else if (argv.at(3) == "output_freq") {
+                ChecArgvExact(5, argv);
+
+                const int frequency(std::stoi(argv.at(4)));
+
+                if (frequency > 0) {
+                    config.frequency = frequency;
+
+                    std::cout << "SET WRITER FOR TRIANGL_MESH VTK OUTPUT FREQUENCY: " << config.frequency << std::endl;
+                } else {
+                    throw CommandError("Frequency must be > 0 [" + argv.at(4) + "]", __PRETTY_FUNCTION__);
+                }
+            } else {
+                throw CommandError("unknown command 'set writer triangl_mesh vtk' [" + argv.at(3) + "]",
+                                   __PRETTY_FUNCTION__);
+            }
+
+            hamt_->writer_.SetConfig(Writer::TRIANGULAR, Writer::VTK, config);
+        } else if (argv.at(2) == "csv") {
+            Writer::Config config(hamt_->writer_.GetConfig(Writer::TRIANGULAR, Writer::CSV));
+
+            if (argv.at(3) == "on") {
+                ChecArgvExact(4, argv);
+
+                config.activated = true;
+
+                std::cout << "SET WRITER FOR TRIANGL_MESH CSV: ON" << std::endl;
+            } else if (argv.at(3) == "off") {
+                ChecArgvExact(4, argv);
+
+                config.activated = false;
+
+                std::cout << "SET WRITER FOR TRIANGL_MESH CSV: OFF" << std::endl;
+            } else if (argv.at(3) == "file_name") {
+                ChecArgvExact(5, argv);
+
+                config.file_name = argv.at(4);
+
+                std::cout << "SET WRITER FOR TRIANGL_MESH CSV FILE NAME: " << config.file_name << std::endl;
+            } else if (argv.at(3) == "output_freq") {
+                ChecArgvExact(5, argv);
+
+                const int frequency(std::stoi(argv.at(4)));
+
+                if (frequency > 0) {
+                    config.frequency = frequency;
+
+                    std::cout << "SET WRITER FOR TRIANGL_MESH CSV OUTPUT FREQUENCY: " << config.frequency << std::endl;
+                } else {
+                    throw CommandError("Frequency must be > 0 [" + argv.at(4) + "]", __PRETTY_FUNCTION__);
+                }
+            } else {
+                throw CommandError("unknown command 'set writer triangl_mesh csv' [" + argv.at(3) + "]",
+                                   __PRETTY_FUNCTION__);
+            }
+
+            hamt_->writer_.SetConfig(Writer::TRIANGULAR, Writer::CSV, config);
+        } else {
+            throw CommandError("unknown command 'set writer triangl_mesh' [" + argv.at(2) + "]", __PRETTY_FUNCTION__);
+        }
     } else {
         throw CommandError("unknown command 'set writer' [" + argv.at(1) + "]", __PRETTY_FUNCTION__);
     }

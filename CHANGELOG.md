@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Full heat equation on a 2d regular mesh in cylinder coordinates
 - Possibility to compile hampt as a python module
 
+## 1.3.0 - 2022-03-25
+### Added
+- Rading of triangular mesh from gmsh 2 format
+- VTK writer for triangular mesh
+- CSV writer for triangular mesh
+- Heat transfer in cartesian coordinates on triangular mesh
+
 ## 1.2.0 - 2021-07-23
 ### Added
 - Added cmake project using pybind11
