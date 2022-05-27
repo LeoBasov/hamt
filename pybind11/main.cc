@@ -42,7 +42,10 @@ void SetUpSolver(::pybind11::module_ &m) {
         .value("CYLINDER", hamt::Solver::CYLINDER)
         .export_values();
 
-    py::enum_<hamt::Solver::MeshType>(solver, "MeshType").value("REGULAR", hamt::Solver::REGULAR).export_values();
+    py::enum_<hamt::Solver::MeshType>(solver, "MeshType")
+            .value("REGULAR", hamt::Solver::REGULAR)
+            .value("TRIANGULAR", hamt::Solver::TRIANGULAR)
+            .export_values();
 
     py::class_<hamt::Solver::Config>(m, "SolverConfig")
         .def(py::init<>())
@@ -52,7 +55,10 @@ void SetUpSolver(::pybind11::module_ &m) {
 }
 
 void SetUpReader(::pybind11::module_ &m) {
-    py::class_<hamt::Reader>(m, "Reader").def(py::init<>()).def("read_reg_mesh", &hamt::Reader::ReadRegularMesh);
+    py::class_<hamt::Reader>(m, "Reader")
+            .def(py::init<>())
+            .def("read_reg_mesh", &hamt::Reader::ReadRegularMesh)
+            .def("read_triangl_mesh", &hamt::Reader::ReadTriangularMesh);
 }
 
 void SetUpWriter(::pybind11::module_ &m) {
@@ -68,7 +74,10 @@ void SetUpWriter(::pybind11::module_ &m) {
         .def_readwrite("file_name", &hamt::Writer::Config::file_name)
         .def_readwrite("activated", &hamt::Writer::Config::activated);
 
-    py::enum_<hamt::Writer::MeshType>(writer, "MeshType").value("REGULAR", hamt::Writer::REGULAR).export_values();
+    py::enum_<hamt::Writer::MeshType>(writer, "MeshType")
+            .value("REGULAR", hamt::Writer::REGULAR)
+            .value("TRIANGULAR", hamt::Writer::TRIANGULAR)
+            .export_values();
 
     py::enum_<hamt::Writer::FileFormat>(writer, "FileFormat")
         .value("VTK", hamt::Writer::VTK)
@@ -80,7 +89,8 @@ void SetUpData(::pybind11::module_ &m) {
     //  to use for shared pointers
     py::class_<hamt::Data, std::shared_ptr<hamt::Data>>(m, "Data")
         .def(py::init<>())
-        .def_readwrite("mesh2d_regular", &hamt::Data::mesh2d_regular_);
+        .def_readwrite("mesh2d_regular", &hamt::Data::mesh2d_regular_)
+        .def_readwrite("mesh2d_triangular", &hamt::Data::mesh2d_triangular_);
 
     py::class_<hamt::Mesh2DRegular> mesh2d_regular(m, "Mesh2DRegular");
     mesh2d_regular.def(py::init<>());
