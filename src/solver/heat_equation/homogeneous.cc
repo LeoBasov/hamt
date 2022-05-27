@@ -647,7 +647,7 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTrian
                 mat_b.first(i, i) = 1.0;
             } else if (boundary1.type == Mesh2DTriangular::BoundaryType::NEUMANN &&
                        boundary2.type == Mesh2DTriangular::BoundaryType::NEUMANN) {
-                NeumannTraingularMesh(mesh, i, mat_b);
+                NeumannTriangularMesh(mesh, i, mat_b);
             } else {
                 throw IncompleteCodeError("undefined boundary condition for triangular mesh");
             }
@@ -707,7 +707,7 @@ void CentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, st
     }
 }
 
-void NeumannTraingularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b) {
+void NeumannTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b) {
     const Mesh2DTriangular::Node& node = mesh.nodes_.at(node_id);
     const Mesh2DTriangular::Boundary& boundary1 = mesh.boundaries_.at(node.boundaries.at(0));
     const Mesh2DTriangular::Boundary& boundary2 = mesh.boundaries_.at(node.boundaries.at(1));
@@ -731,8 +731,7 @@ void NeumannTraingularMesh(const Mesh2DTriangular& mesh, const size_t node_id, s
     for (size_t c = 0; c < node.adjacent_cells.size(); c++) {
         const size_t cell_id = node.adjacent_cells.at(c);
         const Mesh2DTriangular::Cell& cell = mesh.cells_.at(cell_id);
-        const Mesh2DTriangular::Surface& surface = mesh.surfaces_.at(cell.surface_id);
-        const double factor = surface.thermal_conductivity * (1.0 / (2.0 * total_cell_area));
+        const double factor = (1.0 / (2.0 * total_cell_area));
 
         for (size_t i = 0; i < 3; i++) {
             const size_t pos_im = i == 0 ? 2 : i - 1;
