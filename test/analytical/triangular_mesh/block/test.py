@@ -226,3 +226,55 @@ def test_temp_heterogen_horizontal():
 			assert dt < 1e-5
 
 	os.remove('block.csv')
+
+def test_q_homogene_vertical():
+	hamt = set_up_hamt()
+
+	# setting boundary types
+	hamt.data.mesh2d_triangular.set_boundary_type("l_buttom_left", ph.Mesh2DTriangular.BoundaryType.DIRICHLET)
+	hamt.data.mesh2d_triangular.set_boundary_type("l_buttom_right", ph.Mesh2DTriangular.BoundaryType.DIRICHLET)
+
+	hamt.data.mesh2d_triangular.set_boundary_type("l_right_buttom", ph.Mesh2DTriangular.BoundaryType.NEUMANN)
+	hamt.data.mesh2d_triangular.set_boundary_type("l_right_top", ph.Mesh2DTriangular.BoundaryType.NEUMANN)
+
+	hamt.data.mesh2d_triangular.set_boundary_type("l_top_right", ph.Mesh2DTriangular.BoundaryType.NEUMANN)
+	hamt.data.mesh2d_triangular.set_boundary_type("l_top_left", ph.Mesh2DTriangular.BoundaryType.NEUMANN)
+
+	hamt.data.mesh2d_triangular.set_boundary_type("l_left_top", ph.Mesh2DTriangular.BoundaryType.NEUMANN)
+	hamt.data.mesh2d_triangular.set_boundary_type("l_left_buttom", ph.Mesh2DTriangular.BoundaryType.NEUMANN)
+
+	# setting boundary values
+	hamt.data.mesh2d_triangular.set_boundary_value("l_buttom_left", 100.0)
+	hamt.data.mesh2d_triangular.set_boundary_value("l_buttom_right", 100.0)
+
+	hamt.data.mesh2d_triangular.set_boundary_value("l_right_buttom", 0.0)
+	hamt.data.mesh2d_triangular.set_boundary_value("l_right_top", 0.0)
+
+	hamt.data.mesh2d_triangular.set_boundary_value("l_top_right", 100.0)
+	hamt.data.mesh2d_triangular.set_boundary_value("l_top_left", 100.0)
+
+	hamt.data.mesh2d_triangular.set_boundary_value("l_left_top", 0.0)
+	hamt.data.mesh2d_triangular.set_boundary_value("l_left_buttom", 0.0)
+
+	# setting heat conductivity
+	hamt.data.mesh2d_triangular.set_surface_thermal_conductivity("s_buttom_left", 100)
+	hamt.data.mesh2d_triangular.set_surface_thermal_conductivity("s_top_left", 100)
+
+	hamt.data.mesh2d_triangular.set_surface_thermal_conductivity("s_top_right", 100)
+	hamt.data.mesh2d_triangular.set_surface_thermal_conductivity("s_buttom_right", 100)
+
+	hamt.solver.execute()
+	hamt.writer.write()
+
+	with open('block.csv') as block:
+		spamreader = csv.reader(block)
+		for row in spamreader:
+			T = float(row[0])
+			y = float(row[2])
+			Tref = linear_model(100, 300, -1, 1, y)
+
+			dt = abs(Tref - T)/Tref
+
+			assert dt < 1e-1
+
+	os.remove('block.csv')
