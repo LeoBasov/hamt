@@ -17,7 +17,7 @@ def set_up_hamt():
 
 	hamt.writer.set_config(ph.Writer.MeshType.TRIANGULAR, ph.Writer.FileFormat.CSV, writer_config)
 
-	hamt.reader.read_triangl_mesh("cylinder.msh")
+	hamt.reader.read_triangl_mesh("cylinder_fine.msh")
 
 	return hamt
 
@@ -57,6 +57,43 @@ def test_temp_homogene():
 
 			dt = abs(Tref - T)/Tref
 
-			assert dt < 1e-1
+			assert dt < 1e-2
+
+	os.remove('cylinder.csv')
+
+def test_temp_heterogene():
+	hamt = set_up_hamt()
+
+	# setting boundary types
+	hamt.data.mesh2d_triangular.set_boundary_type("left", ph.Mesh2DTriangular.BoundaryType.NEUMANN)
+	hamt.data.mesh2d_triangular.set_boundary_type("right", ph.Mesh2DTriangular.BoundaryType.NEUMANN)
+
+	hamt.data.mesh2d_triangular.set_boundary_type("inner", ph.Mesh2DTriangular.BoundaryType.DIRICHLET)
+	hamt.data.mesh2d_triangular.set_boundary_type("outer", ph.Mesh2DTriangular.BoundaryType.NEUMANN)
+
+
+	# setting boundary values
+	hamt.data.mesh2d_triangular.set_boundary_value("inner", 100.0)
+	hamt.data.mesh2d_triangular.set_boundary_value("outer", 200/math.log(2))
+
+	hamt.data.mesh2d_triangular.set_boundary_value("left", 0.0)
+	hamt.data.mesh2d_triangular.set_boundary_value("right", 0.0)
+
+
+	hamt.solver.execute()
+	hamt.writer.write()
+
+	with open('cylinder.csv') as cylinder:
+		spamreader = csv.reader(cylinder)
+		for row in spamreader:
+			T = float(row[0])
+			x = float(row[1])
+			y = float(row[2])
+			r = math.sqrt(x*x + y*y)
+			Tref = cylinder_model(100, 300, 1, 2, r)
+
+			dt = abs(Tref - T)/Tref
+
+			assert dt < 7e-1
 
 	os.remove('cylinder.csv')
