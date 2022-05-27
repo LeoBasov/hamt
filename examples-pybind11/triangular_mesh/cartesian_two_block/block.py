@@ -32,6 +32,9 @@ hamt.data.mesh2d_triangular.set_boundary_value("l_buttom_right", 0.0)
 hamt.data.mesh2d_triangular.set_boundary_value("l_top_left", 0.0)
 hamt.data.mesh2d_triangular.set_boundary_value("l_top_right", 0.0)
 
+hamt.data.mesh2d_triangular.set_surface_thermal_conductivity("buttom", 50)
+hamt.data.mesh2d_triangular.set_surface_thermal_conductivity("top", 20)
+
 hamt.solver.execute()
 
 hamt.writer.write()
