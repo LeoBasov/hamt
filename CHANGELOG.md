@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Full heat equation on a 2d regular mesh in cartesian coordinates
 - Full heat equation on a 2d regular mesh in cylinder coordinates
 - Possibility to compile hampt as a python module
+- Writer for hdf5 files
 
 ## 1.3.0 - 2022-03-25
 ### Added
