@@ -123,9 +123,7 @@ commands:
       - run:
           name: Run FMMR test
           command: 'cd ./examples-pybind11/FMMR/ && python3 FMMR.py'
-      - run:
-          name: Run NTR test
-          command: 'cd ./examples-pybind11/NTR/ && python3 input.py'
+
   run_pybind11_regression_tests_cylinder:
     steps:
       - run:
@@ -155,8 +153,11 @@ commands:
   run_pybind11_analytic_tests_triangle_mesh_cartesian:
     steps:
       - run:
-          name: Run triangular mesh homogenous block analytic test
+          name: Run triangular mesh block analytic test
           command: cd ./test/analytical/triangular_mesh/block/ && pytest test.py
+      - run:
+          name: Run triangular mesh homogenous cylinder analytic test
+          command: cd ./test/analytical/triangular_mesh/hollow_cylinder/ && pytest test.py
 
 executors:
   docker-bionic:
