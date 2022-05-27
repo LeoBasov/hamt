@@ -152,6 +152,12 @@ commands:
           name: Run cartesian homogenous block analysis vertical heterogen.
           command: cd ./test/regression/regular_mesh/homogeneous_cartesian/ && python3 asses.py reg_car_hom_3.csv reg_car_hom_3_ref.csv
 
+  run_pybind11_analytic_tests_triangle_mesh_cartesian:
+    steps:
+      - run:
+          name: Run triangular mesh homogenous block execution test
+          command: cd ./test/analytical/triangular_mesh/block/ && pytest test.py
+
 executors:
   docker-bionic:
     docker:
@@ -180,6 +186,7 @@ jobs:
       - run_pybind11_execution_tests
       - run_pybind11_regression_tests_cylinder
       - run_pybind11_regression_tests_cartesian
+      - run_pybind11_analytic_tests_triangle_mesh_cartesian
 
 workflows:
   build-and-run-tests:
