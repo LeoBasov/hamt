@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Possibility to compile hampt as a python module
 - Writer for hdf5 files
 
+## 1.4.1 - 2022-05-27
+### Fixed
+- Bug where material heat conductivity would be considered in the Neumann boundary condition
+
 ## 1.4.0 - 2022-05-27
 ### Added
 - Capability to used heat transfer in cartesian coordinates on triangular mesh in pyhamt
