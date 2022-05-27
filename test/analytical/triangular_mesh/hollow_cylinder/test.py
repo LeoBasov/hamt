@@ -17,7 +17,7 @@ def set_up_hamt():
 
 	hamt.writer.set_config(ph.Writer.MeshType.TRIANGULAR, ph.Writer.FileFormat.CSV, writer_config)
 
-	hamt.reader.read_triangl_mesh("cylinder_fine.msh")
+	hamt.reader.read_triangl_mesh("cylinder.msh")
 
 	return hamt
 
@@ -57,7 +57,7 @@ def test_temp_homogene():
 
 			dt = abs(Tref - T)/Tref
 
-			assert dt < 1e-2
+			assert dt < 1e-1
 
 	os.remove('cylinder.csv')
 
@@ -94,6 +94,6 @@ def test_temp_heterogene():
 
 			dt = abs(Tref - T)/Tref
 
-			assert dt < 7e-1
+			assert dt < 8e-1
 
 	os.remove('cylinder.csv')
