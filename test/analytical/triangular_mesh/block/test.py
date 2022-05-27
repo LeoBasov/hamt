@@ -1,5 +1,6 @@
 import csv
 import pyhamt as ph
+import os
 
 def set_up_hamt():
 	hamt = ph.HAMT()
@@ -62,3 +63,5 @@ def test_temp_homogene_vertical():
 			Tref = linear_model(100, 300, -1, 1, y)
 
 			assert T == Tref
+
+	os.remove('block.csv')
