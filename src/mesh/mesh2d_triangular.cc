@@ -37,6 +37,16 @@ void Mesh2DTriangular::SetBoundaryValue(const std::string& name, const double& v
     }
 }
 
+void Mesh2DTriangular::SetSurfaceThermalConductivity(const std::string& name, const double& value) {
+    auto iter(surface_names_.find(name));
+
+    if (iter == surface_names_.end()) {
+        throw Exception("Undefined surface [" + name + "]", __PRETTY_FUNCTION__);
+    } else {
+        surfaces_.at(iter->second).thermal_conductivity = value;
+    }
+}
+
 size_t Mesh2DTriangular::GetAdjNodeId(size_t node_id, size_t adjacent_node_pos) const {
     return nodes_.at(node_id).adjacent_nodes.at(adjacent_node_pos);
 }

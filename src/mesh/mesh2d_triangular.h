@@ -49,6 +49,8 @@ class Mesh2DTriangular {
     void SetBoundaryType(const std::string& name, BoundaryType type);
     void SetBoundaryValue(const std::string& name, const double& value);
 
+    void SetSurfaceThermalConductivity(const std::string& name, const double& value);
+
     size_t GetAdjNodeId(size_t node_id, size_t adjacent_node_pos) const;
     size_t GetAdjCellId(size_t node_id, size_t adjacent_cell_pos) const;
 
