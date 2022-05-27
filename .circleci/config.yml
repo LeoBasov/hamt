@@ -69,7 +69,7 @@ commands:
             genhtml ./build-hamt-tests/unit_tests/coverage-filtered.info --output-directory coverage
       - store_artifacts:
           path: coverage
-  run_analytical_tests_cartesian:
+  run_regression_tests_cartesian:
     steps:
       - run:
           name: Run cartesian homogenous block execution test
@@ -86,7 +86,7 @@ commands:
       - run:
           name: Run cartesian homogenous block analysis vertical heterogen.
           command: cd ./test/regression/regular_mesh/homogeneous_cartesian/ && python3 asses.py ../../../../reg_car_hom_3.csv reg_car_hom_3_ref.csv
-  run_analytical_tests_cylinder:
+  run_regression_tests_cylinder:
     steps:
       - run:
           name: Run cartesian homogenous cylinder block execution test
@@ -123,10 +123,8 @@ commands:
       - run:
           name: Run FMMR test
           command: 'cd ./examples-pybind11/FMMR/ && python3 FMMR.py'
-      - run:
-          name: Run NTR test
-          command: 'cd ./examples-pybind11/NTR/ && python3 input.py'
-  run_pybind11_analytical_tests_cylinder:
+
+  run_pybind11_regression_tests_cylinder:
     steps:
       - run:
           name: Run cartesian homogenous cylinder block execution test
@@ -134,7 +132,7 @@ commands:
       - run:
           name: Run cartesian homogenous cylinder block analysis vertical
           command: cd ./test/regression/regular_mesh/homogeneous_cylinder/ && python3 asses.py cylinder_test_new.csv cylinder_test.csv
-  run_pybind11_analytical_tests_cartesian:
+  run_pybind11_regression_tests_cartesian:
     steps:
       - run:
           name: Run cartesian homogenous block execution test
@@ -152,6 +150,15 @@ commands:
           name: Run cartesian homogenous block analysis vertical heterogen.
           command: cd ./test/regression/regular_mesh/homogeneous_cartesian/ && python3 asses.py reg_car_hom_3.csv reg_car_hom_3_ref.csv
 
+  run_pybind11_analytic_tests_triangle_mesh_cartesian:
+    steps:
+      - run:
+          name: Run triangular mesh block analytic test
+          command: cd ./test/analytical/triangular_mesh/block/ && pytest test.py
+      - run:
+          name: Run triangular mesh homogenous cylinder analytic test
+          command: cd ./test/analytical/triangular_mesh/hollow_cylinder/ && pytest test.py
+
 executors:
   docker-bionic:
     docker:
@@ -164,13 +171,13 @@ jobs:
       - set_up_unit_test_environment
       - build_tests
       - run_unit_tests
-  analytical_tests:
+  regression_tests:
     executor: docker-bionic
     steps:
       - set_up_regression_test_environment
       - build_hamt
-      - run_analytical_tests_cartesian
-      - run_analytical_tests_cylinder
+      - run_regression_tests_cartesian
+      - run_regression_tests_cylinder
       - run_regression_tests_cartesian_triangular_mesh
   pybind11_tests:
     executor: docker-bionic
@@ -178,12 +185,13 @@ jobs:
       - set_up_pybind11_test_environment
       - build_pyhamt
       - run_pybind11_execution_tests
-      - run_pybind11_analytical_tests_cylinder
-      - run_pybind11_analytical_tests_cartesian
+      - run_pybind11_regression_tests_cylinder
+      - run_pybind11_regression_tests_cartesian
+      - run_pybind11_analytic_tests_triangle_mesh_cartesian
 
 workflows:
   build-and-run-tests:
     jobs:
       - unit_tests
-      - analytical_tests
+      - regression_tests
       - pybind11_tests

@@ -18,6 +18,7 @@ elif [ "$1" == "-pybind11" ]; then
     sudo apt install -y python3
     sudo apt install -y python3-pip
     pip3 install "pybind11[global]"
+    pip3 install pytest
     echo "INSTALLATION COMPLETE"
 else
     echo "INSTALLATION COMPLETE"
