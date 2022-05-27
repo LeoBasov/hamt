@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Possibility to compile hampt as a python module
 - Writer for hdf5 files
 
+## 1.4.0 - 2022-05-27
+### Added
+- Capability to used heat transfer in cartesian coordinates on triangular mesh in pyhamt
+
 ## 1.3.0 - 2022-03-25
 ### Added
 - Rading of triangular mesh from gmsh 2 format
