@@ -27,6 +27,16 @@ void Mesh2DTriangular::SetBoundaryType(const std::string& name, BoundaryType typ
     }
 }
 
+void Mesh2DTriangular::SetBoundaryValue(const std::string& name, const double& value) {
+    auto iter(boundary_names_.find(name));
+
+    if (iter == boundary_names_.end()) {
+        throw Exception("Undefined boundary [" + name + "]", __PRETTY_FUNCTION__);
+    } else {
+        boundaries_.at(iter->second).value = value;
+    }
+}
+
 size_t Mesh2DTriangular::GetAdjNodeId(size_t node_id, size_t adjacent_node_pos) const {
     return nodes_.at(node_id).adjacent_nodes.at(adjacent_node_pos);
 }
