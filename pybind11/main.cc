@@ -104,4 +104,18 @@ void SetUpData(::pybind11::module_ &m) {
         .value("DIRICHLET", hamt::Mesh2DRegular::DIRICHLET)
         .value("RADIATION", hamt::Mesh2DRegular::RADIATION)
         .export_values();
+
+    py::class_<hamt::Mesh2DTriangular> mesh2d_triangular(m, "Mesh2DTriangular");
+    mesh2d_triangular.def(py::init<>())
+        .def("set_boundary_type", &hamt::Mesh2DTriangular::SetBoundaryType);
+        /*.def("set_boundary_value", &hamt::Mesh2DTriangular::SetBoundaryValue)
+        .def("set_surface_thermal_conductivity", &hamt::Mesh2DTriangular::SetSurfaceThermalConductivity)
+        .def("clear", &hamt::Mesh2DTriangular::Clear);*/
+
+    py::enum_<hamt::Mesh2DTriangular::BoundaryType>(mesh2d_triangular, "BoundaryType")
+        .value("NEUMANN", hamt::Mesh2DTriangular::NEUMANN)
+        .value("DIRICHLET", hamt::Mesh2DTriangular::DIRICHLET)
+        .value("RADIATION", hamt::Mesh2DTriangular::RADIATION)
+        .export_values();
+
 }
