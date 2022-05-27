@@ -1,3 +1,4 @@
+import csv
 import pyhamt as ph
 
 def set_up_hamt():
@@ -17,6 +18,9 @@ def set_up_hamt():
 	hamt.reader.read_triangl_mesh("block.msh")
 
 	return hamt
+
+def linear_model(T0, T1, x0, x1, x):
+	return T0*((x1 - x) / (x1 - x0)) + T1*((x - x0) / (x1 - x0))
 
 def test_temp_homogene_vertical():
 	hamt = set_up_hamt()
@@ -50,7 +54,11 @@ def test_temp_homogene_vertical():
 	hamt.solver.execute()
 	hamt.writer.write()
 
-if __name__ == '__main__':
-	print('running test: test_temp_homogene_vertical')
-	test_temp_homogene_vertical()
-	print('done')
+	with open('block.csv') as block:
+		spamreader = csv.reader(block)
+		for row in spamreader:
+			T = float(row[0])
+			y = float(row[2])
+			Tref = linear_model(100, 300, -1, 1, y)
+
+			assert T == Tref
