@@ -155,7 +155,7 @@ commands:
   run_pybind11_analytic_tests_triangle_mesh_cartesian:
     steps:
       - run:
-          name: Run triangular mesh homogenous block execution test
+          name: Run triangular mesh homogenous block analytic test
           command: cd ./test/analytical/triangular_mesh/block/ && pytest test.py
 
 executors:
