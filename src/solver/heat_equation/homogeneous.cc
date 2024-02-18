@@ -652,7 +652,8 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTrian
                 throw IncompleteCodeError("undefined boundary condition for triangular mesh");
             }
         } else {
-            CentreTriangularMesh(mesh, i, mat_b);
+            // CentreTriangularMesh(mesh, i, mat_b);
+            FEMCentreTriangularMesh(mesh, i, mat_b);
         }
     }
 
@@ -704,6 +705,42 @@ void CentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, st
             mat_b.first(node_id, node_id_bp_i) +=
                 factor_ip * (rot_mat * (node_pos_bp_ip - node_pos_bp_im)).dot(bary_vec);
         }
+    }
+}
+
+void FEMCentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b) {
+    const Mesh2DTriangular::Node& node = mesh.nodes_.at(node_id);
+
+    for (size_t c = 0; c < node.adjacent_cells.size(); c++) {
+        const size_t cell_id = node.adjacent_cells.at(c);
+        const Mesh2DTriangular::Cell& cell = mesh.cells_.at(cell_id);
+        size_t pos_im, pos_ip;
+
+        for (size_t i = 0; i < 3; i++) {
+            if (cell.nodes.at(i) == node_id) {
+                pos_im = i == 0 ? 2 : i - 1;
+                pos_ip = i == 2 ? 0 : i + 1;
+            }
+        }
+
+        const size_t node_id_im = cell.nodes.at(pos_im);
+        const size_t node_id_ip = cell.nodes.at(pos_ip);
+        const Vector3d node_pos_i = mesh.GetNodePos(node_id);
+        const Vector3d node_pos_im = mesh.GetNodePos(node_id_im);
+        const Vector3d node_pos_ip = mesh.GetNodePos(node_id_ip);
+
+        const double x_i = node_pos_i(0);
+        const double x_im = node_pos_im(0);
+        const double x_ip = node_pos_ip(0);
+        const double y_i = node_pos_i(1);
+        const double y_im = node_pos_im(1);
+        const double y_ip = node_pos_ip(1);
+
+        const double det_J = x_i * (y_ip - y_im) + x_ip * (-y_i + y_im) + x_im * (y_i - y_ip);
+
+        mat_b.first(node_id, node_id) += 2.0 * det_J;
+        mat_b.first(node_id, node_id_im) -= det_J;
+        mat_b.first(node_id, node_id_ip) -= det_J;
     }
 }
 
