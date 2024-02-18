@@ -714,12 +714,13 @@ void FEMCentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id,
     for (size_t c = 0; c < node.adjacent_cells.size(); c++) {
         const size_t cell_id = node.adjacent_cells.at(c);
         const Mesh2DTriangular::Cell& cell = mesh.cells_.at(cell_id);
-        size_t pos_im, pos_ip;
+        int pos_im = -1, pos_ip = -1;
 
         for (size_t i = 0; i < 3; i++) {
             if (cell.nodes.at(i) == node_id) {
                 pos_im = i == 0 ? 2 : i - 1;
                 pos_ip = i == 2 ? 0 : i + 1;
+                break;
             }
         }
 
@@ -738,9 +739,11 @@ void FEMCentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id,
 
         const double det_J = x_i * (y_ip - y_im) + x_ip * (-y_i + y_im) + x_im * (y_i - y_ip);
 
-        mat_b.first(node_id, node_id) += det_J;
-        mat_b.first(node_id, node_id_im) -= 0.5 * det_J;
-        mat_b.first(node_id, node_id_ip) -= 0.5 * det_J;
+        const Mesh2DTriangular::Surface surface_br(mesh.surfaces_.at(mesh.cells_.at(cell_id).surface_id));
+
+        mat_b.first(node_id, node_id) += det_J * surface_br.thermal_conductivity;
+        mat_b.first(node_id, node_id_im) -= 0.5 * det_J * surface_br.thermal_conductivity;
+        mat_b.first(node_id, node_id_ip) -= 0.5 * det_J * surface_br.thermal_conductivity;
     }
 }
 
