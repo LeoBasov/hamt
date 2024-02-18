@@ -738,9 +738,9 @@ void FEMCentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id,
 
         const double det_J = x_i * (y_ip - y_im) + x_ip * (-y_i + y_im) + x_im * (y_i - y_ip);
 
-        mat_b.first(node_id, node_id) += 2.0 * det_J;
-        mat_b.first(node_id, node_id_im) -= det_J;
-        mat_b.first(node_id, node_id_ip) -= det_J;
+        mat_b.first(node_id, node_id) += det_J;
+        mat_b.first(node_id, node_id_im) -= 0.5 * det_J;
+        mat_b.first(node_id, node_id_ip) -= 0.5 * det_J;
     }
 }
 
