@@ -1,0 +1,17 @@
+# First test
+
+read triangl_mesh hole.msh
+info triangl_mesh
+
+set triangl_mesh bound_value buttom 300
+set triangl_mesh bound_value right 300
+set triangl_mesh bound_value top 300
+set triangl_mesh bound_value left 300
+set triangl_mesh bound_value cirlce 100
+
+set writer triangl_mesh vtk on
+set writer triangl_mesh vtk file_name hole_FEM
+
+set solver mesh_type triangular
+
+run
