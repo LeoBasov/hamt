@@ -68,7 +68,9 @@ void Solver::ExecuteHomogenTrianglMesh() {
             break;
         }
         case CYLINDER: {
-            throw IncompleteCodeError("cylinder coordinates not defined for trangular mesh");
+            const std::pair<MatrixXd, VectorXd> mat_b(heat_equation_homogeneous::ConvertMesh2dTriangularCylindrical(
+                data_->mesh2d_triangular_, data_->results_));
+            data_->results_ = mat_b.first.partialPivLu().solve(mat_b.second);
             break;
         }
         default: {
