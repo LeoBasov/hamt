@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Possibility to compile hampt as a python module
 - Writer for hdf5 files
 
+## 1.5.0 - 2024-02-19
+### Added
+- Algorithms to solve the 2d homogeneous heat equation on a triangular mesh in cylinder coordinates
+
 ## 1.4.1 - 2022-05-27
 ### Fixed
 - Bug where material heat conductivity would be considered in the Neumann boundary condition
