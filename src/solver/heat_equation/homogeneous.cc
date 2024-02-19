@@ -730,20 +730,27 @@ void FEMCentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id,
         const Vector3d node_pos_im = mesh.GetNodePos(node_id_im);
         const Vector3d node_pos_ip = mesh.GetNodePos(node_id_ip);
 
-        const double x_i = node_pos_i(0);
-        const double x_im = node_pos_im(0);
-        const double x_ip = node_pos_ip(0);
-        const double y_i = node_pos_i(1);
-        const double y_im = node_pos_im(1);
-        const double y_ip = node_pos_ip(1);
+        const double dx10 = node_pos_ip(0) - node_pos_i(0);
+        const double dx20 = node_pos_im(0) - node_pos_i(0);
+        const double dy10 = node_pos_ip(1) - node_pos_i(1);
+        const double dy20 = node_pos_im(1) - node_pos_i(1);
 
-        const double det_J = x_i * (y_ip - y_im) + x_ip * (-y_i + y_im) + x_im * (y_i - y_ip);
+        const double det_J = dx10 * dy20 - dx20 * dy10;
+
+        const double phi_ii_x = 0.5 * std::pow(-dy20 + dy10, 2) / det_J;
+        const double phi_ii_y = 0.5 * std::pow(dx20 - dx10, 2) / det_J;
+
+        const double phi_ip_x = 0.5 * (-dy20 + dy10) * dy20 / det_J;
+        const double phi_ip_y = -0.5 * (dx20 - dx10) * dx20 / det_J;
+
+        const double phi_im_x = -0.5 * (-dy20 + dy10) * dy10 / det_J;
+        const double phi_im_y = 0.5 * (dx20 - dx10) * dx10 / det_J;
 
         const Mesh2DTriangular::Surface surface_br(mesh.surfaces_.at(mesh.cells_.at(cell_id).surface_id));
 
-        mat_b.first(node_id, node_id) += det_J * surface_br.thermal_conductivity;
-        mat_b.first(node_id, node_id_im) -= 0.5 * det_J * surface_br.thermal_conductivity;
-        mat_b.first(node_id, node_id_ip) -= 0.5 * det_J * surface_br.thermal_conductivity;
+        mat_b.first(node_id, node_id) += (phi_ii_x + phi_ii_y) * surface_br.thermal_conductivity;
+        mat_b.first(node_id, node_id_im) += (phi_im_x + phi_im_y) * surface_br.thermal_conductivity;
+        mat_b.first(node_id, node_id_ip) += (phi_ip_x + phi_ip_y) * surface_br.thermal_conductivity;
     }
 }
 
