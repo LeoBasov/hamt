@@ -1,0 +1,30 @@
+# First test
+
+read triangl_mesh two_blocks.msh
+info triangl_mesh
+
+set triangl_mesh bound_value l_buttom 100
+set triangl_mesh bound_value l_top 300
+
+
+set triangl_mesh bound_value l_buttom_right 0
+set triangl_mesh bound_value l_buttom_left 0
+
+set triangl_mesh bound_value l_top_right 0
+set triangl_mesh bound_value l_top_left 0
+
+set triangl_mesh bound_type l_buttom_right neumann
+set triangl_mesh bound_type l_buttom_left neumann
+
+set triangl_mesh bound_type l_top_right neumann
+set triangl_mesh bound_type l_top_left neumann
+
+set writer triangl_mesh vtk on
+set writer triangl_mesh vtk file_name cube_triangl
+
+set triangl_mesh surf_therm_conduct top 5
+
+set solver mesh_type triangular
+set solver coord_type cylinder
+
+run

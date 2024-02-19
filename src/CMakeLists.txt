@@ -9,6 +9,6 @@ find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 find_package(OpenMP REQUIRED)
 
 include_directories(${EIGEN3_INCLUDE_DIRS})
-file(GLOB_RECURSE sources *.cc)
+file(GLOB_RECURSE sources *.cc *.h)
 add_executable(hamt ${sources})
 target_link_libraries(hamt ${EIGEN3_LIBRARIES} OpenMP::OpenMP_CXX)

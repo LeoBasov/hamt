@@ -652,7 +652,8 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTrian
                 throw IncompleteCodeError("undefined boundary condition for triangular mesh");
             }
         } else {
-            CentreTriangularMesh(mesh, i, mat_b);
+            // CentreTriangularMesh(mesh, i, mat_b);
+            FEMCentreTriangularMesh(mesh, i, mat_b);
         }
     }
 
@@ -707,6 +708,52 @@ void CentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, st
     }
 }
 
+void FEMCentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b) {
+    const Mesh2DTriangular::Node& node = mesh.nodes_.at(node_id);
+
+    for (size_t c = 0; c < node.adjacent_cells.size(); c++) {
+        const size_t cell_id = node.adjacent_cells.at(c);
+        const Mesh2DTriangular::Cell& cell = mesh.cells_.at(cell_id);
+        int pos_im = -1, pos_ip = -1;
+
+        for (size_t i = 0; i < 3; i++) {
+            if (cell.nodes.at(i) == node_id) {
+                pos_im = i == 0 ? 2 : i - 1;
+                pos_ip = i == 2 ? 0 : i + 1;
+                break;
+            }
+        }
+
+        const size_t node_id_im = cell.nodes.at(pos_im);
+        const size_t node_id_ip = cell.nodes.at(pos_ip);
+        const Vector3d node_pos_i = mesh.GetNodePos(node_id);
+        const Vector3d node_pos_im = mesh.GetNodePos(node_id_im);
+        const Vector3d node_pos_ip = mesh.GetNodePos(node_id_ip);
+
+        const double dx10 = node_pos_ip(0) - node_pos_i(0);
+        const double dx20 = node_pos_im(0) - node_pos_i(0);
+        const double dy10 = node_pos_ip(1) - node_pos_i(1);
+        const double dy20 = node_pos_im(1) - node_pos_i(1);
+
+        const double det_J = dx10 * dy20 - dx20 * dy10;
+
+        const double phi_ii_x = 0.5 * std::pow(-dy20 + dy10, 2) / det_J;
+        const double phi_ii_y = 0.5 * std::pow(dx20 - dx10, 2) / det_J;
+
+        const double phi_ip_x = 0.5 * (-dy20 + dy10) * dy20 / det_J;
+        const double phi_ip_y = -0.5 * (dx20 - dx10) * dx20 / det_J;
+
+        const double phi_im_x = -0.5 * (-dy20 + dy10) * dy10 / det_J;
+        const double phi_im_y = 0.5 * (dx20 - dx10) * dx10 / det_J;
+
+        const Mesh2DTriangular::Surface surface_br(mesh.surfaces_.at(mesh.cells_.at(cell_id).surface_id));
+
+        mat_b.first(node_id, node_id) += (phi_ii_x + phi_ii_y) * surface_br.thermal_conductivity;
+        mat_b.first(node_id, node_id_im) += (phi_im_x + phi_im_y) * surface_br.thermal_conductivity;
+        mat_b.first(node_id, node_id_ip) += (phi_ip_x + phi_ip_y) * surface_br.thermal_conductivity;
+    }
+}
+
 void NeumannTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b) {
     const Mesh2DTriangular::Node& node = mesh.nodes_.at(node_id);
     const Mesh2DTriangular::Boundary& boundary1 = mesh.boundaries_.at(node.boundaries.at(0));
@@ -748,6 +795,93 @@ void NeumannTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, s
 
     // TODO (LB): implement correct area dependant average
     mat_b.second(node_id) = (boundary1.value + boundary2.value) / 2.0;
+}
+
+std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCylindrical(const Mesh2DTriangular& mesh,
+                                                                 const VectorXd& results) {
+    std::pair<MatrixXd, VectorXd> mat_b;
+
+    mat_b.first = MatrixXd::Zero(mesh.nodes_.size(), mesh.nodes_.size());
+    mat_b.second = VectorXd::Zero(mesh.nodes_.size());
+
+    for (size_t i = 0; i < mesh.nodes_.size(); i++) {
+        const Mesh2DTriangular::Node& node = mesh.nodes_.at(i);
+
+        if (node.boundaries.size()) {
+            const Mesh2DTriangular::Boundary& boundary1 = mesh.boundaries_.at(node.boundaries.at(0));
+            const Mesh2DTriangular::Boundary& boundary2 = mesh.boundaries_.at(node.boundaries.at(1));
+
+            if (boundary1.type == Mesh2DTriangular::BoundaryType::DIRICHLET &&
+                boundary2.type == Mesh2DTriangular::BoundaryType::DIRICHLET) {
+                mat_b.second(i) = 0.5 * (boundary1.value + boundary2.value);
+                mat_b.first(i, i) = 1.0;
+            } else if (boundary1.type == Mesh2DTriangular::BoundaryType::DIRICHLET) {
+                mat_b.second(i) = boundary1.value;
+                mat_b.first(i, i) = 1.0;
+            } else if (boundary2.type == Mesh2DTriangular::BoundaryType::DIRICHLET) {
+                mat_b.second(i) = boundary2.value;
+                mat_b.first(i, i) = 1.0;
+            } else if (boundary1.type == Mesh2DTriangular::BoundaryType::NEUMANN &&
+                       boundary2.type == Mesh2DTriangular::BoundaryType::NEUMANN) {
+                NeumannTriangularMesh(mesh, i, mat_b);
+            } else {
+                throw IncompleteCodeError("undefined boundary condition for triangular mesh");
+            }
+        } else {
+            FEMCentreCylindricalMesh(mesh, i, mat_b);
+        }
+    }
+
+    return mat_b;
+}
+
+void FEMCentreCylindricalMesh(const Mesh2DTriangular& mesh, const size_t node_id,
+                              std::pair<MatrixXd, VectorXd>& mat_b) {
+    const Mesh2DTriangular::Node& node = mesh.nodes_.at(node_id);
+
+    for (size_t c = 0; c < node.adjacent_cells.size(); c++) {
+        const size_t cell_id = node.adjacent_cells.at(c);
+        const Mesh2DTriangular::Cell& cell = mesh.cells_.at(cell_id);
+        int pos_im = -1, pos_ip = -1;
+
+        for (size_t i = 0; i < 3; i++) {
+            if (cell.nodes.at(i) == node_id) {
+                pos_im = i == 0 ? 2 : i - 1;
+                pos_ip = i == 2 ? 0 : i + 1;
+                break;
+            }
+        }
+
+        const size_t node_id_im = cell.nodes.at(pos_im);
+        const size_t node_id_ip = cell.nodes.at(pos_ip);
+        const Vector3d node_pos_i = mesh.GetNodePos(node_id);
+        const Vector3d node_pos_im = mesh.GetNodePos(node_id_im);
+        const Vector3d node_pos_ip = mesh.GetNodePos(node_id_ip);
+
+        const double dx10 = node_pos_ip(0) - node_pos_i(0);
+        const double dx20 = node_pos_im(0) - node_pos_i(0);
+        const double dy10 = node_pos_ip(1) - node_pos_i(1);
+        const double dy20 = node_pos_im(1) - node_pos_i(1);
+
+        const double det_J = dx10 * dy20 - dx20 * dy10;
+
+        const double phi_ii_x = 0.5 * std::pow(-dy20 + dy10, 2) / det_J;
+        const double phi_ii_y = 0.5 * std::pow(dx20 - dx10, 2) / det_J;
+
+        const double phi_ip_x = 0.5 * (-dy20 + dy10) * dy20 / det_J;
+        const double phi_ip_y = -0.5 * (dx20 - dx10) * dx20 / det_J;
+
+        const double phi_im_x = -0.5 * (-dy20 + dy10) * dy10 / det_J;
+        const double phi_im_y = 0.5 * (dx20 - dx10) * dx10 / det_J;
+
+        const double int_r = (dy10 / 3.0) + (dy20 / 3.0) + node_pos_i(1);
+
+        const Mesh2DTriangular::Surface surface_br(mesh.surfaces_.at(mesh.cells_.at(cell_id).surface_id));
+
+        mat_b.first(node_id, node_id) += int_r * (phi_ii_x + phi_ii_y) * surface_br.thermal_conductivity;
+        mat_b.first(node_id, node_id_im) += int_r * (phi_im_x + phi_im_y) * surface_br.thermal_conductivity;
+        mat_b.first(node_id, node_id_ip) += int_r * (phi_ip_x + phi_ip_y) * surface_br.thermal_conductivity;
+    }
 }
 
 }  // namespace heat_equation_homogeneous
