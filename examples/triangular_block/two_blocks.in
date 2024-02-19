@@ -21,6 +21,8 @@ set triangl_mesh bound_type l_top_left neumann
 set writer triangl_mesh vtk on
 set writer triangl_mesh vtk file_name cube_triangl
 
+set triangl_mesh surf_therm_conduct buttom 5
+
 set solver mesh_type triangular
 
 run
