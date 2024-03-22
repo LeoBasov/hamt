@@ -11,3 +11,6 @@ CTestTestfile.cmake
 _deps
 __pycache__
 .ipynb_checkpoints
+build/
+pyhamt.egg-info/
+*.so
