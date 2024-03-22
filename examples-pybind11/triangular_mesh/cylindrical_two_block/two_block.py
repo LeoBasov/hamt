@@ -7,6 +7,7 @@ writer_config = pyhamt.WriterConfig()
 solver_config = pyhamt.SolverConfig()
 
 solver_config.mesh_type = pyhamt.Solver.MeshType.TRIANGULAR
+solver_config.coord_type = pyhamt.Solver.CoordinatesType.CYLINDER
 
 hamt.solver.config = solver_config
 
