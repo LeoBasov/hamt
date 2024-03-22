@@ -21,6 +21,7 @@ set reg_mesh bound_value right_buttom 0
 set reg_mesh bound_value left_top 0
 set reg_mesh bound_value right_top 0
 
+#Set surface values
 set reg_mesh surf_therm_conduct top_surf 100
 set reg_mesh surf_therm_conduct buttom_surf 100
 
