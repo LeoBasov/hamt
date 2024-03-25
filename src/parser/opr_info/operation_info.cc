@@ -75,6 +75,11 @@ void OperationInfo::Execute(const std::vector<std::string>& argv, const bool&) {
                               << " ";
                     break;
                 }
+                case Mesh2DTriangular::HEAT_FLUX: {
+                    std::cout << "TYPE: HEAT_FLUX"
+                              << " ";
+                    break;
+                }
             }
 
             std::cout << "VALUE: " << boundary.value << std::endl;

@@ -817,13 +817,17 @@ void HeatFluxTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, 
     coeffs_left = CalcNormalDerevativeCoefficients(mesh, nomal_left, cell_left_id, node_id);
     coeffs_right = CalcNormalDerevativeCoefficients(mesh, nomal_right, cell_right_id, node_id);
 
-    mat_b.first(node_id, node_id) = coeffs_left(0) + coeffs_right(0);
+    Mesh2DTriangular::Surface surface_left = mesh.surfaces_.at(cell_left.surface_id);
+    Mesh2DTriangular::Surface surface_right = mesh.surfaces_.at(cell_right.surface_id);
 
-    mat_b.first(node_id, node_left_id_ip) = coeffs_left(1);
-    mat_b.first(node_id, node_left_id_im) = coeffs_left(2);
+    mat_b.first(node_id, node_id) =
+        -surface_left.thermal_conductivity * coeffs_left(0) - surface_right.thermal_conductivity * coeffs_right(0);
 
-    mat_b.first(node_id, node_right_id_ip) = coeffs_right(1);
-    mat_b.first(node_id, node_right_id_im) = coeffs_right(2);
+    mat_b.first(node_id, node_left_id_ip) = -surface_left.thermal_conductivity * coeffs_left(1);
+    mat_b.first(node_id, node_left_id_im) = -surface_left.thermal_conductivity * coeffs_left(2);
+
+    mat_b.first(node_id, node_right_id_ip) = -surface_right.thermal_conductivity * coeffs_right(1);
+    mat_b.first(node_id, node_right_id_im) = -surface_right.thermal_conductivity * coeffs_right(2);
 
     mat_b.second(node_id) = (boundary1.value + boundary2.value);
 }
@@ -941,6 +945,9 @@ void ConvertBoundariesTriangularMesh(const Mesh2DTriangular& mesh, const size_t 
     } else if (boundary1.type == Mesh2DTriangular::BoundaryType::NEUMANN &&
                boundary2.type == Mesh2DTriangular::BoundaryType::NEUMANN) {
         NeumannTriangularMesh(mesh, node_id, mat_b);
+    } else if (boundary1.type == Mesh2DTriangular::BoundaryType::HEAT_FLUX &&
+               boundary2.type == Mesh2DTriangular::BoundaryType::HEAT_FLUX) {
+        HeatFluxTriangularMesh(mesh, node_id, mat_b);
     } else {
         throw IncompleteCodeError("undefined boundary condition for triangular mesh");
     }
