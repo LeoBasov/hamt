@@ -739,9 +739,8 @@ void NeumannTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, s
     const Mesh2DTriangular::Node& node = mesh.nodes_.at(node_id);
     const Mesh2DTriangular::Boundary& boundary1 = mesh.boundaries_.at(node.boundaries.at(0));
     const Mesh2DTriangular::Boundary& boundary2 = mesh.boundaries_.at(node.boundaries.at(1));
-    const Vector3d node_im = mesh.GetNodePos(node_id, 0);
-    const Vector3d node_ip = mesh.GetNodePos(node_id, node.adjacent_nodes.size() - 1);
-    Vector3d nomal;
+    const Vector3d node_pos_left = mesh.GetNodePos(node_id, 0);
+    const Vector3d node_pos_right = mesh.GetNodePos(node_id, node.adjacent_nodes.size() - 1);
     Matrix3d rot_mat = Matrix3d::Zero();
     double total_cell_area = 0.0;
 
@@ -749,7 +748,9 @@ void NeumannTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, s
     rot_mat(1, 0) = -1.0;
     rot_mat(2, 2) = 1.0;
 
-    nomal = (0.5 * rot_mat * (node_im - node.position) + 0.5 * rot_mat * (node.position - node_ip)).normalized();
+    Vector3d normal =
+        (0.5 * rot_mat * (node_pos_left - node.position) + 0.5 * rot_mat * (node.position - node_pos_right))
+            .normalized();
 
     for (size_t c = 0; c < node.adjacent_cells.size(); c++) {
         const size_t cell_id = node.adjacent_cells.at(c);
@@ -770,12 +771,61 @@ void NeumannTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, s
             const Vector3d node_pos_im = mesh.GetNodePos(node_id_im);
             const Vector3d node_pos_ip = mesh.GetNodePos(node_id_ip);
 
-            mat_b.first(node_id, node_id_i) += factor * (rot_mat * (node_pos_ip - node_pos_im)).dot(nomal);
+            mat_b.first(node_id, node_id_i) += factor * (rot_mat * (node_pos_ip - node_pos_im)).dot(normal);
         }
     }
 
     // TODO (LB): implement correct area dependant average
     mat_b.second(node_id) = (boundary1.value + boundary2.value) / 2.0;
+}
+
+void HeatFluxTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b) {
+    const Mesh2DTriangular::Node& node = mesh.nodes_.at(node_id);
+    const Mesh2DTriangular::Boundary& boundary1 = mesh.boundaries_.at(node.boundaries.at(0));
+    const Mesh2DTriangular::Boundary& boundary2 = mesh.boundaries_.at(node.boundaries.at(1));
+    const Vector3d node_pos_left = mesh.GetNodePos(node_id, 0);
+    const Vector3d node_pos_right = mesh.GetNodePos(node_id, node.adjacent_nodes.size() - 1);
+    const size_t cell_left_id = mesh.GetAdjCellId(node_id, 0);
+    const size_t cell_right_id = mesh.GetAdjCellId(node_id, node.adjacent_cells.size() - 1);
+    const Mesh2DTriangular::Cell& cell_left = mesh.cells_.at(cell_left_id);
+    const Mesh2DTriangular::Cell& cell_right = mesh.cells_.at(cell_right_id);
+
+    const size_t pos_left_i = cell_left.GetNodePos(node_id);
+    const size_t pos_left_im = pos_left_i == 0 ? 2 : pos_left_i - 1;
+    const size_t pos_left_ip = pos_left_i == 2 ? 0 : pos_left_i + 1;
+    const size_t node_left_id_im = cell_left.nodes.at(pos_left_im);
+    const size_t node_left_id_ip = cell_left.nodes.at(pos_left_ip);
+
+    const size_t pos_right_i = cell_right.GetNodePos(node_id);
+    const size_t pos_right_im = pos_right_i == 0 ? 2 : pos_right_i - 1;
+    const size_t pos_right_ip = pos_right_i == 2 ? 0 : pos_right_i + 1;
+    const size_t node_right_id_im = cell_right.nodes.at(pos_right_im);
+    const size_t node_right_id_ip = cell_right.nodes.at(pos_right_ip);
+
+    Vector3d coeffs_left, coeffs_right;
+    Vector3d nomal_left, nomal_right;
+    Matrix3d rot_mat = Matrix3d::Zero();
+    double total_cell_area = 0.0;
+
+    rot_mat(0, 1) = 1.0;
+    rot_mat(1, 0) = -1.0;
+    rot_mat(2, 2) = 1.0;
+
+    nomal_left = (rot_mat * (node_pos_left - node.position)).normalized();
+    nomal_right = (rot_mat * (node.position - node_pos_right)).normalized();
+
+    coeffs_left = CalcNormalDerevativeCoefficients(mesh, nomal_left, cell_left_id, node_id);
+    coeffs_right = CalcNormalDerevativeCoefficients(mesh, nomal_right, cell_right_id, node_id);
+
+    mat_b.first(node_id, node_id) = coeffs_left(0) + coeffs_right(0);
+
+    mat_b.first(node_id, node_left_id_ip) = coeffs_left(1);
+    mat_b.first(node_id, node_left_id_im) = coeffs_left(2);
+
+    mat_b.first(node_id, node_right_id_ip) = coeffs_right(1);
+    mat_b.first(node_id, node_right_id_im) = coeffs_right(2);
+
+    mat_b.second(node_id) = (boundary1.value + boundary2.value);
 }
 
 Vector3d CalcNormalDerevativeCoefficients(const Mesh2DTriangular& mesh, const Vector3d& normal_vec,
