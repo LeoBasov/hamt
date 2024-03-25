@@ -778,6 +778,31 @@ void NeumannTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, s
     mat_b.second(node_id) = (boundary1.value + boundary2.value) / 2.0;
 }
 
+Vector3d CalcNormalDerevativeCoefficients(const Mesh2DTriangular& mesh, const Vector3d& normal_vec,
+                                          const size_t cell_id, const size_t node_id) {
+    const Mesh2DTriangular::Cell& cell = mesh.cells_.at(cell_id);
+    const size_t pos_i = cell.GetNodePos(node_id);
+    const size_t pos_im = pos_i == 0 ? 2 : pos_i - 1;
+    const size_t pos_ip = pos_i == 2 ? 0 : pos_i + 1;
+    const size_t node_id_im = cell.nodes.at(pos_im);
+    const size_t node_id_ip = cell.nodes.at(pos_ip);
+    const Vector3d node_pos_i = mesh.GetNodePos(node_id);
+    const Vector3d node_pos_im = mesh.GetNodePos(node_id_im);
+    const Vector3d node_pos_ip = mesh.GetNodePos(node_id_ip);
+    const double dx10 = node_pos_ip(0) - node_pos_i(0);
+    const double dx20 = node_pos_im(0) - node_pos_i(0);
+    const double dy10 = node_pos_ip(1) - node_pos_i(1);
+    const double dy20 = node_pos_im(1) - node_pos_i(1);
+    const double det_J = dx10 * dy20 - dx20 * dy10;
+    Vector3d coeffs = Vector3d::Zero();
+
+    coeffs(0) = (normal_vec(0) * (dy10 - dy20) + normal_vec(1) * (dx20 - dx10)) / det_J;
+    coeffs(1) = (normal_vec(0) * dy20 - normal_vec(1) * dx20) / det_J;
+    coeffs(2) = (-normal_vec(0) * dy10 + normal_vec(1) * dx10) / det_J;
+
+    return coeffs;
+}
+
 std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCylindrical(const Mesh2DTriangular& mesh,
                                                                  const VectorXd& results) {
     std::pair<MatrixXd, VectorXd> mat_b;
