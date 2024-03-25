@@ -632,27 +632,8 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTrian
         const Mesh2DTriangular::Node& node = mesh.nodes_.at(i);
 
         if (node.boundaries.size()) {
-            const Mesh2DTriangular::Boundary& boundary1 = mesh.boundaries_.at(node.boundaries.at(0));
-            const Mesh2DTriangular::Boundary& boundary2 = mesh.boundaries_.at(node.boundaries.at(1));
-
-            if (boundary1.type == Mesh2DTriangular::BoundaryType::DIRICHLET &&
-                boundary2.type == Mesh2DTriangular::BoundaryType::DIRICHLET) {
-                mat_b.second(i) = 0.5 * (boundary1.value + boundary2.value);
-                mat_b.first(i, i) = 1.0;
-            } else if (boundary1.type == Mesh2DTriangular::BoundaryType::DIRICHLET) {
-                mat_b.second(i) = boundary1.value;
-                mat_b.first(i, i) = 1.0;
-            } else if (boundary2.type == Mesh2DTriangular::BoundaryType::DIRICHLET) {
-                mat_b.second(i) = boundary2.value;
-                mat_b.first(i, i) = 1.0;
-            } else if (boundary1.type == Mesh2DTriangular::BoundaryType::NEUMANN &&
-                       boundary2.type == Mesh2DTriangular::BoundaryType::NEUMANN) {
-                NeumannTriangularMesh(mesh, i, mat_b);
-            } else {
-                throw IncompleteCodeError("undefined boundary condition for triangular mesh");
-            }
+            ConvertBoundariesTriangularMesh(mesh, i, mat_b);
         } else {
-            // CentreTriangularMesh(mesh, i, mat_b);
             FEMCentreTriangularMesh(mesh, i, mat_b);
         }
     }
@@ -808,25 +789,7 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCylindrical(const Mesh2DTri
         const Mesh2DTriangular::Node& node = mesh.nodes_.at(i);
 
         if (node.boundaries.size()) {
-            const Mesh2DTriangular::Boundary& boundary1 = mesh.boundaries_.at(node.boundaries.at(0));
-            const Mesh2DTriangular::Boundary& boundary2 = mesh.boundaries_.at(node.boundaries.at(1));
-
-            if (boundary1.type == Mesh2DTriangular::BoundaryType::DIRICHLET &&
-                boundary2.type == Mesh2DTriangular::BoundaryType::DIRICHLET) {
-                mat_b.second(i) = 0.5 * (boundary1.value + boundary2.value);
-                mat_b.first(i, i) = 1.0;
-            } else if (boundary1.type == Mesh2DTriangular::BoundaryType::DIRICHLET) {
-                mat_b.second(i) = boundary1.value;
-                mat_b.first(i, i) = 1.0;
-            } else if (boundary2.type == Mesh2DTriangular::BoundaryType::DIRICHLET) {
-                mat_b.second(i) = boundary2.value;
-                mat_b.first(i, i) = 1.0;
-            } else if (boundary1.type == Mesh2DTriangular::BoundaryType::NEUMANN &&
-                       boundary2.type == Mesh2DTriangular::BoundaryType::NEUMANN) {
-                NeumannTriangularMesh(mesh, i, mat_b);
-            } else {
-                throw IncompleteCodeError("undefined boundary condition for triangular mesh");
-            }
+            ConvertBoundariesTriangularMesh(mesh, i, mat_b);
         } else {
             FEMCentreCylindricalMesh(mesh, i, mat_b);
         }
@@ -881,6 +844,30 @@ void FEMCentreCylindricalMesh(const Mesh2DTriangular& mesh, const size_t node_id
         mat_b.first(node_id, node_id) += int_r * (phi_ii_x + phi_ii_y) * surface_br.thermal_conductivity;
         mat_b.first(node_id, node_id_im) += int_r * (phi_im_x + phi_im_y) * surface_br.thermal_conductivity;
         mat_b.first(node_id, node_id_ip) += int_r * (phi_ip_x + phi_ip_y) * surface_br.thermal_conductivity;
+    }
+}
+
+void ConvertBoundariesTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id,
+                                     std::pair<MatrixXd, VectorXd>& mat_b) {
+    const Mesh2DTriangular::Node& node = mesh.nodes_.at(node_id);
+    const Mesh2DTriangular::Boundary& boundary1 = mesh.boundaries_.at(node.boundaries.at(0));
+    const Mesh2DTriangular::Boundary& boundary2 = mesh.boundaries_.at(node.boundaries.at(1));
+
+    if (boundary1.type == Mesh2DTriangular::BoundaryType::DIRICHLET &&
+        boundary2.type == Mesh2DTriangular::BoundaryType::DIRICHLET) {
+        mat_b.second(node_id) = 0.5 * (boundary1.value + boundary2.value);
+        mat_b.first(node_id, node_id) = 1.0;
+    } else if (boundary1.type == Mesh2DTriangular::BoundaryType::DIRICHLET) {
+        mat_b.second(node_id) = boundary1.value;
+        mat_b.first(node_id, node_id) = 1.0;
+    } else if (boundary2.type == Mesh2DTriangular::BoundaryType::DIRICHLET) {
+        mat_b.second(node_id) = boundary2.value;
+        mat_b.first(node_id, node_id) = 1.0;
+    } else if (boundary1.type == Mesh2DTriangular::BoundaryType::NEUMANN &&
+               boundary2.type == Mesh2DTriangular::BoundaryType::NEUMANN) {
+        NeumannTriangularMesh(mesh, node_id, mat_b);
+    } else {
+        throw IncompleteCodeError("undefined boundary condition for triangular mesh");
     }
 }
 
