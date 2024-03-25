@@ -190,7 +190,7 @@ int ProcessFile(Controller &controller, const std::string &file_name, const std:
                 return 1;
             }
         } catch (Exception &e) {
-            std::cout << "Exception trhown: " << e.what() << " In: " << e.where() << std::endl;
+            std::cout << "Exception thrown: " << e.what() << " In: " << e.where() << std::endl;
             return 1;
         }
     }
