@@ -44,11 +44,13 @@ void NeumannTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, s
 void HeatFluxTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b);
 Vector3d CalcNormalDerevativeCoefficients(const Mesh2DTriangular& mesh, const Vector3d& normal_vec,
                                           const size_t cell_id, const size_t node_id);
+void RadiationTriangularMesh(const Mesh2DTriangular& mesh, const VectorXd& results, const size_t node_id,
+                             std::pair<MatrixXd, VectorXd>& mat_b);
 
 std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCylindrical(const Mesh2DTriangular& mesh, const VectorXd& results);
 void FEMCentreCylindricalMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b);
 
-void ConvertBoundariesTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id,
+void ConvertBoundariesTriangularMesh(const Mesh2DTriangular& mesh, const VectorXd& results, const size_t node_id,
                                      std::pair<MatrixXd, VectorXd>& mat_b);
 
 }  // namespace heat_equation_homogeneous
