@@ -785,25 +785,10 @@ void HeatFluxTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, 
     const Mesh2DTriangular::Boundary& boundary2 = mesh.boundaries_.at(node.boundaries.at(1));
     const Vector3d node_pos_left = mesh.GetNodePos(node_id, 0);
     const Vector3d node_pos_right = mesh.GetNodePos(node_id, node.adjacent_nodes.size() - 1);
-    const size_t cell_left_id = mesh.GetAdjCellId(node_id, 0);
-    const size_t cell_right_id = mesh.GetAdjCellId(node_id, node.adjacent_cells.size() - 1);
-    const Mesh2DTriangular::Cell& cell_left = mesh.cells_.at(cell_left_id);
-    const Mesh2DTriangular::Cell& cell_right = mesh.cells_.at(cell_right_id);
-
-    const size_t pos_left_i = cell_left.GetNodePos(node_id);
-    const size_t pos_left_im = pos_left_i == 0 ? 2 : pos_left_i - 1;
-    const size_t pos_left_ip = pos_left_i == 2 ? 0 : pos_left_i + 1;
-    const size_t node_left_id_im = cell_left.nodes.at(pos_left_im);
-    const size_t node_left_id_ip = cell_left.nodes.at(pos_left_ip);
-
-    const size_t pos_right_i = cell_right.GetNodePos(node_id);
-    const size_t pos_right_im = pos_right_i == 0 ? 2 : pos_right_i - 1;
-    const size_t pos_right_ip = pos_right_i == 2 ? 0 : pos_right_i + 1;
-    const size_t node_right_id_im = cell_right.nodes.at(pos_right_im);
-    const size_t node_right_id_ip = cell_right.nodes.at(pos_right_ip);
-
-    Vector3d coeffs_left, coeffs_right;
-    Vector3d nomal_left, nomal_right;
+    const double L_left = (node_pos_left - node.position).norm();
+    const double L_right = (node.position - node_pos_right).norm();
+    const double L = L_left + L_right;
+    Vector3d nomal, nomal_left, nomal_right;
     Matrix3d rot_mat = Matrix3d::Zero();
     double total_cell_area = 0.0;
 
@@ -813,23 +798,34 @@ void HeatFluxTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, 
 
     nomal_left = (rot_mat * (node_pos_left - node.position)).normalized();
     nomal_right = (rot_mat * (node.position - node_pos_right)).normalized();
+    nomal = ((L_left * nomal_left + L_right * nomal_right) / L).normalized();
 
-    coeffs_left = CalcNormalDerevativeCoefficients(mesh, nomal_left, cell_left_id, node_id);
-    coeffs_right = CalcNormalDerevativeCoefficients(mesh, nomal_right, cell_right_id, node_id);
+    mat_b.second(node_id) = ((L_left * boundary1.value + L_right * boundary2.value) / L);
 
-    Mesh2DTriangular::Surface surface_left = mesh.surfaces_.at(cell_left.surface_id);
-    Mesh2DTriangular::Surface surface_right = mesh.surfaces_.at(cell_right.surface_id);
+    for (size_t c = 0; c < node.adjacent_cells.size(); c++) {
+        const size_t cell_id = node.adjacent_cells.at(c);
+        total_cell_area += mesh.GetCellArea(cell_id);
+    }
 
-    mat_b.first(node_id, node_id) =
-        -surface_left.thermal_conductivity * coeffs_left(0) - surface_right.thermal_conductivity * coeffs_right(0);
+    for (size_t c = 0; c < node.adjacent_cells.size(); c++) {
+        const size_t cell_id = node.adjacent_cells.at(c);
+        const Mesh2DTriangular::Cell& cell_left = mesh.cells_.at(cell_id);
+        const Mesh2DTriangular::Cell& cell = mesh.cells_.at(cell_id);
+        const int pos_i = cell.GetNodePos(node_id);
+        const int pos_im = pos_i == 0 ? 2 : pos_i - 1;
+        const int pos_ip = pos_i == 2 ? 0 : pos_i + 1;
+        const size_t node_id_im = cell.nodes.at(pos_im);
+        const size_t node_id_ip = cell.nodes.at(pos_ip);
+        const Mesh2DTriangular::Surface& surface = mesh.surfaces_.at(cell.surface_id);
+        const double frac = mesh.GetCellArea(cell_id) / total_cell_area;
+        const Vector3d coeffs =
+            -frac * surface.thermal_conductivity * CalcNormalDerevativeCoefficients(mesh, nomal, cell_id, node_id);
 
-    mat_b.first(node_id, node_left_id_ip) = -surface_left.thermal_conductivity * coeffs_left(1);
-    mat_b.first(node_id, node_left_id_im) = -surface_left.thermal_conductivity * coeffs_left(2);
+        mat_b.first(node_id, node_id) += coeffs(0);
 
-    mat_b.first(node_id, node_right_id_ip) = -surface_right.thermal_conductivity * coeffs_right(1);
-    mat_b.first(node_id, node_right_id_im) = -surface_right.thermal_conductivity * coeffs_right(2);
-
-    mat_b.second(node_id) = (boundary1.value + boundary2.value);
+        mat_b.first(node_id, node_id_ip) += coeffs(1);
+        mat_b.first(node_id, node_id_im) += coeffs(2);
+    }
 }
 
 Vector3d CalcNormalDerevativeCoefficients(const Mesh2DTriangular& mesh, const Vector3d& normal_vec,
