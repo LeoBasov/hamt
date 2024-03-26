@@ -802,6 +802,20 @@ void HeatFluxTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, 
 
     mat_b.second(node_id) = ((L_left * boundary1.value + L_right * boundary2.value) / L);
 
+    if (boundary1.type == Mesh2DTriangular::BoundaryType::HEAT_FLUX &&
+        boundary2.type == Mesh2DTriangular::BoundaryType::HEAT_FLUX) {
+        nomal_left = (rot_mat * (node_pos_left - node.position)).normalized();
+        nomal_right = (rot_mat * (node.position - node_pos_right)).normalized();
+        nomal = ((L_left * nomal_left + L_right * nomal_right) / L).normalized();
+        mat_b.second(node_id) = ((L_left * boundary1.value + L_right * boundary2.value) / L);
+    } else if (boundary1.type == Mesh2DTriangular::BoundaryType::HEAT_FLUX) {
+        nomal = (rot_mat * (node_pos_left - node.position)).normalized();
+        mat_b.second(node_id) = boundary1.value;
+    } else {
+        nomal = (rot_mat * (node.position - node_pos_right)).normalized();
+        mat_b.second(node_id) = boundary2.value;
+    }
+
     for (size_t c = 0; c < node.adjacent_cells.size(); c++) {
         const size_t cell_id = node.adjacent_cells.at(c);
         total_cell_area += mesh.GetCellArea(cell_id);
@@ -809,7 +823,6 @@ void HeatFluxTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, 
 
     for (size_t c = 0; c < node.adjacent_cells.size(); c++) {
         const size_t cell_id = node.adjacent_cells.at(c);
-        const Mesh2DTriangular::Cell& cell_left = mesh.cells_.at(cell_id);
         const Mesh2DTriangular::Cell& cell = mesh.cells_.at(cell_id);
         const int pos_i = cell.GetNodePos(node_id);
         const int pos_im = pos_i == 0 ? 2 : pos_i - 1;
@@ -872,7 +885,6 @@ void RadiationTriangularMesh(const Mesh2DTriangular& mesh, const VectorXd& resul
 
     for (size_t c = 0; c < node.adjacent_cells.size(); c++) {
         const size_t cell_id = node.adjacent_cells.at(c);
-        const Mesh2DTriangular::Cell& cell_left = mesh.cells_.at(cell_id);
         const Mesh2DTriangular::Cell& cell = mesh.cells_.at(cell_id);
         const int pos_i = cell.GetNodePos(node_id);
         const int pos_im = pos_i == 0 ? 2 : pos_i - 1;
@@ -1004,12 +1016,12 @@ void ConvertBoundariesTriangularMesh(const Mesh2DTriangular& mesh, const VectorX
     } else if (boundary1.type == Mesh2DTriangular::BoundaryType::RADIATION ||
                boundary2.type == Mesh2DTriangular::BoundaryType::RADIATION) {
         RadiationTriangularMesh(mesh, results, node_id, mat_b);
+    } else if (boundary1.type == Mesh2DTriangular::BoundaryType::HEAT_FLUX ||
+               boundary2.type == Mesh2DTriangular::BoundaryType::HEAT_FLUX) {
+        HeatFluxTriangularMesh(mesh, node_id, mat_b);
     } else if (boundary1.type == Mesh2DTriangular::BoundaryType::NEUMANN &&
                boundary2.type == Mesh2DTriangular::BoundaryType::NEUMANN) {
         NeumannTriangularMesh(mesh, node_id, mat_b);
-    } else if (boundary1.type == Mesh2DTriangular::BoundaryType::HEAT_FLUX &&
-               boundary2.type == Mesh2DTriangular::BoundaryType::HEAT_FLUX) {
-        HeatFluxTriangularMesh(mesh, node_id, mat_b);
     } else {
         throw IncompleteCodeError("undefined boundary condition for triangular mesh");
     }
