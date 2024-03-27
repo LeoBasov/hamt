@@ -1,0 +1,40 @@
+#Set up writer
+set writer triangl_mesh vtk on
+set writer triangl_mesh vtk file_name ntr
+
+#Read mesh
+read triangl_mesh ntr_fine.msh
+
+#Set boundary type
+set triangl_mesh bound_type attachment dirichlet
+
+set triangl_mesh bound_type housing_top radiation
+set triangl_mesh bound_type housing_buttom radiation
+
+set triangl_mesh bound_type emitter_left dirichlet
+set triangl_mesh bound_type emitter_buttom dirichlet
+
+set triangl_mesh bound_type keeper_top radiation
+set triangl_mesh bound_type keeper_front radiation
+set triangl_mesh bound_type keeper_buttom radiation
+set triangl_mesh bound_type keeper_left radiation
+
+#Set boundary values
+set triangl_mesh bound_value attachment 300
+
+set triangl_mesh bound_value housing_top 1
+set triangl_mesh bound_value housing_buttom 1
+
+set triangl_mesh bound_value emitter_left 1000
+set triangl_mesh bound_value emitter_buttom 1000
+
+set triangl_mesh bound_value keeper_top 1
+set triangl_mesh bound_value keeper_front 1
+set triangl_mesh bound_value keeper_buttom 1
+set triangl_mesh bound_value keeper_left 1
+
+#Set up solver
+set solver mesh_type triangular
+set solver coord_type cylinder
+
+run 10

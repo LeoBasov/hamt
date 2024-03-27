@@ -11,8 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Relative error calculation for black body radiation boundary condition
 - Full heat equation on a 2d regular mesh in cartesian coordinates
 - Full heat equation on a 2d regular mesh in cylinder coordinates
-- Possibility to compile hampt as a python module
 - Writer for hdf5 files
+
+## 1.6.0 - 2024-03-27
+### Added
+- Possibility to compile hampt as a python module
+- Black body radiation boundary condition with adjustable emission coefficient for unstructured triangular mesh
+- Heat flux boundary condition for unstructured triangular mesh
 
 ## 1.5.0 - 2024-02-19
 ### Added

@@ -1,0 +1,19 @@
+# First test
+
+read triangl_mesh circle_very_fine.msh
+info triangl_mesh
+
+set triangl_mesh bound_value inner 0
+set triangl_mesh bound_value outer 0
+set triangl_mesh bound_value mirrow_left 100
+set triangl_mesh bound_value mirrow_right 300
+
+set triangl_mesh bound_type inner neumann
+set triangl_mesh bound_type outer neumann
+
+set writer triangl_mesh vtk on
+set writer triangl_mesh vtk file_name circle
+
+set solver mesh_type triangular
+
+run

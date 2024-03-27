@@ -12,7 +12,7 @@ namespace hamt {
 using namespace Eigen;
 class Mesh2DTriangular {
    public:
-    enum BoundaryType { NEUMANN, DIRICHLET, RADIATION };
+    enum BoundaryType { NEUMANN, DIRICHLET, RADIATION, HEAT_FLUX };
 
     struct Node {
         Vector3d position;
