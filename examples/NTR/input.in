@@ -1,10 +1,3 @@
-#Set up writer
-set writer reg_mesh vtk on
-set writer reg_mesh vtk file_name ntr
-
-set writer reg_mesh csv on
-set writer reg_mesh csv file_name ntr
-
 #Read mesh
 read reg_mesh ntr.msh
 
@@ -24,5 +17,12 @@ set boundary keeper_left 1 radiation
 
 #Set up solver
 set solver coord_type cylinder
+
+#Set up writer
+set writer vtk on
+set writer vtk file_name ntr
+
+set writer csv on
+set writer csv file_name ntr
 
 run 5
