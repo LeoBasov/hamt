@@ -6,10 +6,12 @@ OperationSet::OperationSet() : Operation("set") {
     std::shared_ptr<class SetWriter> set_writer(std::make_shared<class SetWriter>(name_));
     std::shared_ptr<class SetSolver> set_solver(std::make_shared<class SetSolver>(name_));
     std::shared_ptr<class SetBoundary> set_boundary(std::make_shared<class SetBoundary>(name_));
+    std::shared_ptr<class SetSurface> set_surface(std::make_shared<class SetSurface>(name_));
 
     sub_operations_[set_writer->GetName()] = set_writer;
     sub_operations_[set_solver->GetName()] = set_solver;
     sub_operations_[set_boundary->GetName()] = set_boundary;
+    sub_operations_[set_surface->GetName()] = set_surface;
 }
 
 void OperationSet::Check(const std::vector<std::string>& argv) { ChecArgvMin(3, argv); }

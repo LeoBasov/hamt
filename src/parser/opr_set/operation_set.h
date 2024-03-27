@@ -7,6 +7,7 @@
 #include "../operation.h"
 #include "set_boundary.h"
 #include "set_solver.h"
+#include "set_surface.h"
 #include "set_writer.h"
 
 namespace hamt {
