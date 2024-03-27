@@ -10,9 +10,9 @@ set boundary outer_right 0 neumann
 set boundary left 100
 set boundary right 300
 
-#set triangl_mesh surf_therm_conduct surf_left 5
+set surface surf_left 5
 
-set writer triangl_mesh vtk on
-set writer triangl_mesh vtk file_name circle_two
+set writer vtk on
+set writer vtk file_name circle_two
 
 run
