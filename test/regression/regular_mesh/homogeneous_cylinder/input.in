@@ -6,8 +6,8 @@ set writer csv file_name cylinder_test
 
 read reg_mesh block.msh
 
-set boundary buttom 100
-set boundary top 300
+set boundary buttom 100 dirichlet
+set boundary top 300 dirichlet
 
 set boundary left_buttom 0 neumann
 

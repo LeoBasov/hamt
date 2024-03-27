@@ -17,15 +17,14 @@ set writer csv on
 set writer csv file_name reg_car_hom
 
 # set voundary conditions
-set boundary buttom_left 100
-set boundary buttom_right 100
+set boundary buttom_left 100 dirichlet
+set boundary buttom_right 100 dirichlet
 
 set boundary right_buttom 0 neumann
 set boundary right_top 0 neumann
 
-set boundary top_right 300
-set boundary top_left 300
-
+set boundary top_right 300 dirichlet
+set boundary top_left 300 dirichlet
 
 set boundary left_buttom 0 neumann
 set boundary left_top 0 neumann
@@ -43,17 +42,17 @@ set boundary buttom_left 0 neumann
 
 set boundary buttom_right 0 neumann
 
-set boundary right_buttom 300
+set boundary right_buttom 300 dirichlet
 
-set boundary right_top 300
+set boundary right_top 300 dirichlet
 
 set boundary top_right 0 neumann
 
 set boundary top_left 0 neumann
 
-set boundary left_buttom 100
+set boundary left_buttom 100 dirichlet
 
-set boundary left_top 100
+set boundary left_top 100 dirichlet
 
 run
 
@@ -69,9 +68,9 @@ set boundary buttom_left 0 neumann
 
 set boundary buttom_right 0 neumann
 
-set boundary right_buttom 300
+set boundary right_buttom 300 dirichlet
 
-set boundary right_top 300
+set boundary right_top 300 dirichlet
 
 set boundary top_right 0 neumann
 
