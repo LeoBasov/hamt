@@ -1,0 +1,21 @@
+# First test
+
+# Read mesh
+read reg_mesh two_block.msh
+
+# Set boundary conditions
+set boundary buttom 300
+set boundary top 100
+set boundary left_buttom 0 neumann
+set boundary left_top 0 neumann
+set boundary right_buttom 0 neumann
+set boundary right_top 0 neumann
+
+# Set surface properties
+set surface buttom_surf 5
+
+# Set writer
+set writer vtk on
+set writer vtk file_name two_block
+
+run
