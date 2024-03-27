@@ -1,0 +1,20 @@
+#Read mesh
+read reg_mesh block.msh
+
+#Set boundary values
+set boundary buttom 1000
+set boundary top 1 radiation
+set boundary left_buttom 0 neumann
+set boundary right_buttom 0 neumann
+set boundary left_top 0 neumann
+set boundary right_top 0 neumann
+
+#Set surface values
+set surface top_surf 100
+set surface buttom_surf 100
+
+#Set up writer
+set writer vtk on
+set writer vtk file_name radiation_reg
+
+run 5

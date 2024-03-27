@@ -1,25 +1,18 @@
 # First test
 
 read triangl_mesh circle_two.msh
-info triangl_mesh
+info
 
-set triangl_mesh bound_value inner_left 0
-set triangl_mesh bound_value inner_right 0
-set triangl_mesh bound_value outer_left 0
-set triangl_mesh bound_value outer_right 0
-set triangl_mesh bound_value left 100
-set triangl_mesh bound_value right 300
+set boundary inner_left 0 neumann
+set boundary inner_right 0 neumann
+set boundary outer_left 0 neumann
+set boundary outer_right 0 neumann
+set boundary left 100
+set boundary right 300
 
-set triangl_mesh bound_type inner_left neumann
-set triangl_mesh bound_type inner_right neumann
-set triangl_mesh bound_type outer_left neumann
-set triangl_mesh bound_type outer_right neumann
+set surface surf_left 5
 
-#set triangl_mesh surf_therm_conduct surf_left 5
-
-set writer triangl_mesh vtk on
-set writer triangl_mesh vtk file_name circle_two
-
-set solver mesh_type triangular
+set writer vtk on
+set writer vtk file_name circle_two
 
 run

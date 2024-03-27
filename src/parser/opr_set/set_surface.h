@@ -7,11 +7,11 @@
 
 namespace hamt {
 
-class SetTriangularMesh : public SubOperation {
+class SetSurface : public SubOperation {
    public:
-    SetTriangularMesh();
-    SetTriangularMesh(std::string command_name);
-    ~SetTriangularMesh() = default;
+    SetSurface();
+    SetSurface(std::string command_name);
+    ~SetSurface() = default;
 
     virtual std::string GetHelp() const override;
     virtual void Execute(const std::vector<std::string>& argv, const bool& test_mode = false) override;

@@ -1,0 +1,13 @@
+read triangl_mesh cyl_block.msh
+
+set boundary buttom 100
+set boundary top 300
+set boundary right 0 neumann
+set boundary left 0 neumann
+
+set writer vtk on
+set writer vtk file_name cyl_block
+
+set solver coord_type cylinder
+
+run

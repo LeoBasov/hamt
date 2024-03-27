@@ -7,7 +7,7 @@ OperationInfo::OperationInfo() : Operation("info") {}
 void OperationInfo::Execute(const std::vector<std::string>& argv, const bool&) {
     const std::string tab("    ");
 
-    if (argv.at(0) == "reg_mesh") {
+    if (hamt_->solver_.GetConfig().mesh_type == Solver::REGULAR) {
         std::cout << "REGULAR MESH INFO" << std::endl;
         std::cout << "NUMBER NODES : " << hamt_->data_->mesh2d_regular_.nodes_.size() << std::endl;
         std::cout << "NUMBER CELLS : " << hamt_->data_->mesh2d_regular_.cells_.size() << std::endl;
@@ -47,7 +47,7 @@ void OperationInfo::Execute(const std::vector<std::string>& argv, const bool&) {
             std::cout << tab << bin.first << " ";
             std::cout << "THERM. CONDUCT.: " << surface.thermal_conductivity << std::endl;
         }
-    } else if (argv.at(0) == "triangl_mesh") {
+    } else if (hamt_->solver_.GetConfig().mesh_type == Solver::TRIANGULAR) {
         std::cout << "TRIANGULAR MESH INFO" << std::endl;
         std::cout << "NUMBER NODES : " << hamt_->data_->mesh2d_triangular_.nodes_.size() << std::endl;
         std::cout << "NUMBER CELLS : " << hamt_->data_->mesh2d_triangular_.cells_.size() << std::endl;
@@ -97,7 +97,7 @@ void OperationInfo::Execute(const std::vector<std::string>& argv, const bool&) {
     }
 }
 
-void OperationInfo::Check(const std::vector<std::string>& argv) { ChecArgvExact(1, argv); }
+void OperationInfo::Check(const std::vector<std::string>& argv) { ChecArgvExact(0, argv); }
 
 std::string OperationInfo::GetHelp() const {
     const std::string tab("    ");

@@ -7,11 +7,11 @@
 
 namespace hamt {
 
-class SetRegularMesh : public SubOperation {
+class SetBoundary : public SubOperation {
    public:
-    SetRegularMesh();
-    SetRegularMesh(std::string command_name);
-    ~SetRegularMesh() = default;
+    SetBoundary();
+    SetBoundary(std::string command_name);
+    ~SetBoundary() = default;
 
     virtual std::string GetHelp() const override;
     virtual void Execute(const std::vector<std::string>& argv, const bool& test_mode = false) override;

@@ -1,42 +1,28 @@
-#Set up writer
-set writer reg_mesh vtk on
-set writer reg_mesh vtk file_name ntr
-
-set writer reg_mesh csv on
-set writer reg_mesh csv file_name ntr
-
 #Read mesh
 read reg_mesh ntr.msh
 
-#Set boundary type
-set reg_mesh bound_type attachment dirichlet
-
-set reg_mesh bound_type housing_top radiation
-set reg_mesh bound_type housing_buttom radiation
-
-set reg_mesh bound_type emitter_left dirichlet
-set reg_mesh bound_type emitter_buttom dirichlet
-
-set reg_mesh bound_type keeper_top radiation
-set reg_mesh bound_type keeper_front radiation
-set reg_mesh bound_type keeper_buttom radiation
-set reg_mesh bound_type keeper_left radiation
-
 #Set boundary values
-set reg_mesh bound_value attachment 300
+set boundary attachment 300
 
-set reg_mesh bound_value housing_top 1
-set reg_mesh bound_value housing_buttom 1
+set boundary housing_top 1 radiation
+set boundary housing_buttom 1 radiation
 
-set reg_mesh bound_value emitter_left 1000
-set reg_mesh bound_value emitter_buttom 1000
+set boundary emitter_left 1000
+set boundary emitter_buttom 1000
 
-set reg_mesh bound_value keeper_top 1
-set reg_mesh bound_value keeper_front 1
-set reg_mesh bound_value keeper_buttom 1
-set reg_mesh bound_value keeper_left 1
+set boundary keeper_top 1 radiation
+set boundary keeper_front 1 radiation
+set boundary keeper_buttom 1 radiation
+set boundary keeper_left 1 radiation
 
 #Set up solver
 set solver coord_type cylinder
+
+#Set up writer
+set writer vtk on
+set writer vtk file_name ntr
+
+set writer csv on
+set writer csv file_name ntr
 
 run 5

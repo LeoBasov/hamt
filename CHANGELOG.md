@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Full heat equation on a 2d regular mesh in cylinder coordinates
 - Writer for hdf5 files
 
+## 2.0.0 - 2024-03-27
+### Changed
+- simplified input format
+- grid type is not set for all modules when reading grid
+
 ## 1.6.0 - 2024-03-27
 ### Added
 - Possibility to compile hampt as a python module

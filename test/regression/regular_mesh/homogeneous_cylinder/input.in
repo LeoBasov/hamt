@@ -1,28 +1,24 @@
-set writer reg_mesh vtk on
-set writer reg_mesh vtk file_name cylinder_test
+set writer vtk on
+set writer vtk file_name cylinder_test
 
-set writer reg_mesh csv on
-set writer reg_mesh csv file_name cylinder_test
+set writer csv on
+set writer csv file_name cylinder_test
 
 read reg_mesh block.msh
 
-set reg_mesh bound_value buttom 100
-set reg_mesh bound_value top 300
+set boundary buttom 100 dirichlet
+set boundary top 300 dirichlet
 
-set reg_mesh bound_type left_buttom neumann
-set reg_mesh bound_value left_buttom 0
+set boundary left_buttom 0 neumann
 
-set reg_mesh bound_type left_top neumann
-set reg_mesh bound_value left_top 0
+set boundary left_top 0 neumann
 
-set reg_mesh bound_type right_buttom neumann
-set reg_mesh bound_value right_buttom 0
+set boundary right_buttom 0 neumann
 
-set reg_mesh bound_type right_top neumann
-set reg_mesh bound_value right_top 0
+set boundary right_top 0 neumann
 
-set reg_mesh surf_therm_conduct buttom_surf 10
-set reg_mesh surf_therm_conduct top_surf 50
+set surface buttom_surf 10
+set surface top_surf 50
 
 set solver coord_type cylinder
 
