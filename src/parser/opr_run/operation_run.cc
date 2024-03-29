@@ -8,6 +8,7 @@ void OperationRun::Execute(const std::vector<std::string>& argv, const bool&) {
     ChecArgvMax(1, argv);
     uint number_iterations(1);
     Timer writer_timer, total_timer, solver_timer;
+    double rel_error;
 
     if (argv.size()) {
         number_iterations = std::stoi(argv.at(0));
@@ -20,7 +21,7 @@ void OperationRun::Execute(const std::vector<std::string>& argv, const bool&) {
         total_timer.Start();
 
         solver_timer.Start();
-        hamt_->solver_.Execute();
+        rel_error = hamt_->solver_.Execute();
         solver_timer.Stop();
 
         writer_timer.Start();
@@ -29,6 +30,7 @@ void OperationRun::Execute(const std::vector<std::string>& argv, const bool&) {
 
         total_timer.Stop();
 
+        std::cout << "Relative error: " << rel_error << std::endl;
         std::cout << "Solver time: " << solver_timer.GetCurrentDuration() << " s" << std::endl;
         std::cout << "Writer time: " << writer_timer.GetCurrentDuration() << " s" << std::endl;
         std::cout << "Total time: " << total_timer.GetCurrentDuration() << " s" << std::endl;
