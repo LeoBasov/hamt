@@ -62,13 +62,12 @@ void Solver::ExecuteHomogenTrianglMesh(std::pair<MatrixXd, VectorXd>& mat_b) {
 
     switch (config_.coord_type) {
         case CARTESIAN: {
-            mat_b =
-                heat_equation_homogeneous::ConvertMesh2dTriangularCartesian(data_->mesh2d_triangular_, data_->results_);
+            mat_b = heat_equation_homogeneous::ConvertMesh2dTriangular(data_->mesh2d_triangular_, data_->results_);
             break;
         }
         case CYLINDER: {
-            mat_b = heat_equation_homogeneous::ConvertMesh2dTriangularCylindrical(data_->mesh2d_triangular_,
-                                                                                  data_->results_);
+            mat_b =
+                heat_equation_homogeneous::ConvertMesh2dTriangular(data_->mesh2d_triangular_, data_->results_, false);
             break;
         }
         default: {

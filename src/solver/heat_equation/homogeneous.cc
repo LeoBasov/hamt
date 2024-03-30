@@ -622,7 +622,8 @@ void ConvertMidCylindrical(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DReg
     mat_b.first(row, node.u_i_jp) = (1 + r_dash) * mean_xt;
 }
 
-std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTriangular& mesh, const VectorXd& results) {
+std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangular(const Mesh2DTriangular& mesh, const VectorXd& results,
+                                                      bool cartesian) {
     std::pair<MatrixXd, VectorXd> mat_b;
 
     mat_b.first = MatrixXd::Zero(mesh.nodes_.size(), mesh.nodes_.size());
@@ -633,8 +634,10 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTrian
 
         if (node.boundaries.size()) {
             ConvertBoundariesTriangularMesh(mesh, results, i, mat_b);
-        } else {
+        } else if (cartesian) {
             FEMCentreTriangularMesh(mesh, i, mat_b);
+        } else {
+            FEMCentreCylindricalMesh(mesh, i, mat_b);
         }
 
         SetVolumetricHeatSourceTriangularMesh(mesh, i, mat_b);
@@ -928,28 +931,6 @@ Vector3d CalcNormalDerevativeCoefficients(const Mesh2DTriangular& mesh, const Ve
     coeffs(2) = (-normal_vec(0) * dy10 + normal_vec(1) * dx10) / det_J;
 
     return coeffs;
-}
-
-std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCylindrical(const Mesh2DTriangular& mesh,
-                                                                 const VectorXd& results) {
-    std::pair<MatrixXd, VectorXd> mat_b;
-
-    mat_b.first = MatrixXd::Zero(mesh.nodes_.size(), mesh.nodes_.size());
-    mat_b.second = VectorXd::Zero(mesh.nodes_.size());
-
-    for (size_t i = 0; i < mesh.nodes_.size(); i++) {
-        const Mesh2DTriangular::Node& node = mesh.nodes_.at(i);
-
-        if (node.boundaries.size()) {
-            ConvertBoundariesTriangularMesh(mesh, results, i, mat_b);
-        } else {
-            FEMCentreCylindricalMesh(mesh, i, mat_b);
-        }
-
-        SetVolumetricHeatSourceTriangularMesh(mesh, i, mat_b);
-    }
-
-    return mat_b;
 }
 
 void FEMCentreCylindricalMesh(const Mesh2DTriangular& mesh, const size_t node_id,

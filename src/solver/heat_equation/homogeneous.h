@@ -37,7 +37,8 @@ void ConvertMidCartesian(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegul
 std::pair<MatrixXd, VectorXd> ConvertMesh2dRegularCylindircal(const Mesh2DRegular& mesh, const VectorXd& results);
 void ConvertMidCylindrical(std::pair<MatrixXd, VectorXd>& mat_b, const Mesh2DRegular& mesh, const uint& row);
 
-std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCartesian(const Mesh2DTriangular& mesh, const VectorXd& results);
+std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangular(const Mesh2DTriangular& mesh, const VectorXd& results,
+                                                      bool cartesian = true);
 void CentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b);
 void FEMCentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b);
 void NeumannTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b);
@@ -46,8 +47,6 @@ Vector3d CalcNormalDerevativeCoefficients(const Mesh2DTriangular& mesh, const Ve
                                           const size_t cell_id, const size_t node_id);
 void RadiationTriangularMesh(const Mesh2DTriangular& mesh, const VectorXd& results, const size_t node_id,
                              std::pair<MatrixXd, VectorXd>& mat_b);
-
-std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangularCylindrical(const Mesh2DTriangular& mesh, const VectorXd& results);
 void FEMCentreCylindricalMesh(const Mesh2DTriangular& mesh, const size_t node_id, std::pair<MatrixXd, VectorXd>& mat_b);
 
 void ConvertBoundariesTriangularMesh(const Mesh2DTriangular& mesh, const VectorXd& results, const size_t node_id,
