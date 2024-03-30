@@ -33,6 +33,9 @@ class Mesh2DTriangular {
 
     struct Surface {
         double thermal_conductivity = 1.0;
+        double heat_capacity = 1.0;
+        double density = 1.0;
+        double volumetric_heat_source = 0.0;
     };
 
     struct Boundary {
