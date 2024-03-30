@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Full heat equation on a 2d regular mesh in cylinder coordinates
 - Writer for hdf5 files
 
+## 2.0.1 - 2024-03-30
+### Added
+- Relative error calculation for solver
+
+### Changed
+- refactored solver
+
 ## 2.0.0 - 2024-03-27
 ### Changed
 - simplified input format
