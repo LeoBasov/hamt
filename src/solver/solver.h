@@ -33,6 +33,7 @@ class Solver {
 
     void ExecuteHomogenRegMesh(std::pair<MatrixXd, VectorXd>& mat_b);
     void ExecuteHomogenTrianglMesh(std::pair<MatrixXd, VectorXd>& mat_b);
-    double SolveSystemOfLinearEquations(const std::pair<MatrixXd, VectorXd>& mat_b);
+    void SolveSystemOfLinearEquations(const std::pair<MatrixXd, VectorXd>& mat_b);
+    double CheckAccuracy(std::pair<MatrixXd, VectorXd>& mat_b);
 };
 }  // namespace hamt
