@@ -52,6 +52,8 @@ void FEMCentreCylindricalMesh(const Mesh2DTriangular& mesh, const size_t node_id
 
 void ConvertBoundariesTriangularMesh(const Mesh2DTriangular& mesh, const VectorXd& results, const size_t node_id,
                                      std::pair<MatrixXd, VectorXd>& mat_b);
+void SetVolumetricHeatSourceTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id,
+                                           std::pair<MatrixXd, VectorXd>& mat_b);
 
 }  // namespace heat_equation_homogeneous
 }  // namespace hamt
