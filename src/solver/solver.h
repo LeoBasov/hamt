@@ -25,13 +25,14 @@ class Solver {
     Config GetConfig() const;
     void SetConfig(const Config& config);
     void SetData(const std::shared_ptr<Data>& data);
-    void Execute();
+    double Execute();
 
    private:
     std::shared_ptr<Data> data_;
     Config config_;
 
-    void ExecuteHomogenRegMesh();
-    void ExecuteHomogenTrianglMesh();
+    void ExecuteHomogenRegMesh(std::pair<MatrixXd, VectorXd>& mat_b);
+    void ExecuteHomogenTrianglMesh(std::pair<MatrixXd, VectorXd>& mat_b);
+    double SolveSystemOfLinearEquations(const std::pair<MatrixXd, VectorXd>& mat_b);
 };
 }  // namespace hamt
