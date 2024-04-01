@@ -1032,7 +1032,7 @@ void FEMCentreCylindricalMesh(const Mesh2DTriangular& mesh, const size_t node_id
         const double phi_im_y = 0.5 * (dx20 - dx10) * dx10 / det_J;
 
         const double int_r = (dy10 / 3.0) + (dy20 / 3.0) + node_pos_i(1);
-        const double int_rb = (dy10 / 24.0) + (dy20 / 24.0) + node_pos_i(1) / 6.0;
+        const double int_rb = (dy10 / 24.0) + (dy20 / 24.0) + (node_pos_i(1) / 6.0);
 
         const Mesh2DTriangular::Surface surface_br(mesh.surfaces_.at(mesh.cells_.at(cell_id).surface_id));
 
