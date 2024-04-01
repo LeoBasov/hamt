@@ -15,6 +15,6 @@ set solver coord_type cylinder
 
 #Set up writer
 set writer vtk on
-set writer vtk file_name line
+set writer vtk file_name line_cyl
 
 run
