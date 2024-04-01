@@ -1,0 +1,20 @@
+#Read mesh
+read triangl_mesh line_fine.msh
+info
+
+#Set boundary values
+set boundary left 0 neumann
+set boundary buttom 0
+set boundary right 0 neumann
+set boundary top 0
+
+set surface surf q 1
+
+#Set up solver
+set solver coord_type cylinder
+
+#Set up writer
+set writer vtk on
+set writer vtk file_name line_cyl
+
+run
