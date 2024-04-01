@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Full heat equation on a 2d regular mesh in cylinder coordinates
 - Writer for hdf5 files
 
+## 2.1.1 - 2024-04-01
+### Fixed
+- bug in volumetric heat source term
+
 ## 2.1.0 - 2024-03-30
 ### Added
 - Algorithms to solve the 2d homogeneous heat equation on a triangular mesh in cartesian coordinates with a volumetric heat source

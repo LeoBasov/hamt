@@ -1,11 +1,11 @@
 #Read mesh
-read triangl_mesh plane_very_fine.msh
+read triangl_mesh plane.msh
 
 #Set boundary values
-set boundary left 300
-set boundary buttom 300
-set boundary right 300
-set boundary top 300
+set boundary left 0
+set boundary buttom 0
+set boundary right 0
+set boundary top 0
 
 set surface cirlce q 1
 

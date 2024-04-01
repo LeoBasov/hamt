@@ -639,8 +639,6 @@ std::pair<MatrixXd, VectorXd> ConvertMesh2dTriangular(const Mesh2DTriangular& me
         } else {
             FEMCentreCylindricalMesh(mesh, i, mat_b);
         }
-
-        SetVolumetricHeatSourceTriangularMesh(mesh, i, mat_b);
     }
 
     return mat_b;
@@ -737,6 +735,8 @@ void FEMCentreTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id,
         mat_b.first(node_id, node_id) += (phi_ii_x + phi_ii_y) * surface_br.thermal_conductivity;
         mat_b.first(node_id, node_id_im) += (phi_im_x + phi_im_y) * surface_br.thermal_conductivity;
         mat_b.first(node_id, node_id_ip) += (phi_ip_x + phi_ip_y) * surface_br.thermal_conductivity;
+
+        mat_b.second(node_id) += (1.0 / 6.0) * surface_br.volumetric_heat_source * det_J;
     }
 }
 
@@ -1032,12 +1032,15 @@ void FEMCentreCylindricalMesh(const Mesh2DTriangular& mesh, const size_t node_id
         const double phi_im_y = 0.5 * (dx20 - dx10) * dx10 / det_J;
 
         const double int_r = (dy10 / 3.0) + (dy20 / 3.0) + node_pos_i(1);
+        const double int_rb = (dy10 / 24.0) + (dy20 / 24.0) + (node_pos_i(1) / 6.0);
 
         const Mesh2DTriangular::Surface surface_br(mesh.surfaces_.at(mesh.cells_.at(cell_id).surface_id));
 
         mat_b.first(node_id, node_id) += int_r * (phi_ii_x + phi_ii_y) * surface_br.thermal_conductivity;
         mat_b.first(node_id, node_id_im) += int_r * (phi_im_x + phi_im_y) * surface_br.thermal_conductivity;
         mat_b.first(node_id, node_id_ip) += int_r * (phi_ip_x + phi_ip_y) * surface_br.thermal_conductivity;
+
+        mat_b.second(node_id) += int_rb * surface_br.volumetric_heat_source * det_J;
     }
 }
 
@@ -1072,22 +1075,6 @@ void ConvertBoundariesTriangularMesh(const Mesh2DTriangular& mesh, const VectorX
     } else {
         throw IncompleteCodeError("undefined boundary condition for triangular mesh");
     }
-}
-
-void SetVolumetricHeatSourceTriangularMesh(const Mesh2DTriangular& mesh, const size_t node_id,
-                                           std::pair<MatrixXd, VectorXd>& mat_b) {
-    const Mesh2DTriangular::Node& node = mesh.nodes_.at(node_id);
-    double volumetric_heat_source = 0.0, total_cell_area = 0.0;
-
-    for (size_t c = 0; c < node.adjacent_cells.size(); c++) {
-        const size_t cell_id = node.adjacent_cells.at(c);
-        const Mesh2DTriangular::Surface surface(mesh.surfaces_.at(mesh.cells_.at(cell_id).surface_id));
-
-        volumetric_heat_source += mesh.GetCellArea(cell_id) * surface.volumetric_heat_source;
-        total_cell_area += mesh.GetCellArea(cell_id);
-    }
-
-    mat_b.second(node_id) += volumetric_heat_source / total_cell_area;
 }
 
 }  // namespace heat_equation_homogeneous
