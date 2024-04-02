@@ -1,0 +1,23 @@
+#Read mesh
+read triangl_mesh line_fine.msh
+info
+
+#Set boundary values
+set boundary left_buttom 0 neumann
+set boundary left_top 0 neumann
+set boundary right_buttom 0 neumann
+set boundary right_top 0 neumann
+
+set boundary buttom 0
+set boundary top 0 heat_flux
+
+#set surface surf q 1
+set surface surf_top q 1
+
+#Set up writer
+set writer vtk on
+set writer csv on
+set writer vtk file_name line
+set writer csv file_name line
+
+run
